@@ -52,9 +52,9 @@
           <span class="app-menu__label">Quản lý</span></a></li>
       <li><a class="app-menu__item " href="index"><i class='app-menu__icon bx bx-tachometer'></i><span
             class="app-menu__label">Bảng điều khiển</span></a></li>
-      <li><a class="app-menu__item active" href="table_data_employees"><i class='app-menu__icon bx bx-id-card'></i>
+      <li><a class="app-menu__item" href="table_data_employees"><i class='app-menu__icon bx bx-id-card'></i>
           <span class="app-menu__label">Quản lý nhân viên</span></a></li>
-      <li><a class="app-menu__item" href="table_chuc_vu"><i class='app-menu__icon bx bxs-book-content'></i>
+      <li><a class="app-menu__item active" href="table_chuc_vu"><i class='app-menu__icon bx bxs-book-content'></i>
         <span class="app-menu__label">Quản lý chức vụ</span></a></li>
       <li><a class="app-menu__item" href="danh_sach_hop_dong"><i class='app-menu__icon bx bx-user-voice'></i><span
             class="app-menu__label">Danh sách hợp đồng</span></a></li>
@@ -85,8 +85,8 @@
             <div class="row element-button">
               <div class="col-sm-2">
 
-                <a class="btn btn-add btn-sm" href="form_add_data_employees" title="Thêm"><i class="fas fa-plus"></i>
-                  Tạo mới nhân viên</a>
+                <a class="btn btn-add btn-sm" href="form_add_chuc_vu" title="Thêm"><i class="fas fa-plus"></i>
+                  Tạo mới chức vụ</a>
               </div>
               <div class="col-sm-2">
                 <a class="btn btn-delete btn-sm nhap-tu-file" type="button" title="Nhập" onclick="myFunction(this)"><i
@@ -119,39 +119,17 @@
               <thead>
                 <tr>
                   <th width="10"><input type="checkbox" id="all"></th>
-                  <th>ID nhân viên</th>
-                  <th width="150">Họ và tên</th>
-                  <th width="20">Ảnh thẻ</th>
-                  <th width="300">Địa chỉ</th>
-                  <th>Ngày sinh</th>
-                  <th>Giới tính</th>
-                  <th>SĐT</th>
-                  <th>Chức vụ</th>
-                  <th width="100">Tính năng</th>
+                  <th width="100">ID Chức vụ</th>
+                  <th>Tên chức vụ</th>
                 </tr>
               </thead>
               <tbody>
-                {% for data in nhanvien %}
+                {% for data in chucvu %}
                 <tr>
                   <td width="10"><input type="checkbox" name="check1" value="1"></td>
                   <td>{{data[0]}}</td>
                   <td>{{data[1]}}</td>
-                  <td><img class="img-card-person" src="static/images/employee_image/No_Image.png" alt=""></td>
-                  <td>{{data[2]}}</td>
-                  <td>{{data[3]}}</td>
-                  <td>{{data[4]}}</td>
-                  <td>{{data[5]}}</td>
-                  <td>{{data[6]}}</td>
-                  <td class="table-td-center"><button class="btn btn-primary btn-sm trash" type="button" title="Xóa"
-                      onclick="myFunction(this)"><i class="fas fa-trash-alt"></i>
-                    </button>
-                    <button class="btn btn-primary btn-sm edit" type="button" title="Sửa" id="show-emp"
-                      data-toggle="modal" data-target="#ModalUP"><i class="fas fa-edit"></i>
-                    </button>
-                  </td>
-                </tr>
                 {% endfor %}
-
               </tbody>
             </table>
           </div>

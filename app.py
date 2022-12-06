@@ -106,10 +106,6 @@ def form_add_data_employees():
         
         print(MNV, TENNV, MAIL, DIACHI, SDT, NGAYSINH, NOISINH, CMND, NGAYCMND, NOICMND, GIOITINH, CV, BANGCAP, HONHAN)
         
-        
-        
-
-        
     return render_template('form_add_data_employees.html', chucvu = chucvu, my_user = session['username'])
 
 
@@ -117,6 +113,38 @@ def form_add_data_employees():
 def form_add_data_money():
     return render_template('form_add_data_money.html')
 
+@login_required
+@app.route("/form_add_chuc_vu", methods=['GET','POST'])
+def form_add_chuc_vu():
+    cur = mysql.connection.cursor()
+    cur.execute("""SELECT * FROM qlnv_chucvu""")
+    chucvu = cur.fetchall()
+    
+    if request.method == 'POST':
+        details = request.form
+        MaCV = details['MaCV'].strip()
+        TenCV = details["TenCV"].strip()
+        print (MaCV, TenCV)
+        for data in chucvu:
+            if (MaCV in data):
+                return render_template("form_add_chuc_vu.html", ma_err = "True", my_user = session['username'])
+        
+        cur.execute("INSERT INTO qlnv_chucvu(MaCV, TenCV) VALUES (%s, %s)",(MaCV, TenCV))
+        mysql.connection.commit()
+        cur.close()
+        
+        return redirect(url_for("table_chuc_vu"))
+    return render_template("form_add_chuc_vu.html", my_user = session['username'])
+
+@login_required
+@app.route("/table_chuc_vu")
+def table_chuc_vu():
+    cur = mysql.connection.cursor()
+    cur.execute("""SELECT * FROM qlnv_chucvu""")
+    chucvu = cur.fetchall()
+    cur.close()
+    
+    return render_template("table_chuc_vu.html", chucvu = chucvu, my_user = session['username'])
 
 # @app.route("/")
 @app.route("/table_data_employees")

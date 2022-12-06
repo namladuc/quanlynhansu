@@ -163,6 +163,8 @@
             class="app-menu__label">Bảng điều khiển</span></a></li>
       <li><a class="app-menu__item active" href="table_data_employees"><i class='app-menu__icon bx bx-id-card'></i>
           <span class="app-menu__label">Quản lý nhân viên</span></a></li>
+      <li><a class="app-menu__item" href="table_chuc_vu"><i class='app-menu__icon bx bxs-book-content'></i>
+        <span class="app-menu__label">Quản lý chức vụ</span></a></li>
       <li><a class="app-menu__item" href="danh_sach_hop_dong"><i class='app-menu__icon bx bx-user-voice'></i><span
             class="app-menu__label">Danh sách hợp đồng</span></a></li>
       <li><a class="app-menu__item" href="table-data-banned.html"><i class='app-menu__icon bx bx-run'></i><span
@@ -192,10 +194,13 @@
           <div class="tile-body">
             <div class="row element-button">
               <div class="col-sm-2">
-                <a class="btn btn-add btn-sm" data-toggle="modal" data-target="#exampleModalCenter"><b><i
+                <a class="btn btn-add btn-sm" data-toggle="modal" herf="\"><b><i
                       class="fas fa-folder-plus"></i> Tạo chức vụ mới</b></a>
               </div>
-
+              <div class="col-sm-2">
+                <a class="btn btn-add btn-sm" data-toggle="modal" data-target="#taoTrinhDoHocVan"><b><i
+                  class="fas fa-folder-plus"></i> Tạo trình độ học vấn mới</b></a>
+              </div>
             </div>
             <form class="row" method="post" action="/form_add_data_employees" >
               <div class="form-group col-md-4">
@@ -308,7 +313,7 @@
   <!--
   MODAL
 -->
-  <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
+  <div class="modal fade" id="taoChucVu" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
     data-backdrop="static" data-keyboard="false">
     <div class="modal-dialog modal-dialog-centered" role="document">
       <div class="modal-content">
@@ -329,6 +334,42 @@
           <button class="btn btn-save" type="button">Lưu lại</button>
           <a class="btn btn-cancel" data-dismiss="modal" href="#">Hủy bỏ</a>
           <BR>
+        </div>
+        <div class="modal-footer">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="taoTrinhDoHocVan" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
+    data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+
+        <div class="modal-body">
+          <div class="row">
+            <div class="form-group  col-md-12">
+              <span class="thong-tin-thanh-toan">
+                <h5>Tạo chức vụ mới</h5>
+              </span>
+            </div>
+            <form>
+            <div class="form-group col-md-12">
+                <label class="control-label">Nhập mã trình độ học vấn mới</label>
+                <input class="form-control" type="text" required><br>
+
+                <label class="control-label">Nhập tên trình độ học vấn</label>
+                <input class="form-control" type="text" required><br>
+
+                <label class="control-label">Nhập tên chuyên ngành</label>
+                <input class="form-control" type="text" required><br>
+            </div>
+            </div>
+            <BR>
+          <button class="btn btn-save" type="button">Lưu lại</button>
+          <a class="btn btn-cancel" data-dismiss="modal" href="#">Hủy bỏ</a>
+          <BR>
+          </form>
         </div>
         <div class="modal-footer">
         </div>
