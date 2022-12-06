@@ -87,6 +87,9 @@ def form_add_data_employees():
     cur.execute("""SELECT * FROM qlnv_chucvu""")
     chucvu = cur.fetchall()
     
+    cur.execute("""SELECT * FROM qlnv_trinhdohocvan""")
+    trinhdohocvan = cur.fetchall()
+    
     if request.method == 'POST':
         details = request.form
         MNV = details['MNV'].strip()
@@ -101,12 +104,17 @@ def form_add_data_employees():
         NOICMND = details['NOICMND'].strip()
         GIOITINH = details['GIOITINH'].strip()
         CV = details['CV'].strip()
-        BANGCAP = details['BANGCAP'].strip()
+        MATDHV = details['MATDHV'].strip().split(" - ")[0]
         HONHAN = details['HONHAN'].strip()
         
-        print(MNV, TENNV, MAIL, DIACHI, SDT, NGAYSINH, NOISINH, CMND, NGAYCMND, NOICMND, GIOITINH, CV, BANGCAP, HONHAN)
+        print(MNV, TENNV, MAIL, DIACHI, SDT,
+              NGAYSINH, NOISINH, CMND, NGAYCMND, 
+              NOICMND, GIOITINH, CV, MATDHV, HONHAN)
         
-    return render_template('form_add_data_employees.html', chucvu = chucvu, my_user = session['username'])
+    return render_template('form_add_data_employees.html',
+                           trinhdohocvan = trinhdohocvan, 
+                           chucvu = chucvu,
+                           my_user = session['username'])
 
 
 @app.route("/form_add_data_money")
@@ -124,7 +132,6 @@ def form_add_chuc_vu():
         details = request.form
         MaCV = details['MaCV'].strip()
         TenCV = details["TenCV"].strip()
-        print (MaCV, TenCV)
         for data in chucvu:
             if (MaCV in data):
                 return render_template("form_add_chuc_vu.html", ma_err = "True", my_user = session['username'])
@@ -135,6 +142,29 @@ def form_add_chuc_vu():
         
         return redirect(url_for("table_chuc_vu"))
     return render_template("form_add_chuc_vu.html", my_user = session['username'])
+
+@login_required
+@app.route("/form_add_trinhdohocvan", methods=['GET','POST'])
+def form_add_trinhdohocvan():
+    cur = mysql.connection.cursor()
+    cur.execute("""SELECT * FROM qlnv_trinhdohocvan""")
+    trinhdohocvan = cur.fetchall()
+    
+    if request.method == 'POST':
+        details = request.form
+        MATDHV = details['MATDHV'].strip()
+        TenTDHV = details["TenTDHV"].strip()
+        ChuyenNganh = details['ChuyenNganh'].strip()
+        for data in trinhdohocvan:
+            if (MATDHV in data):
+                return render_template("form_add_trinhdohocvan.html", ma_err = "True", my_user = session['username'])
+        
+        cur.execute("INSERT INTO qlnv_trinhdohocvan(MATDHV, TenTDHV, ChuyenNganh) VALUES (%s, %s, %s)",(MATDHV, TenTDHV, ChuyenNganh))
+        mysql.connection.commit()
+        cur.close()
+        
+        return redirect(url_for("table_data_employees"))
+    return render_template("form_add_trinhdohocvan.html", my_user = session['username'])
 
 @login_required
 @app.route("/table_chuc_vu")

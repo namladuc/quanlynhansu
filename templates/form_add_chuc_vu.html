@@ -8,6 +8,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <!-- Main CSS-->
   <link rel="stylesheet" href="{{ url_for('static', filename='doc/css/main.css') }}">
+  <script src="{{url_for('static', filename='js/displaytime/displaytime.js')}}"></script>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/boxicons@latest/css/boxicons.min.css">
   <!-- or -->
   <link rel="stylesheet" href="https://unpkg.com/boxicons@latest/css/boxicons.min.css">
@@ -194,25 +195,26 @@
           <div class="tile-body">
             <div class="row element-button">
               <div class="col-sm-2">
-                <a class="btn btn-add btn-sm" data-toggle="modal" herf="\form_add_data_employees"><b><i
+                <a class="btn btn-add btn-sm" href="/form_add_data_employees"><b><i
                       class="fas fa-folder-plus"></i> Tạo nhân viên mới</b></a>
               </div>
               <div class="col-sm-2">
-                <a class="btn btn-add btn-sm" data-toggle="modal" data-target="#taoTrinhDoHocVan"><b><i
+                <a class="btn btn-add btn-sm" href="/form_add_trinhdohocvan"><b><i
                   class="fas fa-folder-plus"></i> Tạo trình độ học vấn mới</b></a>
               </div>
             </div>
 
             <form class="row" method="post" action="/form_add_chuc_vu" >
-              <div class="form-group col-md-4">
-
-                {% if ma_err %}
-                  <div class="alert alert-danger" style="text-align: left; font-size: 12px; background-color: red;">
+              {% if ma_err %}
+                <div class="form-group col-md-12">
+                    <div class="alert alert-danger" style="text-align: left; font-size: 12px; background-color: red;">
                     <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
                     <strong>Mã chức vụ đã tồn tại!</strong> Hãy nhập lại
-                  </div>
-                {% endif %}
+                    </div>
+                </div>
+              {% endif %}
 
+              <div class="form-group col-md-4">
                 <label class="control-label">Nhập mã chức vụ mới</label>
                 <input class="form-control" name="MaCV" type="text" required>
               </div>
@@ -222,8 +224,10 @@
                 <input class="form-control" name="TenCV" type="text" required>
               </div>
 
+              <div class="form-group col-md-12">
+              </div>
+
               <div class="form-group col-md-4">
-                <label class="control-label"></label><br>
                 <input class="btn btn-save" type="submit" value="Lưu lại"/>
                 <a class="btn btn-cancel" href="table_chuc_vu">Hủy bỏ</a>
               </div>
