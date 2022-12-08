@@ -117,6 +117,19 @@ def form_add_data_employees():
                            my_user = session['username'])
 
 
+@login_required
+@app.route("/delete_nhan_vien/<string:maNV>")
+def delete_nhan_vien(maNV):
+    cur = mysql.connection.cursor()
+    sql = "DELETE FROM qlnv_nhanvien WHERE MaNhanVien=%s"
+    val = (maNV, )
+    cur.execute(sql,val)
+    mysql.connection.commit()
+    cur.close()
+    return redirect(url_for("table_data_employees"))
+    
+    
+@login_required
 @app.route("/form_add_data_money")
 def form_add_data_money():
     return render_template('form_add_data_money.html')
@@ -170,13 +183,39 @@ def form_add_trinhdohocvan():
 @app.route("/table_chuc_vu")
 def table_chuc_vu():
     cur = mysql.connection.cursor()
-    cur.execute("""SELECT * FROM qlnv_chucvu""")
+    cur.execute("""
+        SELECT cv.MaCV, cv.TenCV, COUNT(*) 
+        FROM qlnv_chucvu cv
+        JOIN qlnv_nhanvien nv ON cv.MaCV = nv.MaChucVu
+        GROUP BY cv.MaCV""")
     chucvu = cur.fetchall()
     cur.close()
-    
     return render_template("table_chuc_vu.html", chucvu = chucvu, my_user = session['username'])
 
-# @app.route("/")
+@login_required
+@app.route("/table_chuc_vu/<string:maCV>")
+def table_chuc_vu_nhan_vien(maCV):
+    cur = mysql.connection.cursor()
+    cur.execute("""
+        SELECT TenCV
+        FROM qlnv_chucvu 
+        WHERE MaCV = %s """, (maCV, ))
+    tenCV = cur.fetchall()
+    
+    cur.execute("""
+        SELECT nv.MaNhanVien, nv.TenNV, nv.NgaySinh, nv.DienThoai, cv.TenCV, tg.NgayNhanChuc
+        FROM qlnv_chucvu cv
+        JOIN qlnv_thoigiancongtac tg ON tg.MaCV = cv.MaCV
+        JOIN qlnv_nhanvien nv ON tg.MaNV = nv.MaNhanVien
+        WHERE cv.MaCV = %s AND tg.DuongNhiem = 1 """, (maCV, ))
+    nv_chuc_vu = cur.fetchall()
+    
+    cur.close()
+    
+    return render_template("table_chuc_vu_nhan_vien.html", tenCV = tenCV, nv_chuc_vu=nv_chuc_vu, my_user = session['username'])
+    
+
+@login_required
 @app.route("/table_data_employees")
 def table_data_employees():
     cur = mysql.connection.cursor()
@@ -188,27 +227,27 @@ def table_data_employees():
     cur.close()
     return render_template('table_data_employees.html', nhanvien = nhanvien, my_user = session['username'])
 
-
+@login_required
 @app.route("/table_data_money")
 def table_data_money():
     return render_template('table_data_money.html', my_user = session['username'])
 
-
+@login_required
 @app.route("/danh_sach_cham_cong")
 def danh_sach_cham_cong():
     return render_template('danh_sach_cham_cong.html', my_user = session['username'])
 
-
+@login_required
 @app.route("/index")
 def index():
     return render_template('index.html', my_user = session['username'])
 
-
+@login_required
 @app.route("/page_calendar")
 def page_calendar():
     return render_template('page_calendar.html', my_user = session['username'])
 
-
+@login_required
 @app.route("/danh_sach_hop_dong")
 def danh_sach_hop_dong():
     return render_template('danh_sach_hop_dong.html', my_user = session['username'])
