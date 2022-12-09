@@ -90,6 +90,9 @@ def form_add_data_employees():
     cur.execute("""SELECT * FROM qlnv_trinhdohocvan""")
     trinhdohocvan = cur.fetchall()
     
+    cur.execute("""SELECT * FROM qlnv_phongban""")
+    phongban = cur.fetchall()
+    
     if request.method == 'POST':
         details = request.form
         MNV = details['MNV'].strip()
@@ -114,6 +117,7 @@ def form_add_data_employees():
     return render_template('form_add_data_employees.html',
                            trinhdohocvan = trinhdohocvan, 
                            chucvu = chucvu,
+                           phongban = phongban,
                            my_user = session['username'])
 
 
