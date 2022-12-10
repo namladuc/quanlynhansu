@@ -1,6 +1,8 @@
 import hashlib
 from flask import Flask, render_template, request, redirect, url_for, session, json, jsonify
 from flask_mysqldb import MySQL
+from werkzeug.utils import secure_filename
+import os
 import MySQLdb.cursors
 import functools
 import re
@@ -8,15 +10,52 @@ import re
 app = Flask(__name__)
 app.secret_key = 'la nam'
 
+UPLOAD_FOLDER = 'static/web'
+UPLOAD_FOLDER_IMG = 'static/web/img'
+
 app.config['MYSQL_HOST'] = 'localhost'
 app.config['MYSQL_USER'] = 'root'
 app.config['MYSQL_PASSWORD'] = ''
 app.config['MYSQL_DB'] = 'quan_ly_nhan_su'
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+app.config['UPLOAD_FOLDER_IMG'] = UPLOAD_FOLDER_IMG
 
 mysql = MySQL(app)
 
 # def home_login():
 #     return render_template('login.html')
+
+def take_image_to_save(id_image, path_to_img):
+    cur = mysql.connection.cursor()
+    cur.execute("""SELECT * FROM qlnv_imagedata""")
+    img_data = cur.fetchall()
+    change_path = False
+    
+    for data in img_data:
+        if id_image in data:
+            change_path = True
+            break;
+    
+    if change_path:
+        sql = """
+            UPDATE qlnv_imagedata
+            SET PathToImage = %s
+            WHERE ID_image = %s"""
+        val = (id_image, path_to_img)
+        cur.execute(sql,val)
+        mysql.connection.commit()
+        cur.close()
+        pass
+    
+    sql = """
+        INSERT INTO qlnv_imagedata (ID_image, PathToImage) 
+        VALUES (%s, %s)"""
+    val = (id_image, path_to_img)
+    cur.execute(sql,val)
+    mysql.connection.commit()
+    cur.close()
+    pass
+    
 
 def login_required(func): # need for some router
     @functools.wraps(func)
@@ -52,7 +91,11 @@ def login():
             return render_template('/index.html', my_user = session['username'])
         
         cur = mysql.connection.cursor()
-        cur.execute("SELECT * FROM qlnv_user WHERE username=%s",(user_name,))
+        cur.execute("""SELECT us.*, img.PathToImage
+                FROM qlnv_user us
+                JOIN qlnv_nhanvien nv ON us.MaNhanVien = nv.MaNhanVien
+                JOIN qlnv_imagedata img ON nv.ID_profile_image = img.ID_image
+                WHERE username=%s""",(user_name,))
         user_data = cur.fetchall()
         
         if len(user_data)==0:
@@ -61,8 +104,11 @@ def login():
         if password != user_data[0][2]:
             return render_template('/general/login.html', user_exits='True', pass_check='False')
         
-        my_user_data = user_data[0]
-        session['username'] = my_user_data
+        cur.execute("SELECT * FROM qlnv_congty")
+        congty = cur.fetchall()[0]
+        
+        my_user = tuple(list(user_data[0]) + list(congty))
+        session['username'] = my_user
         cur.close()
         return redirect(url_for("home"))
     return render_template('/general/login.html')
@@ -94,25 +140,79 @@ def form_add_data_employees():
     phongban = cur.fetchall()
     
     if request.method == 'POST':
+        cur.execute("""SELECT MaNhanVien FROM qlnv_nhanvien""")
+        danh_sach_ma_nhan_vien = cur.fetchall()
+            
         details = request.form
         MNV = details['MNV'].strip()
         TENNV = details['TENNV'].strip()
         MAIL = details['MAIL'].strip()
         DIACHI = details['DIACHI'].strip()
         SDT = details['SDT'].strip()
+        BHYT = details['BHYT'].strip()
+        BHXH = details['BHXH'].strip()
         NGAYSINH = details['NGAYSINH'].strip()
         NOISINH = details['NOISINH'].strip()
         CMND = details['CMND'].strip()
         NGAYCMND = details['NGAYCMND'].strip()
         NOICMND = details['NOICMND'].strip()
         GIOITINH = details['GIOITINH'].strip()
-        CV = details['CV'].strip()
         MATDHV = details['MATDHV'].strip().split(" - ")[0]
         HONHAN = details['HONHAN'].strip()
+        LUONG = details['LUONG'].strip()
+        MAHD = details['MAHD'].strip()
+        DANTOC = details['DANTOC']
+        CV = details['CV'].strip()
+        PB = details['MAPB'].strip()
+        ID_image = "none_image_profile"
         
-        print(MNV, TENNV, MAIL, DIACHI, SDT,
-              NGAYSINH, NOISINH, CMND, NGAYCMND, 
-              NOICMND, GIOITINH, CV, MATDHV, HONHAN)
+        for data in danh_sach_ma_nhan_vien:
+            if MNV in data:
+                return render_template('form_add_data_employees.html',
+                            ma_err="True",
+                            trinhdohocvan = trinhdohocvan, 
+                            chucvu = chucvu,
+                            phongban = phongban,
+                            my_user = session['username'])
+        
+        for data in chucvu:
+            if (CV in data):
+                CV = data[0]
+                break;
+        
+        for data in phongban:
+            if (PB in data):
+                PB = data[0]
+                break;
+        
+        image_profile = request.files['ImageProfileUpload']
+        
+        if image_profile.filename != '':
+            ID_image = "Image_Profile_" + MNV 
+            filename = ID_image + "." + secure_filename(image_profile.filename).split(".")[1]
+            pathToImage = os.path.join(app.config['UPLOAD_FOLDER_IMG'], filename)
+            image_profile.save(pathToImage)
+            take_image_to_save(ID_image, pathToImage)
+            
+        print(MNV, CV, PB, LUONG, GIOITINH, MAHD,
+             TENNV, NGAYSINH, CMND, SDT, DIACHI,
+             MAIL, HONHAN, DANTOC, MATDHV, NGAYCMND, NOICMND, ID_image)
+        
+        # cur.execute("""INSERT INTO `qlnv_nhanvien` 
+        #     (MaNhanVien, MaChucVu, MaPhongBan,
+        #     Luong, GioiTinh, MaHD, TenNV,
+        #     NgaySinh, SoCMT, DienThoai,
+        #     DiaChi, Email, TTHonNhan, DanToc,
+        #     MATDHV, NgayCMND, NoiCMND, ID_profile_image)
+        #     VALUES
+        #     (%s, %s, %s, %s, %s, %s,
+        #      %s, %s, %s, %s, %s, %s,
+        #      %s, %s, %s, %s, %s, %s)""",
+        #     (MNV, CV, PB, LUONG, GIOITINH, MAHD,
+        #      TENNV, NGAYSINH, CMND, SDT, DIACHI,
+        #      MAIL, HONHAN, DANTOC, MATDHV, NGAYCMND, NOICMND, ID_image))
+        # mysql.connection.commit()
+        # cur.close()
         
     return render_template('form_add_data_employees.html',
                            trinhdohocvan = trinhdohocvan, 
@@ -224,11 +324,13 @@ def table_chuc_vu_nhan_vien(maCV):
 def table_data_employees():
     cur = mysql.connection.cursor()
     cur.execute("""
-        SELECT nv.MaNhanVien, nv.TenNV, nv.DiaChi, nv.NgaySinh, nv.GioiTinh, nv.DienThoai, cv.TenCV
+        SELECT nv.MaNhanVien, nv.TenNV, img.PathToImage, nv.DiaChi, nv.NgaySinh, nv.GioiTinh, nv.DienThoai, cv.TenCV
         FROM qlnv_nhanvien nv
-        JOIN qlnv_chucvu cv ON nv.MaChucVu = cv.MaCV""")
+        JOIN qlnv_chucvu cv ON nv.MaChucVu = cv.MaCV
+        JOIN qlnv_imagedata img ON nv.ID_profile_image = img.ID_image""")
     nhanvien = cur.fetchall()
     cur.close()
+    print(session)
     return render_template('table_data_employees.html', nhanvien = nhanvien, my_user = session['username'])
 
 @login_required

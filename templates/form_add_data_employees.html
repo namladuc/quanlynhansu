@@ -9,6 +9,7 @@
   <!-- Main CSS-->
   <link rel="stylesheet" href="{{ url_for('static', filename='doc/css/main.css') }}">
   <script src="{{url_for('static', filename='js/displaytime/displaytime.js')}}"></script>
+  <link rel="shortcut icon" type="image/x-icon" href="{{ url_for('static', filename=my_user[10])}}"/>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/boxicons@latest/css/boxicons.min.css">
   <!-- or -->
   <link rel="stylesheet" href="https://unpkg.com/boxicons@latest/css/boxicons.min.css">
@@ -20,7 +21,6 @@
   <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.css">
   <script>
-
     function readURL(input, thumbimage) {
       if (input.files && input.files[0]) { //Sử dụng  cho Firefox - chrome
         var reader = new FileReader();
@@ -150,7 +150,7 @@
   <!-- Sidebar menu-->
   <div class="app-sidebar__overlay" data-toggle="sidebar"></div>
     <aside class="app-sidebar">
-        <div class="app-sidebar__user"><img class="app-sidebar__user-avatar" src="static/images/employee_image/No_Image.png" width="50px"
+        <div class="app-sidebar__user"><img class="app-sidebar__user-avatar" src="{{ url_for('static', filename=my_user[7])}}" style="border-radius: 50%;" width="50px"
                 alt="User Image">
             <div>
                 <p class="app-sidebar__user-name"><b>{{my_user[3]}}</b></p>
@@ -189,9 +189,7 @@
     </div>
     <div class="row">
       <div class="col-md-12">
-
         <div class="tile">
-
           <h3 class="tile-title">Tạo mới nhân viên</h3>
           <div class="tile-body">
             <div class="row element-button">
@@ -205,6 +203,15 @@
               </div>
             </div>
             <form class="row" method="post" action="/form_add_data_employees" enctype ="multipart/form-data">
+              {% if ma_err %}
+                <div class="form-group col-md-12">
+                    <div class="alert alert-danger" style="text-align: left; font-size: 12px; background-color: red;">
+                    <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
+                    <strong>Mã nhân viên đã tồn tại!</strong> 
+                    </div>
+                </div>
+              {% endif %}
+              
               <div class="form-group col-md-4">
                 <label class="control-label">Mã nhân viên</label>
                 <input class="form-control" type="text" name="MNV" required>
@@ -327,8 +334,13 @@
               </div>
 
               <div class="form-group col-md-4">
+                <label class="control-label">Mã hợp đồng</label>
+                <input class="form-control" type="number" name="MAHD" required>
+              </div>
+
+              <div class="form-group col-md-4">
                 <label class="control-label">Lương cơ bản</label>
-                <input class="form-control" type="number" name="Luong" required>
+                <input class="form-control" type="number" name="LUONG" required>
               </div>
 
               <div class="form-group col-md-4">
@@ -337,7 +349,7 @@
               <div class="form-group col-md-12">
                 <label class="control-label">Ảnh 3x4 nhân viên</label>
                 <div id="myfileupload">
-                  <input type="file" id="uploadfile" name="ImageUpload" onchange="readURL(this);" />
+                  <input type="file" id="uploadfile" name="ImageProfileUpload" onchange="readURL(this);" />
                 </div>
                 <div id="thumbbox">
                   <img height="300" width="300" alt="Thumb image" id="thumbimage" style="display: none" />
