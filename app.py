@@ -1,9 +1,10 @@
 import hashlib
-from flask import Flask, render_template, request, redirect, url_for, session, json, jsonify
+from flask import Flask, render_template, request, redirect, url_for, session, json, jsonify, send_file
 from flask_mysqldb import MySQL
 from werkzeug.utils import secure_filename
 import os
 import MySQLdb.cursors
+import pandas as pd
 import functools
 import re
 
@@ -180,7 +181,67 @@ def form_add_data_employees():
                            chucvu = chucvu,
                            phongban = phongban,
                            my_user = session['username'])
+    
+@login_required
+@app.route("/form_add_data_employees_upload_file", methods=['GET','POST'])
+def form_add_data_employees_upload_file():
+    if request.method == 'POST':
+        data_file = request.files['FileDataUpload']
+        if data_file.filename != '':
+            if data_file.filename.split(".")[-1] not in ['txt', 'xlsx', 'csv']:
+                return redirect(url_for("form_add_data_employees_upload_file"))
+            filename = "TMP_" + data_file.filename 
+            pathToFile = app.config['UPLOAD_FOLDER'] + "/" + filename
+            data_file.save(pathToFile)
+            return redirect(url_for("form_add_data_employees_upload_process", filename=filename))
+        return redirect(url_for("form_add_data_employees_upload_file"))
+    return render_template('form_add_data_employees_upload_file.html',
+                           my_user = session['username'])
 
+@login_required
+@app.route("/form_add_data_employees_upload_process/<string:filename>", methods=['GET','POST'])
+def form_add_data_employees_upload_process(filename):
+    pathToFile = app.config['UPLOAD_FOLDER'] + "/" + filename
+    default_tag_Column = ['MNV', 'TENNV', 'NGAYSINH', 'CV', 'PB', 'LUONG', 'GIOITINH', 'MAHD',
+                         'NOISINH', 'CMND', 'NGAYCMND', 'NOICMND', 'SDT', 'DIACHI', 'MAIL',
+                        'HONHAN', 'DANTOC', 'MATDHV', 'BHYT', 'BHXH']
+    default_name_Column = ['Mã nhân viên', 'Tên Nhân Viên', 'Ngày Sinh' 'Chức vụ', 'Phòng Ban', 'Lương', 'Giới tính', 'Mã Hợp đồng',
+                           'Nơi sinh', 'Chứng minh thư (thẻ căn cước)', 'Ngày cấp CMND', 'Nơi cấp CMND' 'Số điện thoại', 'Địa Chỉ', 'Email', 'Tình trạng hôn nhân',
+                           'Dân tộc', 'Trình Độ Học Vấn', 'Bảo hiểm y tế', 'BHXH']
+    
+    
+    
+    os.remove(pathToFile)
+    return render_template("form_add_data_employees_upload_process.html",
+                           my_user = session['username'],
+                           name_column = default_name_Column,
+                           index_column = default_tag_Column)
+    
+@login_required
+@app.route("/get_data_employees_excel", methods=['GET','POST'])
+def get_data_employees_excel():
+    cur = mysql.connection.cursor()
+    cur.execute("""
+        SELECT nv.MaNhanVien, nv.TenNV, cv.TenCV, nv.Luong, nv.DiaChi, nv.NoiSinh,
+        nv.NgaySinh, nv.GioiTinh, nv.DienThoai, nv.SoCMT, nv.NgayCMND, nv.NoiCMND,
+        nv.Email, nv.TTHonNhan, nv.BHYT, nv.BHXH
+        FROM qlnv_nhanvien nv
+        JOIN qlnv_chucvu cv ON nv.MaChucVu = cv.MaCV
+        JOIN qlnv_trinhdohocvan td ON nv.MATDHV = td.MATDHV
+        """)
+    nhanvien = cur.fetchall()
+    cur.close()
+    columnName = ['MaNhanVien', 'TenNV', 'TenCV', 'Luong', 'DiaChi', 'NoiSinh',
+        'NgaySinh', 'GioiTinh', 'DienThoai', 'SoCMT', 'NgayCMND', 'NoiCMND',
+        'Email', 'TTHonNhan', 'BHYT', 'BHXH']
+    data = pd.DataFrame.from_records(nhanvien, columns=columnName)
+    data = data.set_index('MaNhanVien')
+    pathFile = app.config['UPLOAD_FOLDER'] + "/" + "Data_Nhan_Vien.xlsx"
+    data.to_excel(pathFile)
+    return send_file(pathFile, as_attachment=True)
+    
+    
+    
 
 @login_required
 @app.route("/delete_nhan_vien/<string:maNV>")
