@@ -189,13 +189,12 @@ def delete_nhan_vien(maNV):
     cur.execute("SELECT ID_profile_image FROM qlnv_nhanvien WHERE MaNhanVien=%s", (maNV, ))
     id_image = cur.fetchall()
     
-    cur.execute("SELECT * FROM qlnv_imagedata WHERE ID_image=%s", (id_image, ))
-    image_path = "static/" + cur.fetchall()[0][1]
-    
-    if os.path.exists(image_path):
-        os.remove(image_path)
-    
-    cur.execute("DELETE FROM qlnv_imagedata WHERE ID_image=%s", (id_image, ))
+    if (id_image != "none_image_profile"):
+        cur.execute("SELECT * FROM qlnv_imagedata WHERE ID_image=%s", (id_image, ))
+        image_path = "static/" + cur.fetchall()[0][1]
+        if os.path.exists(image_path):
+            os.remove(image_path)
+        cur.execute("DELETE FROM qlnv_imagedata WHERE ID_image=%s", (id_image, ))
     
     sql = "DELETE FROM qlnv_nhanvien WHERE MaNhanVien=%s"
     val = (maNV, )
