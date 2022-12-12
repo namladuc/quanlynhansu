@@ -20,6 +20,8 @@
   <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.css">
 
+  <!-- header noti css-->
+  <link rel="stylesheet" href="{{ url_for('static', filename='doc/css/notibox.css') }}">
 </head>
 
 <body onload="time()" class="app sidebar-mini rtl">
@@ -32,7 +34,58 @@
 
 
       <!-- User Menu-->
-      <li><a class="app-nav__item" style="margin: 0 25px 0 0;" href=""><i class='bx bx-bell'></i> </a></li>
+      <li><a class="app-nav__item" style="margin: 0 25px 0 0;" href="#" onclick="toggleNotifi()"><i class='bx bx-bell'></i> </a></li>
+      <div class="notifi-box" id="box">
+        <div style="background-color: rgb(70,130,180);"><h2>Thông báo</h2></div>
+        <div class="notifi-item">
+          <img src="img/avatar1.png" alt="img">
+          <div class="text">
+             <h4>Duong Nam</h4>
+             <p>Dang nhap abvdhdjsds</p>
+            </div> 
+        </div>
+  
+        <div class="notifi-item">
+          <img src="img/avatar2.png" alt="img">
+          <div class="text">
+             <h4>La Nam</h4>
+             <p>mai iu cẩm ly</p>
+            </div> 
+        </div>
+  
+        <div class="notifi-item">
+          <img src="img/avatar3.png" alt="img">
+          <div class="text">
+             <h4>Hong Nghia</h4>
+             <p>Sắp lấy vợ</p>
+            </div> 
+        </div>
+  
+        <div class="notifi-item">
+          <img src="img/avatar4.png" alt="img">
+          <div class="text">
+             <h4>Khac Huy</h4>
+             <p>Mai iu Hải Dương</p>
+            </div> 
+        </div>
+  
+        <div class="notifi-item">
+          <img src="img/avatar5.png" alt="img">
+          <div class="text">
+             <h4>Khoa gà</h4>
+             <p>Mai iu Mai Anh</p>
+            </div> 
+        </div>
+  
+      </div>
+      
+      
+      
+      
+      
+      
+      
+      <!-- ---------------------------------------------------------------------------------- -->
       <li><a class="app-nav__item" href="/logout"><i class='bx bx-log-out bx-rotate-180'></i> </a>
 
       </li>
@@ -176,11 +229,11 @@
   <!-- Page specific javascripts-->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.js"></script>
   <!-- Data table plugin-->
-  <!-- <script type="text/javascript" src="js/plugins/jquery.dataTables.min.js"></script> -->
   <script src="{{url_for('static', filename='doc/js/plugins/jquery.dataTables.min.js')}}"></script>
-  <!-- <script type="text/javascript" src="js/plugins/dataTables.bootstrap.min.js"></script> -->
   <script src="{{url_for('static', filename='doc/js/plugins/dataTables.bootstrap.min.js')}}"></script>
   <script type="text/javascript">$('#sampleTable').DataTable();</script>
+  <!-- header noti-->
+  <script src="{{url_for('static', filename='js/notibox/notibox.js')}}"></script>
   <script>
     function deleteRow(r) {
       var i = r.parentNode.parentNode.rowIndex;

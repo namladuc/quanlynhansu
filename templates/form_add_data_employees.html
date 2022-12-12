@@ -19,8 +19,13 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.js"></script>
   <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.css">
-  <script>
 
+  <!-- Notification -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='doc/css/noti.css') }}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css"
+  integrity="sha512-MV7K8+y+gLIBoVD59lQIYicR65iaqukzvf/nwasF0nqhPay5w/9lJmVM2hMDcnK1OnMGCdVK+iQrJ7lzPJQd1w=="
+  crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <script>
     function readURL(input, thumbimage) {
       if (input.files && input.files[0]) { //Sử dụng  cho Firefox - chrome
         var reader = new FileReader();
@@ -149,14 +154,14 @@
   </header>
   <!-- Sidebar menu-->
   <div class="app-sidebar__overlay" data-toggle="sidebar"></div>
-    <aside class="app-sidebar">
-        <div class="app-sidebar__user"><img class="app-sidebar__user-avatar" src="static/images/employee_image/No_Image.png" width="50px"
-                alt="User Image">
-            <div>
-                <p class="app-sidebar__user-name"><b>{{my_user[3]}}</b></p>
-                <p class="app-sidebar__user-designation">Chào mừng bạn trở lại</p>
-            </div>
-        </div>
+  <aside class="app-sidebar">
+    <div class="app-sidebar__user"><img class="app-sidebar__user-avatar" src="static/images/employee_image/No_Image.png"
+        width="50px" alt="User Image">
+      <div>
+        <p class="app-sidebar__user-name"><b>{{my_user[3]}}</b></p>
+        <p class="app-sidebar__user-designation">Chào mừng bạn trở lại</p>
+      </div>
+    </div>
     <hr>
     <ul class="app-menu">
       <li><a class="app-menu__item haha"><i class='app-menu__icon bx bx-user'></i>
@@ -166,7 +171,7 @@
       <li><a class="app-menu__item active" href="table_data_employees"><i class='app-menu__icon bx bx-id-card'></i>
           <span class="app-menu__label">Quản lý nhân viên</span></a></li>
       <li><a class="app-menu__item" href="table_chuc_vu"><i class='app-menu__icon bx bxs-book-content'></i>
-        <span class="app-menu__label">Quản lý chức vụ</span></a></li>
+          <span class="app-menu__label">Quản lý chức vụ</span></a></li>
       <li><a class="app-menu__item" href="danh_sach_hop_dong"><i class='app-menu__icon bx bx-user-voice'></i><span
             class="app-menu__label">Danh sách hợp đồng</span></a></li>
       <li><a class="app-menu__item" href="table-data-banned.html"><i class='app-menu__icon bx bx-run'></i><span
@@ -196,15 +201,15 @@
           <div class="tile-body">
             <div class="row element-button">
               <div class="col-sm-2">
-                <a class="btn btn-add btn-sm" href="/form_add_chuc_vu"><b><i
-                      class="fas fa-folder-plus"></i> Tạo chức vụ mới</b></a>
+                <a class="btn btn-add btn-sm" href="/form_add_chuc_vu"><b><i class="fas fa-folder-plus"></i> Tạo chức vụ
+                    mới</b></a>
               </div>
               <div class="col-sm-2">
-                <a class="btn btn-add btn-sm" href="/form_add_trinhdohocvan"><b><i
-                  class="fas fa-folder-plus"></i> Tạo trình độ học vấn mới</b></a>
+                <a class="btn btn-add btn-sm" href="/form_add_trinhdohocvan"><b><i class="fas fa-folder-plus"></i> Tạo
+                    trình độ học vấn mới</b></a>
               </div>
             </div>
-            <form class="row" method="post" action="/form_add_data_employees" enctype ="multipart/form-data">
+            <form class="row" method="post" action="/form_add_data_employees" enctype="multipart/form-data">
               <div class="form-group col-md-4">
                 <label class="control-label">Mã nhân viên</label>
                 <input class="form-control" type="text" name="MNV" required>
@@ -272,7 +277,7 @@
                 <label class="control-label">Mã bảo hiểm xã hội</label>
                 <input class="form-control" type="text" name="BHXH">
               </div>
-              
+
               <div class="form-group col-md-4">
                 <label class="control-label">Số CMND (Thẻ căn cước)</label>
                 <input class="form-control" type="number" name="CMND" required>
@@ -285,7 +290,7 @@
                 <label class="control-label">Nơi cấp</label>
                 <input class="form-control" type="text" name="NOICMND" required>
               </div>
-              
+
               <div class="form-group col-md-4">
                 <label class="control-label">Phòng ban</label>
                 <select class="form-control" id="exampleSelect3" name="MAPB">
@@ -312,7 +317,7 @@
                 </select>
               </div>
 
-              
+
               <div class="form-group col-md-4">
                 <label class="control-label">Chọn trình độ học vấn</label>
                 <select class="form-control" id="exampleSelect3" name="MATDHV">
@@ -348,9 +353,13 @@
                   <p style="clear:both"></p>
                 </div>
               </div>
+              <div id="toast">
+              </div>
               <div class="form-group col-md-4">
-                <input class="btn btn-save" type="submit" value="Lưu lại"/>
+                <input class="btn btn-save" type="submit" onclick="showSuccessToast();" value="Lưu lại"/>
                 <a class="btn btn-cancel" href="table_data_employees">Hủy bỏ</a>
+                <!-- <div onclick="showSuccessToast();" class="btn btn--success">Show success</div>
+                <div onclick="showErrorToast();" class="btn btn--danger">Show eroor</div> -->
               </div>
             </form>
 
@@ -364,6 +373,8 @@
   <script src="{{url_for('static', filename='doc/js/main.js')}}"></script>
   <!-- The javascript plugin to display page loading on top-->
   <script src="{{url_for('static', filename='doc/js/plugins/pace.min.js')}}"></script>
+  <!-- Notification -->
+  <script src="{{url_for('static', filename='js/noti/noti.js')}}"></script>
 
 </body>
 

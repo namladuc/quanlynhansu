@@ -256,4 +256,9 @@ def page_calendar():
 def danh_sach_hop_dong():
     return render_template('danh_sach_hop_dong.html', my_user = session['username'])
 
+# -------------------------------------------------------------------------------------
+@app.route("/header_noti")
+def header_noti():
+    return render_template('header_noti.html')
+
 
