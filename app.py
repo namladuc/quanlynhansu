@@ -22,41 +22,6 @@ app.config['UPLOAD_FOLDER_IMG'] = UPLOAD_FOLDER_IMG
 
 mysql = MySQL(app)
 
-# def home_login():
-#     return render_template('login.html')
-
-def take_image_to_save(id_image, path_to_img):
-    cur = mysql.connection.cursor()
-    cur.execute("""SELECT * FROM qlnv_imagedata""")
-    img_data = cur.fetchall()
-    change_path = False
-    
-    for data in img_data:
-        if id_image in data:
-            change_path = True
-            break;
-    
-    if change_path:
-        sql = """
-            UPDATE qlnv_imagedata
-            SET PathToImage = %s
-            WHERE ID_image = %s"""
-        val = (id_image, path_to_img)
-        cur.execute(sql,val)
-        mysql.connection.commit()
-        cur.close()
-        pass
-    
-    sql = """
-        INSERT INTO qlnv_imagedata (ID_image, PathToImage) 
-        VALUES (%s, %s)"""
-    val = (id_image, path_to_img)
-    cur.execute(sql,val)
-    mysql.connection.commit()
-    cur.close()
-    pass
-    
-
 def login_required(func): # need for some router
     @functools.wraps(func)
     def secure_function(*args, **kwargs):
@@ -65,12 +30,6 @@ def login_required(func): # need for some router
         return func(*args, **kwargs)
 
     return secure_function
-
-@app.route("/home")
-def home():
-    if 'username' in session.keys():
-        return render_template('/index.html', my_user = session['username'])
-    return redirect(url_for("login"))
     
 @app.route("/logout")
 def logout():
@@ -114,6 +73,12 @@ def login():
     return render_template('/general/login.html')
 
 
+@app.route("/home")
+def home():
+    if 'username' in session.keys():
+        return render_template('/index.html', my_user = session['username'])
+    return redirect(url_for("login"))
+
 # Error Handler
 # @app.errorhandler(404)
 # def page_not_found(error):
@@ -142,7 +107,7 @@ def form_add_data_employees():
     if request.method == 'POST':
         cur.execute("""SELECT MaNhanVien FROM qlnv_nhanvien""")
         danh_sach_ma_nhan_vien = cur.fetchall()
-            
+        
         details = request.form
         MNV = details['MNV'].strip()
         TENNV = details['TENNV'].strip()
@@ -190,30 +155,26 @@ def form_add_data_employees():
         if image_profile.filename != '':
             ID_image = "Image_Profile_" + MNV 
             filename = ID_image + "." + secure_filename(image_profile.filename).split(".")[1]
-            pathToImage = os.path.join(app.config['UPLOAD_FOLDER_IMG'], filename)
+            pathToImage = app.config['UPLOAD_FOLDER_IMG'] + "/" + filename
             image_profile.save(pathToImage)
             take_image_to_save(ID_image, pathToImage)
-            
-        print(MNV, CV, PB, LUONG, GIOITINH, MAHD,
-             TENNV, NGAYSINH, CMND, SDT, DIACHI,
-             MAIL, HONHAN, DANTOC, MATDHV, NGAYCMND, NOICMND, ID_image)
         
-        # cur.execute("""INSERT INTO `qlnv_nhanvien` 
-        #     (MaNhanVien, MaChucVu, MaPhongBan,
-        #     Luong, GioiTinh, MaHD, TenNV,
-        #     NgaySinh, SoCMT, DienThoai,
-        #     DiaChi, Email, TTHonNhan, DanToc,
-        #     MATDHV, NgayCMND, NoiCMND, ID_profile_image)
-        #     VALUES
-        #     (%s, %s, %s, %s, %s, %s,
-        #      %s, %s, %s, %s, %s, %s,
-        #      %s, %s, %s, %s, %s, %s)""",
-        #     (MNV, CV, PB, LUONG, GIOITINH, MAHD,
-        #      TENNV, NGAYSINH, CMND, SDT, DIACHI,
-        #      MAIL, HONHAN, DANTOC, MATDHV, NGAYCMND, NOICMND, ID_image))
-        # mysql.connection.commit()
-        # cur.close()
-        
+        cur.execute("""INSERT INTO `qlnv_nhanvien` 
+            (MaNhanVien, MaChucVu, MaPhongBan,
+            Luong, GioiTinh, MaHD, TenNV,
+            NgaySinh, NoiSinh, SoCMT, DienThoai,
+            DiaChi, Email, TTHonNhan, DanToc,
+            MATDHV, NgayCMND, NoiCMND, BHYT, BHXH, ID_profile_image)
+            VALUES
+            (%s, %s, %s, %s, %s, %s,
+             %s, %s, %s, %s, %s, %s,
+             %s, %s, %s, %s, %s, %s, %s, %s, %s)""",
+            (MNV, CV, PB, LUONG, GIOITINH, MAHD,
+            TENNV, NGAYSINH, NOISINH, CMND, SDT, DIACHI,
+            MAIL, HONHAN, DANTOC, MATDHV, NGAYCMND, NOICMND, BHYT, BHXH, ID_image))
+        mysql.connection.commit()
+        cur.close()
+        return redirect(url_for("table_data_employees"))
     return render_template('form_add_data_employees.html',
                            trinhdohocvan = trinhdohocvan, 
                            chucvu = chucvu,
@@ -225,6 +186,17 @@ def form_add_data_employees():
 @app.route("/delete_nhan_vien/<string:maNV>")
 def delete_nhan_vien(maNV):
     cur = mysql.connection.cursor()
+    cur.execute("SELECT ID_profile_image FROM qlnv_nhanvien WHERE MaNhanVien=%s", (maNV, ))
+    id_image = cur.fetchall()
+    
+    cur.execute("SELECT * FROM qlnv_imagedata WHERE ID_image=%s", (id_image, ))
+    image_path = "static/" + cur.fetchall()[0][1]
+    
+    if os.path.exists(image_path):
+        os.remove(image_path)
+    
+    cur.execute("DELETE FROM qlnv_imagedata WHERE ID_image=%s", (id_image, ))
+    
     sql = "DELETE FROM qlnv_nhanvien WHERE MaNhanVien=%s"
     val = (maNV, )
     cur.execute(sql,val)
@@ -330,7 +302,6 @@ def table_data_employees():
         JOIN qlnv_imagedata img ON nv.ID_profile_image = img.ID_image""")
     nhanvien = cur.fetchall()
     cur.close()
-    print(session)
     return render_template('table_data_employees.html', nhanvien = nhanvien, my_user = session['username'])
 
 @login_required
@@ -359,3 +330,36 @@ def danh_sach_hop_dong():
     return render_template('danh_sach_hop_dong.html', my_user = session['username'])
 
 
+def take_image_to_save(id_image, path_to_img):
+    cur = mysql.connection.cursor()
+    cur.execute("""SELECT * FROM qlnv_imagedata""")
+    img_data = cur.fetchall()
+    change_path = False
+    
+    path_to_img = "/".join(path_to_img.split("/")[1::])
+    
+    for data in img_data:
+        if id_image in data:
+            change_path = True
+            if os.path.exists(data[1]):
+                os.remove(data[1])
+            break;
+    
+    if change_path:
+        sql = """
+            UPDATE qlnv_imagedata
+            SET PathToImage = %s
+            WHERE ID_image = %s"""
+        val = (id_image, path_to_img)
+        cur.execute(sql,val)
+        mysql.connection.commit()
+        return True
+    
+    sql = """
+        INSERT INTO qlnv_imagedata (ID_image, PathToImage) 
+        VALUES (%s, %s)"""
+    val = (id_image, path_to_img)
+    cur.execute(sql,val)
+    mysql.connection.commit()
+    return True;
+    
