@@ -62,77 +62,6 @@
 </head>
 
 <body class="app sidebar-mini rtl">
-  <style>
-    .Choicefile {
-      display: block;
-      background: #14142B;
-      border: 1px solid #fff;
-      color: #fff;
-      width: 300px;
-      height: 300px;
-      text-align: center;
-      text-decoration: none;
-      cursor: pointer;
-      padding: 5px 0px;
-      border-radius: 5px;
-      font-weight: 500;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .Choicefile:hover {
-      text-decoration: none;
-      color: white;
-    }
-
-    #uploadfile,
-    .removeimg {
-      display: none;
-    }
-
-    #thumbbox {
-      position: relative;
-      width: 100%;
-      margin-bottom: 20px;
-    }
-
-    .removeimg {
-      height: 25px;
-      position: absolute;
-      background-repeat: no-repeat;
-      top: 5px;
-      left: 5px;
-      background-size: 25px;
-      width: 25px;
-      /* border: 3px solid red; */
-      border-radius: 50%;
-
-    }
-
-    .removeimg::before {
-      -webkit-box-sizing: border-box;
-      box-sizing: border-box;
-      content: '';
-      border: 1px solid red;
-      background: red;
-      text-align: center;
-      display: block;
-      margin-top: 11px;
-      transform: rotate(45deg);
-    }
-
-    .removeimg::after {
-      /* color: #FFF; */
-      /* background-color: #DC403B; */
-      content: '';
-      background: red;
-      border: 1px solid red;
-      text-align: center;
-      display: block;
-      transform: rotate(-45deg);
-      margin-top: -2px;
-    }
-  </style>
   <!-- Navbar-->
   <header class="app-header">
     <!-- Sidebar toggle button--><a class="app-sidebar__toggle" href="#" data-toggle="sidebar"
@@ -162,23 +91,25 @@
     <ul class="app-menu">
       <li><a class="app-menu__item haha"><i class='app-menu__icon bx bx-user'></i>
           <span class="app-menu__label">Quản lý</span></a></li>
-      <li><a class="app-menu__item " href="index"><i class='app-menu__icon bx bx-tachometer'></i><span
+      <li><a class="app-menu__item " href="/index"><i class='app-menu__icon bx bx-tachometer'></i><span
             class="app-menu__label">Bảng điều khiển</span></a></li>
-      <li><a class="app-menu__item active" href="table_data_employees"><i class='app-menu__icon bx bx-id-card'></i>
+      <li><a class="app-menu__item active" href="/table_data_employees"><i class='app-menu__icon bx bx-id-card'></i>
           <span class="app-menu__label">Quản lý nhân viên</span></a></li>
-      <li><a class="app-menu__item" href="table_chuc_vu"><i class='app-menu__icon bx bxs-book-content'></i>
+      <li><a class="app-menu__item" href="/table_chuc_vu"><i class='app-menu__icon bx bxs-book-content'></i>
         <span class="app-menu__label">Quản lý chức vụ</span></a></li>
-      <li><a class="app-menu__item" href="danh_sach_hop_dong"><i class='app-menu__icon bx bx-user-voice'></i><span
+      <li><a class="app-menu__item" href="/danh_sach_hop_dong"><i class='app-menu__icon bx bx-user-voice'></i><span
             class="app-menu__label">Danh sách hợp đồng</span></a></li>
-      <li><a class="app-menu__item" href="table-data-banned.html"><i class='app-menu__icon bx bx-run'></i><span
+      <li><a class="app-menu__item" href="/table-data-banned.html"><i class='app-menu__icon bx bx-run'></i><span
             class="app-menu__label">Quản lý nội bộ
           </span></a></li>
-      <li><a class="app-menu__item" href="table_data_money"><i class='app-menu__icon bx bx-dollar'></i><span
+      <li><a class="app-menu__item" href="/table_data_money"><i class='app-menu__icon bx bx-dollar'></i><span
             class="app-menu__label">Bảng kê lương</span></a></li>
-      <li><a class="app-menu__item" href="page_calendar"><i class='app-menu__icon bx bx-calendar-check'></i><span
+      <li><a class="app-menu__item" href="/page_calendar"><i class='app-menu__icon bx bx-calendar-check'></i><span
             class="app-menu__label">Lịch công tác </span></a></li>
-      <li><a class="app-menu__item" href="danh_sach_cham_cong"><i class='app-menu__icon bx bx-edit-alt'></i><span
+      <li><a class="app-menu__item" href="/danh_sach_cham_cong"><i class='app-menu__icon bx bx-edit-alt'></i><span
             class="app-menu__label">Danh sách chấm công</span></a></li>
+      <li><a class="app-menu__item" href="/thoi_gian_cong_tac"><i class='app-menu__icon bx bx-edit-alt'></i><span
+        class="app-menu__label">Thời gian công tác</span></a></li>
     </ul>
   </aside>
   <main class="app-content">

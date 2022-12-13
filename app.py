@@ -106,9 +106,6 @@ def form_add_data_employees():
     phongban = cur.fetchall()
     
     if request.method == 'POST':
-        cur.execute("""SELECT MaNhanVien FROM qlnv_nhanvien""")
-        danh_sach_ma_nhan_vien = cur.fetchall()
-        
         details = request.form
         MNV = details['MNV'].strip()
         TENNV = details['TENNV'].strip()
@@ -132,14 +129,16 @@ def form_add_data_employees():
         PB = details['MAPB'].strip()
         ID_image = "none_image_profile"
         
-        for data in danh_sach_ma_nhan_vien:
-            if MNV in data:
-                return render_template('form_add_data_employees.html',
-                            ma_err="True",
-                            trinhdohocvan = trinhdohocvan, 
-                            chucvu = chucvu,
-                            phongban = phongban,
-                            my_user = session['username'])
+        cur.execute("""SELECT MaNhanVien FROM qlnv_nhanvien WHERE MaNhanVien=%s""", (MNV, ))
+        kiem_tra_ma_nhan_vien = cur.fetchall()
+        
+        if len(kiem_tra_ma_nhan_vien) != 0:
+            return render_template('form_add_data_employees.html',
+                        ma_err="True",
+                        trinhdohocvan = trinhdohocvan, 
+                        chucvu = chucvu,
+                        phongban = phongban,
+                        my_user = session['username'])
         
         for data in chucvu:
             if (CV in data):
@@ -173,6 +172,10 @@ def form_add_data_employees():
             (MNV, CV, PB, LUONG, GIOITINH, MAHD,
             TENNV, NGAYSINH, NOISINH, CMND, SDT, DIACHI,
             MAIL, HONHAN, DANTOC, MATDHV, NGAYCMND, NOICMND, BHYT, BHXH, ID_image))
+        
+        cur.execute("""INSERT INTO qlnv_thoigiancongtac(MaNV, MaCV, NgayNhanChuc, NgayKetThuc, DuongNhiem)
+                    VALUES (%s, %s, CURRENT_DATE(), NULL, '1')
+                    """, (MNV, CV))
         mysql.connection.commit()
         cur.close()
         return redirect(url_for("table_data_employees"))
@@ -183,12 +186,123 @@ def form_add_data_employees():
                            my_user = session['username'])
     
 @login_required
+@app.route("/form_view_update_employees/<string:maNV>_<string:canEdit>", methods=['GET','POST'])
+def form_view_update_employees(maNV, canEdit):
+    # https://www.youtube.com/watch?v=rFPzo1VnPXU
+    
+    mode = "disabled"
+    if (canEdit == "Y"):
+        mode = "";
+    
+    cur = mysql.connection.cursor()
+    cur.execute("""
+        SELECT nv.MaNhanVien, nv.TenNV, nv.GioiTinh, nv.NgaySinh, nv.DanToc,
+        nv.SoCMT, nv.NgayCMND, nv.NoiCMND, nv.DienThoai, nv.Email, nv.DiaChi,
+        nv.NoiSinh, nv.BHYT, NV.BHXH, img.PathToImage, pb.TenPB, cv.TenCV,
+        nv.MaHD, nv.Luong, nv.TTHonNhan, concat(hv.MATDHV, " - ", hv.TenTDHV," - " , hv.ChuyenNganh),
+        nv.MaChucVu, nv.MaPhongBan, nv.MATDHV, img.ID_image
+        FROM qlnv_nhanvien nv
+        JOIN qlnv_imagedata img ON nv.ID_profile_image = img.ID_image
+        JOIN qlnv_phongban pb ON nv.MaPhongBan = pb.MaPB
+        JOIN qlnv_chucvu cv ON nv.MaChucVu = cv.MaCV
+        JOIN qlnv_trinhdohocvan hv ON nv.MATDHV = hv.MATDHV
+        WHERE nv.MaNhanVien = %s
+                """, (maNV, ))
+    data_default = cur.fetchall()
+    
+    if (len(data_default) != 1): # Need page error
+        return "Error"
+    data_default = data_default[0]
+    
+    cur.execute("""SELECT * FROM qlnv_chucvu WHERE MaCV != %s""", (data_default[21], ))
+    chucvu = cur.fetchall()
+    
+    cur.execute("""SELECT * FROM qlnv_trinhdohocvan WHERE MATDHV != %s""", (data_default[23], ))
+    trinhdohocvan = cur.fetchall()
+    
+    cur.execute("""SELECT * FROM qlnv_phongban WHERE MaPB != %s""", (data_default[22], ))
+    phongban = cur.fetchall()
+    
+    if request.method == 'POST':
+        details = request.form
+        MNV = details['MNV'].strip()
+        TENNV = details['TENNV'].strip()
+        MAIL = details['MAIL'].strip()
+        DIACHI = details['DIACHI'].strip()
+        SDT = details['SDT'].strip()
+        BHYT = details['BHYT'].strip()
+        BHXH = details['BHXH'].strip()
+        NGAYSINH = details['NGAYSINH'].strip()
+        NOISINH = details['NOISINH'].strip()
+        CMND = details['CMND'].strip()
+        NGAYCMND = details['NGAYCMND'].strip()
+        NOICMND = details['NOICMND'].strip()
+        GIOITINH = details['GIOITINH'].strip()
+        MATDHV = details['MATDHV'].strip().split(" - ")[0]
+        HONHAN = details['HONHAN'].strip()
+        LUONG = details['LUONG'].strip()
+        MAHD = details['MAHD'].strip()
+        DANTOC = details['DANTOC'].strip()
+        CV = details['CV'].strip()
+        PB = details['MAPB'].strip()
+        ID_image = data_default[24]
+                
+        if (CV != data_default[16]):
+            for data in chucvu:
+                if (CV in data):
+                    CV = data[0]
+                    break;
+        else:
+            CV = data_default[21]
+        
+        if (PB != data_default[15]):
+            for data in phongban:
+                if (PB in data):
+                    PB = data[0]
+                    break;
+        else:
+            PB = data_default[22]
+        
+        image_profile = request.files['ImageProfileUpload']
+        
+        if image_profile.filename != "":
+            ID_image = "Image_Profile_" + MNV 
+            filename = ID_image + "." + secure_filename(image_profile.filename).split(".")[1]
+            pathToImage = app.config['UPLOAD_FOLDER_IMG'] + "/" + filename
+            print("Done")
+            # image_profile.save(pathToImage)
+            # take_image_to_save(ID_image, pathToImage)
+        
+        cur.execute("""UPDATE qlnv_nhanvien
+            SET MaChucVu = %s, MaPhongBan = %s,
+            Luong= %s, GioiTinh= %s, MaHD= %s, TenNV= %s,
+            NgaySinh= %s, NoiSinh= %s, SoCMT= %s, DienThoai= %s,
+            DiaChi= %s, Email= %s, TTHonNhan= %s, DanToc= %s,
+            MATDHV= %s, NgayCMND= %s, NoiCMND= %s, BHYT= %s,
+            BHXH= %s, ID_profile_image= %s
+            WHERE MaNhanVien = %s""",
+            (CV, PB, LUONG, GIOITINH, MAHD,
+            TENNV, NGAYSINH, NOISINH, CMND, SDT, DIACHI,
+            MAIL, HONHAN, DANTOC, MATDHV, NGAYCMND, NOICMND, BHYT, BHXH, ID_image, MNV))
+        mysql.connection.commit()
+        cur.close()
+        return redirect(url_for("table_data_employees"))
+    return render_template('form_view_update_employees.html',
+                           mode=mode,
+                           data_default = data_default,
+                           trinhdohocvan = trinhdohocvan, 
+                           chucvu = chucvu,
+                           phongban = phongban,
+                           my_user = session['username'])
+    
+
+@login_required
 @app.route("/form_add_data_employees_upload_file", methods=['GET','POST'])
 def form_add_data_employees_upload_file():
     if request.method == 'POST':
         data_file = request.files['FileDataUpload']
         if data_file.filename != '':
-            if data_file.filename.split(".")[-1] not in ['txt', 'xlsx', 'csv']:
+            if data_file.filename.split(".")[-1] not in ['txt', 'xlsx', 'csv', 'xls', 'xlsm']:
                 return redirect(url_for("form_add_data_employees_upload_file"))
             filename = "TMP_" + data_file.filename 
             pathToFile = app.config['UPLOAD_FOLDER'] + "/" + filename
@@ -205,17 +319,19 @@ def form_add_data_employees_upload_process(filename):
     default_tag_Column = ['MNV', 'TENNV', 'NGAYSINH', 'CV', 'PB', 'LUONG', 'GIOITINH', 'MAHD',
                          'NOISINH', 'CMND', 'NGAYCMND', 'NOICMND', 'SDT', 'DIACHI', 'MAIL',
                         'HONHAN', 'DANTOC', 'MATDHV', 'BHYT', 'BHXH']
-    default_name_Column = ['Mã nhân viên', 'Tên Nhân Viên', 'Ngày Sinh' 'Chức vụ', 'Phòng Ban', 'Lương', 'Giới tính', 'Mã Hợp đồng',
-                           'Nơi sinh', 'Chứng minh thư (thẻ căn cước)', 'Ngày cấp CMND', 'Nơi cấp CMND' 'Số điện thoại', 'Địa Chỉ', 'Email', 'Tình trạng hôn nhân',
+    default_name_Column = ['Mã nhân viên', 'Tên Nhân Viên', 'Ngày Sinh', 'Chức vụ', 'Phòng Ban', 'Lương', 'Giới tính', 'Mã Hợp đồng',
+                           'Nơi sinh', 'Chứng minh thư (thẻ căn cước)', 'Ngày cấp CMND', 'Nơi cấp CMND', 'Số điện thoại', 'Địa Chỉ', 'Email', 'Tình trạng hôn nhân',
                            'Dân tộc', 'Trình Độ Học Vấn', 'Bảo hiểm y tế', 'BHXH']
     
+    data_nv = pd.read_excel(pathToFile)
+    data_column = list(data_nv.columns)
     
     
     os.remove(pathToFile)
     return render_template("form_add_data_employees_upload_process.html",
                            my_user = session['username'],
                            name_column = default_name_Column,
-                           index_column = default_tag_Column)
+                           index_column = data_column)
     
 @login_required
 @app.route("/get_data_employees_excel", methods=['GET','POST'])
@@ -281,6 +397,7 @@ def form_add_chuc_vu():
         details = request.form
         MaCV = details['MaCV'].strip()
         TenCV = details["TenCV"].strip()
+        
         for data in chucvu:
             if (MaCV in data):
                 return render_template("form_add_chuc_vu.html", ma_err = "True", my_user = session['username'])
