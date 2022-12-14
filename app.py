@@ -42,15 +42,18 @@ def logout():
 def login():
     if 'username' in session.keys():
         return redirect(url_for("home"))
+    cur = mysql.connection.cursor()
+    cur.execute("SELECT * FROM qlnv_congty")
+    congty = cur.fetchall()[0]
+    
+    if 'congty' not in session.keys():
+        session['congty'] = congty
     
     if request.method == 'POST':
         details = request.form
         user_name = details['username'].strip()
         password = hashlib.md5(details['current-password'].encode()).hexdigest()
-        if 'username' in session.keys():
-            return render_template('/index.html', my_user = session['username'])
         
-        cur = mysql.connection.cursor()
         cur.execute("""SELECT us.*, img.PathToImage
                 FROM qlnv_user us
                 JOIN qlnv_nhanvien nv ON us.MaNhanVien = nv.MaNhanVien
@@ -59,25 +62,31 @@ def login():
         user_data = cur.fetchall()
         
         if len(user_data)==0:
-            return render_template('/general/login.html', user_exits='False', pass_check='False')
+            return render_template('/general/login.html',
+                                   congty = session['congty'],
+                                   user_exits='False',
+                                   pass_check='False')
         
         if password != user_data[0][2]:
-            return render_template('/general/login.html', user_exits='True', pass_check='False')
+            return render_template('/general/login.html', 
+                                   congty = session['congty'],
+                                   user_exits='True', 
+                                   pass_check='False')
         
-        cur.execute("SELECT * FROM qlnv_congty")
-        congty = cur.fetchall()[0]
-        
-        my_user = tuple(list(user_data[0]) + list(congty))
+        my_user = user_data[0]
         session['username'] = my_user
         cur.close()
         return redirect(url_for("home"))
-    return render_template('/general/login.html')
+    return render_template('/general/login.html',
+                           congty = session['congty'])
 
 
 @app.route("/home")
 def home():
     if 'username' in session.keys():
-        return render_template('/index.html', my_user = session['username'])
+        return render_template('/index.html',
+                               congty = session['congty'],
+                               my_user = session['username'])
     return redirect(url_for("login"))
 
 # Error Handler
@@ -89,7 +98,8 @@ def home():
 
 @app.route("/forgot")
 def forgot():
-    return render_template('/general/forgot.html')
+    return render_template('/general/forgot.html', 
+                           congty = session['congty'])
 
 @login_required
 @app.route("/form_add_data_employees", methods=['GET','POST'])
@@ -138,6 +148,7 @@ def form_add_data_employees():
                         trinhdohocvan = trinhdohocvan, 
                         chucvu = chucvu,
                         phongban = phongban,
+                        congty = session['congty'],
                         my_user = session['username'])
         
         for data in chucvu:
@@ -183,6 +194,7 @@ def form_add_data_employees():
                            trinhdohocvan = trinhdohocvan, 
                            chucvu = chucvu,
                            phongban = phongban,
+                           congty = session['congty'],
                            my_user = session['username'])
     
 @login_required
@@ -202,10 +214,10 @@ def form_view_update_employees(maNV, canEdit):
         nv.MaHD, nv.Luong, nv.TTHonNhan, concat(hv.MATDHV, " - ", hv.TenTDHV," - " , hv.ChuyenNganh),
         nv.MaChucVu, nv.MaPhongBan, nv.MATDHV, img.ID_image
         FROM qlnv_nhanvien nv
-        JOIN qlnv_imagedata img ON nv.ID_profile_image = img.ID_image
-        JOIN qlnv_phongban pb ON nv.MaPhongBan = pb.MaPB
-        JOIN qlnv_chucvu cv ON nv.MaChucVu = cv.MaCV
-        JOIN qlnv_trinhdohocvan hv ON nv.MATDHV = hv.MATDHV
+        LEFT JOIN qlnv_imagedata img ON nv.ID_profile_image = img.ID_image
+        LEFT JOIN qlnv_phongban pb ON nv.MaPhongBan = pb.MaPB
+        LEFT JOIN qlnv_chucvu cv ON nv.MaChucVu = cv.MaCV
+        LEFT JOIN qlnv_trinhdohocvan hv ON nv.MATDHV = hv.MATDHV
         WHERE nv.MaNhanVien = %s
                 """, (maNV, ))
     data_default = cur.fetchall()
@@ -217,8 +229,12 @@ def form_view_update_employees(maNV, canEdit):
     cur.execute("""SELECT * FROM qlnv_chucvu WHERE MaCV != %s""", (data_default[21], ))
     chucvu = cur.fetchall()
     
-    cur.execute("""SELECT * FROM qlnv_trinhdohocvan WHERE MATDHV != %s""", (data_default[23], ))
-    trinhdohocvan = cur.fetchall()
+    if data_default[23] != None:
+        cur.execute("""SELECT * FROM qlnv_trinhdohocvan WHERE MATDHV != %s""", (data_default[23], ))
+        trinhdohocvan = cur.fetchall()
+    else:
+        cur.execute("""SELECT * FROM qlnv_trinhdohocvan""")
+        trinhdohocvan = cur.fetchall()
     
     cur.execute("""SELECT * FROM qlnv_phongban WHERE MaPB != %s""", (data_default[22], ))
     phongban = cur.fetchall()
@@ -293,6 +309,7 @@ def form_view_update_employees(maNV, canEdit):
                            trinhdohocvan = trinhdohocvan, 
                            chucvu = chucvu,
                            phongban = phongban,
+                           congty = session['congty'],
                            my_user = session['username'])
     
 
@@ -310,25 +327,73 @@ def form_add_data_employees_upload_file():
             return redirect(url_for("form_add_data_employees_upload_process", filename=filename))
         return redirect(url_for("form_add_data_employees_upload_file"))
     return render_template('form_add_data_employees_upload_file.html',
+                           congty = session['congty'],
                            my_user = session['username'])
 
 @login_required
 @app.route("/form_add_data_employees_upload_process/<string:filename>", methods=['GET','POST'])
 def form_add_data_employees_upload_process(filename):
     pathToFile = app.config['UPLOAD_FOLDER'] + "/" + filename
-    default_tag_Column = ['MNV', 'TENNV', 'NGAYSINH', 'CV', 'PB', 'LUONG', 'GIOITINH', 'MAHD',
-                         'NOISINH', 'CMND', 'NGAYCMND', 'NOICMND', 'SDT', 'DIACHI', 'MAIL',
-                        'HONHAN', 'DANTOC', 'MATDHV', 'BHYT', 'BHXH']
-    default_name_Column = ['Mã nhân viên', 'Tên Nhân Viên', 'Ngày Sinh', 'Chức vụ', 'Phòng Ban', 'Lương', 'Giới tính', 'Mã Hợp đồng',
-                           'Nơi sinh', 'Chứng minh thư (thẻ căn cước)', 'Ngày cấp CMND', 'Nơi cấp CMND', 'Số điện thoại', 'Địa Chỉ', 'Email', 'Tình trạng hôn nhân',
-                           'Dân tộc', 'Trình Độ Học Vấn', 'Bảo hiểm y tế', 'BHXH']
+    
+    default_tag_Column = ['MaNhanVien', 'MaChucVu', 'MaPhongBan',
+                    'Luong', 'GioiTinh', 'MaHD', 'TenNV',
+                    'NgaySinh', 'NoiSinh', 'SoCMT', 'DienThoai',
+                    'DiaChi', 'Email', 'TTHonNhan', 'DanToc',
+                    'MATDHV', 'NgayCMND', 'NoiCMND', 'BHYT', 'BHXH']
+    
+    default_name_Column = ['Mã nhân viên', 'Chức vụ', 'Phòng Ban', 'Lương', 'Giới tính',
+                           'Mã Hợp đồng', 'Tên Nhân Viên', 'Ngày Sinh',  'Nơi sinh', 'Chứng minh thư (thẻ căn cước)',
+                           'Số điện thoại', 'Địa Chỉ', 'Email', 'Tình trạng hôn nhân', 'Dân tộc',
+                           'Trình Độ Học Vấn', 'Ngày cấp CMND', 'Nơi cấp CMND', 'Bảo hiểm y tế', 'BHXH']
     
     data_nv = pd.read_excel(pathToFile)
     data_column = list(data_nv.columns)
     
+    if request.method == 'POST':
+        cur = mysql.connection.cursor()
+        details = request.form
+        column_link = [details[col] for col in data_column]
+        column_match = [default_name_Column.index(elm) for elm in column_link]
+        
+        if 0 not in column_match or 1 not in column_match or 2 not in column_match:
+            return "Error"
     
-    os.remove(pathToFile)
+        tmp = tuple(set(data_nv[data_column[column_match.index(1)]]))
+        if len(tmp) == 1:
+            cur.execute("SELECT MaCV FROM qlnv_chucvu WHERE TenCV = %s", tmp)
+        else:
+            cur.execute("SELECT MaCV FROM qlnv_chucvu WHERE TenCV IN %s", tmp)
+        data_nv[data_column[column_match.index(1)]] = data_nv[data_column[column_match.index(1)]].replace(list(tmp), cur.fetchall()[0])
+
+        tmp = tuple(set(data_nv[data_column[column_match.index(2)]]))
+        if len(tmp) == 1:
+            cur.execute("SELECT MaPB FROM qlnv_phongban WHERE TenPB = %s", tmp)
+        else:
+            cur.execute("SELECT MaPB FROM qlnv_phongban WHERE TenPB IN %s", tmp)
+        data_nv[data_column[column_match.index(2)]] = data_nv[data_column[column_match.index(2)]].replace(list(tmp), cur.fetchall()[0])
+        
+        sql = "INSERT INTO `qlnv_nhanvien` ("
+        for index in column_match:
+            sql += default_tag_Column[index] + ","
+        sql = sql[:-1:]
+        sql += ") VALUES "
+        for index_row in range(data_nv.shape[0]):
+            sql += "("
+            for col in data_column:
+                sql +=  "\"" + str(data_nv[col][index_row]) + "\"" + ","
+            sql = sql[:-1:]
+            sql += "),"
+        sql = sql[:-1:]    
+        
+        cur.execute(sql)
+        mysql.connection.commit()
+        cur.close()
+        os.remove(pathToFile)
+        return redirect(url_for('table_data_employees'))
+    
     return render_template("form_add_data_employees_upload_process.html",
+                           filename = filename,
+                           congty = session['congty'],
                            my_user = session['username'],
                            name_column = default_name_Column,
                            index_column = data_column)
@@ -364,7 +429,7 @@ def get_data_employees_excel():
 def delete_nhan_vien(maNV):
     cur = mysql.connection.cursor()
     cur.execute("SELECT ID_profile_image FROM qlnv_nhanvien WHERE MaNhanVien=%s", (maNV, ))
-    id_image = cur.fetchall()
+    id_image = cur.fetchall()[0][0]
     
     if (id_image != "none_image_profile"):
         cur.execute("SELECT * FROM qlnv_imagedata WHERE ID_image=%s", (id_image, ))
@@ -400,14 +465,19 @@ def form_add_chuc_vu():
         
         for data in chucvu:
             if (MaCV in data):
-                return render_template("form_add_chuc_vu.html", ma_err = "True", my_user = session['username'])
+                return render_template("form_add_chuc_vu.html", 
+                                       congty = session['congty'],
+                                       ma_err = "True",
+                                       my_user = session['username'])
         
         cur.execute("INSERT INTO qlnv_chucvu(MaCV, TenCV) VALUES (%s, %s)",(MaCV, TenCV))
         mysql.connection.commit()
         cur.close()
         
         return redirect(url_for("table_chuc_vu"))
-    return render_template("form_add_chuc_vu.html", my_user = session['username'])
+    return render_template("form_add_chuc_vu.html",
+                           congty=session['congty'],
+                           my_user = session['username'])
 
 @login_required
 @app.route("/form_add_trinhdohocvan", methods=['GET','POST'])
@@ -423,14 +493,19 @@ def form_add_trinhdohocvan():
         ChuyenNganh = details['ChuyenNganh'].strip()
         for data in trinhdohocvan:
             if (MATDHV in data):
-                return render_template("form_add_trinhdohocvan.html", ma_err = "True", my_user = session['username'])
+                return render_template("form_add_trinhdohocvan.html", 
+                                       ma_err = "True", 
+                                       congty = session['congty'],
+                                       my_user = session['username'])
         
         cur.execute("INSERT INTO qlnv_trinhdohocvan(MATDHV, TenTDHV, ChuyenNganh) VALUES (%s, %s, %s)",(MATDHV, TenTDHV, ChuyenNganh))
         mysql.connection.commit()
         cur.close()
         
         return redirect(url_for("table_data_employees"))
-    return render_template("form_add_trinhdohocvan.html", my_user = session['username'])
+    return render_template("form_add_trinhdohocvan.html", 
+                           congty = session['congty'],
+                           my_user = session['username'])
 
 @login_required
 @app.route("/table_chuc_vu")
@@ -443,7 +518,10 @@ def table_chuc_vu():
         GROUP BY cv.MaCV""")
     chucvu = cur.fetchall()
     cur.close()
-    return render_template("table_chuc_vu.html", chucvu = chucvu, my_user = session['username'])
+    return render_template("table_chuc_vu.html",
+                           chucvu = chucvu,
+                           congty = session['congty'],
+                           my_user = session['username'])
 
 @login_required
 @app.route("/table_chuc_vu/<string:maCV>")
@@ -465,7 +543,11 @@ def table_chuc_vu_nhan_vien(maCV):
     
     cur.close()
     
-    return render_template("table_chuc_vu_nhan_vien.html", tenCV = tenCV, nv_chuc_vu=nv_chuc_vu, my_user = session['username'])
+    return render_template("table_chuc_vu_nhan_vien.html",
+                           tenCV = tenCV,
+                           nv_chuc_vu=nv_chuc_vu,
+                           congty = session['congty'],
+                           my_user = session['username'])
     
 
 @login_required
@@ -479,32 +561,45 @@ def table_data_employees():
         JOIN qlnv_imagedata img ON nv.ID_profile_image = img.ID_image""")
     nhanvien = cur.fetchall()
     cur.close()
-    return render_template('table_data_employees.html', nhanvien = nhanvien, my_user = session['username'])
+    return render_template('table_data_employees.html',
+                           nhanvien = nhanvien,
+                           congty = session['congty'],
+                           my_user = session['username'])
 
 @login_required
 @app.route("/table_data_money")
 def table_data_money():
-    return render_template('table_data_money.html', my_user = session['username'])
+    return render_template('table_data_money.html',
+                           congty = session['congty'],
+                           my_user = session['username'])
 
 @login_required
 @app.route("/danh_sach_cham_cong")
 def danh_sach_cham_cong():
-    return render_template('danh_sach_cham_cong.html', my_user = session['username'])
+    return render_template('danh_sach_cham_cong.html', 
+                           congty = session['congty'],
+                           my_user = session['username'])
 
 @login_required
 @app.route("/index")
 def index():
-    return render_template('index.html', my_user = session['username'])
+    return render_template('index.html', 
+                           congty = session['congty'],
+                           my_user = session['username'])
 
 @login_required
 @app.route("/page_calendar")
 def page_calendar():
-    return render_template('page_calendar.html', my_user = session['username'])
+    return render_template('page_calendar.html', 
+                           congty = session['congty'],
+                           my_user = session['username'])
 
 @login_required
 @app.route("/danh_sach_hop_dong")
 def danh_sach_hop_dong():
-    return render_template('danh_sach_hop_dong.html', my_user = session['username'])
+    return render_template('danh_sach_hop_dong.html', 
+                           congty = session['congty'],
+                           my_user = session['username'])
 
 
 def take_image_to_save(id_image, path_to_img):

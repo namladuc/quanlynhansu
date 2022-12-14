@@ -9,7 +9,7 @@
   <!-- Main CSS-->
   <link rel="stylesheet" href="{{ url_for('static', filename='doc/css/main.css') }}">
   <script src="{{url_for('static', filename='js/displaytime/displaytime.js')}}"></script>
-  <link rel="shortcut icon" type="image/x-icon" href="{{ url_for('static', filename=my_user[10])}}"/>
+  <link rel="shortcut icon" type="image/x-icon" href="{{ url_for('static', filename=congty[2])}}"/>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/boxicons@latest/css/boxicons.min.css">
   <!-- or -->
   <link rel="stylesheet" href="https://unpkg.com/boxicons@latest/css/boxicons.min.css">
@@ -70,7 +70,7 @@
             class="app-menu__label">Lịch công tác </span></a></li>
       <li><a class="app-menu__item" href="/danh_sach_cham_cong"><i class='app-menu__icon bx bx-edit-alt'></i><span
             class="app-menu__label">Danh sách chấm công</span></a></li>
-      <li><a class="app-menu__item" href="/thoi_gian_cong_tac"><i class='app-menu__icon bx bx-edit-alt'></i><span
+      <li><a class="app-menu__item" href="/thoi_gian_cong_tac"><i class='app-menu__icon bx bx-history'></i><span
         class="app-menu__label">Thời gian công tác</span></a></li>
     </ul>
   </aside>
@@ -117,7 +117,7 @@
 
               <div class="col-sm-2">
                 <a class="btn btn-delete btn-sm" type="button" title="Xóa tát cả các phần tử đã chọn" 
-                      onclick="myFunction(this)"><i
+                      onclick="deleteMoreRow(this)"><i
                     class="fas fa-trash-alt"></i> Xóa phần tử đã chọn </a>
               </div>
 
@@ -141,7 +141,7 @@
               <tbody>
                 {% for data in nhanvien %}
                 <tr>
-                  <td width="10"><input type="checkbox" name="check1" value="1"></td>
+                  <td width="10"><input type="checkbox" id="myChecker" name="check1" value="1"></td>
                   <td>{{data[0]}}</td>
                   <td>{{data[1]}}</td>
                   <td><img class="img-card-person" style="border-radius: 50%;" src="{{url_for('static', filename=data[2])}}" alt=""></td>
@@ -207,6 +207,37 @@
             });
             location.reload();
           }
+        });
+    }
+
+
+    function deleteMoreRow(r) {
+      var numRow = document.getElementById("sampleTable").rows.length;
+      var id_nv = [];
+      $('#sampleTable tbody :checkbox').each(function () {
+          let i = this.parentNode.parentNode.rowIndex;
+          if (this.checked) {
+            id_nv.push(this.parentNode.parentNode.childNodes[3].textContent);
+          }
+      });
+
+      swal({
+        title: "Cảnh báo",
+        text: "Bạn có chắc chắn là muốn xóa các nhân viên này?", // index = 3
+        buttons: ["Hủy bỏ", "Đồng ý"],
+      })
+        .then((willDelete) => {
+          if (willDelete) {
+            for (let i = 0; i < id_nv.length; i++) {
+              $.ajax({
+                url:"/delete_nhan_vien/" + id_nv[i],
+                context: document.body
+              })
+            }
+          }
+          swal("Đã xóa thành công.!", {
+          });
+          location.reload();
         });
     }
 
