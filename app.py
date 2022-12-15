@@ -344,7 +344,7 @@ def form_add_data_employees_upload_process(filename):
     default_name_Column = ['Mã nhân viên', 'Chức vụ', 'Phòng Ban', 'Lương', 'Giới tính',
                            'Mã Hợp đồng', 'Tên Nhân Viên', 'Ngày Sinh',  'Nơi sinh', 'Chứng minh thư (thẻ căn cước)',
                            'Số điện thoại', 'Địa Chỉ', 'Email', 'Tình trạng hôn nhân', 'Dân tộc',
-                           'Trình Độ Học Vấn', 'Ngày cấp CMND', 'Nơi cấp CMND', 'Bảo hiểm y tế', 'BHXH']
+                           'Trình Độ Học Vấn', 'Ngày cấp CMND', 'Nơi cấp CMND', 'Bảo hiểm y tế', 'Bảo hiểm xã hội']
     
     data_nv = pd.read_excel(pathToFile)
     data_column = list(data_nv.columns)
@@ -355,22 +355,60 @@ def form_add_data_employees_upload_process(filename):
         column_link = [details[col] for col in data_column]
         column_match = [default_name_Column.index(elm) for elm in column_link]
         
+        if (len(set(column_match)) != len(column_link)):
+            return "Error"
+        
         if 0 not in column_match or 1 not in column_match or 2 not in column_match:
             return "Error"
     
+        # convert Ten CV to ChucVu
         tmp = tuple(set(data_nv[data_column[column_match.index(1)]]))
         if len(tmp) == 1:
             cur.execute("SELECT MaCV FROM qlnv_chucvu WHERE TenCV = %s", tmp)
         else:
-            cur.execute("SELECT MaCV FROM qlnv_chucvu WHERE TenCV IN %s", tmp)
-        data_nv[data_column[column_match.index(1)]] = data_nv[data_column[column_match.index(1)]].replace(list(tmp), cur.fetchall()[0])
+            new_tmp = ["\"" + text +"\"" for text in tmp]
+            cur.execute("SELECT MaCV FROM qlnv_chucvu WHERE TenCV IN (" + ", ".join(new_tmp) + ")")
+        data_tuple = cur.fetchall()
+        data_tmp_take = []
+        for elm in data_tuple:
+            data_tmp_take.append(elm[0])
+        if (len(data_tmp_take) != len(tmp)):
+            return "Error"
+        data_nv[data_column[column_match.index(1)]] = data_nv[data_column[column_match.index(1)]].replace(list(tmp), data_tmp_take)
 
+        # convert Ten PB to PhongBan
         tmp = tuple(set(data_nv[data_column[column_match.index(2)]]))
         if len(tmp) == 1:
             cur.execute("SELECT MaPB FROM qlnv_phongban WHERE TenPB = %s", tmp)
         else:
-            cur.execute("SELECT MaPB FROM qlnv_phongban WHERE TenPB IN %s", tmp)
-        data_nv[data_column[column_match.index(2)]] = data_nv[data_column[column_match.index(2)]].replace(list(tmp), cur.fetchall()[0])
+            new_tmp = ["\"" + text +"\"" for text in tmp]
+            cur.execute("SELECT MaPB FROM qlnv_phongban WHERE TenPB IN (" + ", ".join(new_tmp) + ")")
+        data_tuple = cur.fetchall()
+        data_tmp_take = []
+        for elm in data_tuple:
+            data_tmp_take.append(elm[0])
+        if (len(data_tmp_take) != len(tmp)):
+            return "Error"
+        data_nv[data_column[column_match.index(2)]] = data_nv[data_column[column_match.index(2)]].replace(list(tmp), data_tmp_take)
+        
+        # Chuyển đổi trình độ học vấn
+        if 15 in column_match:
+            tdhv_cn = set(data_nv[data_column[column_match.index(15)]]) # Trình dộ học vấn - chuyên ngành
+            tmp = []
+            sql_find_tdhv = "SELECT td.MATDHV FROM qlnv_trinhdohocvan td WHERE "
+            for elm in tdhv_cn:
+                sql_find_tdhv += " ( td.TenTDHV = %s AND td.ChuyenNganh = %s ) OR"
+                new_tmp = [text.strip() for text in elm.split("-")]
+                tmp += new_tmp
+            sql_find_tdhv = sql_find_tdhv[:-2:]
+            cur.execute(sql_find_tdhv, tuple(tmp))
+            data_tdhv = cur.fetchall()
+            data_tdhv_lst = []
+            for elm in data_tdhv:
+                data_tdhv_lst.append(elm[0])
+            if (len(tdhv_cn) != len(data_tdhv_lst)):
+                return "Error"
+            data_nv[data_column[column_match.index(15)]] = data_nv[data_column[column_match.index(15)]].replace(list(tdhv_cn), data_tdhv)
         
         sql = "INSERT INTO `qlnv_nhanvien` ("
         for index in column_match:
@@ -403,16 +441,17 @@ def form_add_data_employees_upload_process(filename):
 def get_data_employees_excel():
     cur = mysql.connection.cursor()
     cur.execute("""
-        SELECT nv.MaNhanVien, nv.TenNV, cv.TenCV, nv.Luong, nv.DiaChi, nv.NoiSinh,
-        nv.NgaySinh, nv.GioiTinh, nv.DienThoai, nv.SoCMT, nv.NgayCMND, nv.NoiCMND,
+        SELECT nv.MaNhanVien, nv.TenNV, cv.TenCV, pb.TenPB, CONCAT(td.TenTDHV,"-",td.ChuyenNganh) AS "TrinhDoHocVan", nv.Luong, nv.DiaChi, nv.NoiSinh,
+        DATE_FORMAT(nv.NgaySinh,"%d-%m-%Y"), nv.GioiTinh, nv.DienThoai, nv.SoCMT, DATE_FORMAT(nv.NgayCMND,"%d-%m-%Y"), nv.NoiCMND,
         nv.Email, nv.TTHonNhan, nv.BHYT, nv.BHXH
         FROM qlnv_nhanvien nv
         JOIN qlnv_chucvu cv ON nv.MaChucVu = cv.MaCV
+        JOIN qlnv_phongban pb ON nv.MaPhongBan = pb.MaPB
         JOIN qlnv_trinhdohocvan td ON nv.MATDHV = td.MATDHV
         """)
     nhanvien = cur.fetchall()
     cur.close()
-    columnName = ['MaNhanVien', 'TenNV', 'TenCV', 'Luong', 'DiaChi', 'NoiSinh',
+    columnName = ['MaNhanVien', 'TenNV', 'TenCV', 'TenPB', 'TrinhDoHocVan', 'Luong', 'DiaChi', 'NoiSinh',
         'NgaySinh', 'GioiTinh', 'DienThoai', 'SoCMT', 'NgayCMND', 'NoiCMND',
         'Email', 'TTHonNhan', 'BHYT', 'BHXH']
     data = pd.DataFrame.from_records(nhanvien, columns=columnName)
@@ -420,9 +459,19 @@ def get_data_employees_excel():
     pathFile = app.config['UPLOAD_FOLDER'] + "/" + "Data_Nhan_Vien.xlsx"
     data.to_excel(pathFile)
     return send_file(pathFile, as_attachment=True)
-    
-    
-    
+
+@login_required
+@app.route("/get_print_data_employees")
+def get_print_data_employees():
+    cur = mysql.connection.cursor()
+    cur.execute("""
+        SELECT nv.MaNhanVien, nv.TenNV, img.PathToImage, nv.DiaChi,DATE_FORMAT(nv.NgaySinh,"%d-%m-%Y"), nv.GioiTinh, nv.DienThoai, cv.TenCV
+        FROM qlnv_nhanvien nv
+        JOIN qlnv_chucvu cv ON nv.MaChucVu = cv.MaCV
+        JOIN qlnv_imagedata img ON nv.ID_profile_image = img.ID_image""")
+    nhanvien = cur.fetchall()
+    cur.close()
+    return render_template("table_print_employees.html", nhanvien = nhanvien)
 
 @login_required
 @app.route("/delete_nhan_vien/<string:maNV>")
@@ -515,6 +564,7 @@ def table_chuc_vu():
         SELECT cv.MaCV, cv.TenCV, COUNT(*) 
         FROM qlnv_chucvu cv
         JOIN qlnv_nhanvien nv ON cv.MaCV = nv.MaChucVu
+        JOIN qlnv_thoigiancongtac tg ON tg.MaNV = nv.MaNhanVien 
         GROUP BY cv.MaCV""")
     chucvu = cur.fetchall()
     cur.close()
@@ -534,11 +584,11 @@ def table_chuc_vu_nhan_vien(maCV):
     tenCV = cur.fetchall()
     
     cur.execute("""
-        SELECT nv.MaNhanVien, nv.TenNV, nv.NgaySinh, nv.DienThoai, cv.TenCV, tg.NgayNhanChuc
+        SELECT nv.MaNhanVien, nv.TenNV,DATE_FORMAT(nv.NgaySinh,"%d-%m-%Y"), nv.DienThoai, cv.TenCV, DATE_FORMAT(tg.NgayNhanChuc,"%d-%m-%Y")
         FROM qlnv_chucvu cv
         JOIN qlnv_thoigiancongtac tg ON tg.MaCV = cv.MaCV
         JOIN qlnv_nhanvien nv ON tg.MaNV = nv.MaNhanVien
-        WHERE cv.MaCV = %s AND tg.DuongNhiem = 1 """, (maCV, ))
+        WHERE cv.MaCV = '""" + str(maCV) + """' AND tg.DuongNhiem = 1 """)
     nv_chuc_vu = cur.fetchall()
     
     cur.close()
@@ -555,7 +605,7 @@ def table_chuc_vu_nhan_vien(maCV):
 def table_data_employees():
     cur = mysql.connection.cursor()
     cur.execute("""
-        SELECT nv.MaNhanVien, nv.TenNV, img.PathToImage, nv.DiaChi, nv.NgaySinh, nv.GioiTinh, nv.DienThoai, cv.TenCV
+        SELECT nv.MaNhanVien, nv.TenNV, img.PathToImage, nv.DiaChi, DATE_FORMAT(nv.NgaySinh,"%d-%m-%Y"), nv.GioiTinh, nv.DienThoai, cv.TenCV
         FROM qlnv_nhanvien nv
         JOIN qlnv_chucvu cv ON nv.MaChucVu = cv.MaCV
         JOIN qlnv_imagedata img ON nv.ID_profile_image = img.ID_image""")

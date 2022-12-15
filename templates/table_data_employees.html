@@ -88,11 +88,12 @@
           <div class="tile-body">
 
             <div class="row element-button">
-              <div class="col-sm-2">
 
+              <div class="col-sm-2">
                 <a class="btn btn-add btn-sm" href="/form_add_data_employees" title="Thêm"><i class="fas fa-plus"></i>
                   Tạo mới nhân viên</a>
               </div>
+
               <div class="col-sm-2">
                 <a class="btn btn-delete btn-sm nhap-tu-file" href="/form_add_data_employees_upload_file" type="button" title="Nhập"><i
                     class="fas fa-file-upload"></i> Tải từ file</a>
@@ -102,14 +103,17 @@
                 <a class="btn btn-delete btn-sm print-file" type="button" title="In" onclick="myApp.printTable()"><i
                     class="fas fa-print"></i> In dữ liệu</a>
               </div>
+
               <div class="col-sm-2">
                 <a class="btn btn-delete btn-sm print-file js-textareacopybtn" type="button" title="Sao chép"><i
                     class="fas fa-copy"></i> Sao chép</a>
               </div>
 
               <div class="col-sm-2">
-                <a class="btn btn-excel btn-sm" href="/get_data_employees_excel" title="In"><i class="fas fa-file-excel"></i> Xuất Excel</a>
+                <a class="btn btn-excel btn-sm" href="/get_data_employees_excel" title="In"><i 
+                  class="fas fa-file-excel"></i> Xuất Excel</a>
               </div>
+
               <div class="col-sm-2">
                 <a class="btn btn-delete btn-sm pdf-file" type="button" title="In" onclick="myFunction(this)"><i
                     class="fas fa-file-pdf"></i> Xuất PDF</a>
@@ -131,7 +135,7 @@
                   <th width="150">Họ và tên</th>
                   <th width="20">Ảnh thẻ</th>
                   <th width="250">Địa chỉ</th>
-                  <th width="100">Ngày sinh</th>
+                  <th width="100">Ngày sinh <br> (dd-mm-yyyy) </th>
                   <th>Giới tính</th>
                   <th>SĐT</th>
                   <th>Chức vụ</th>
@@ -234,9 +238,10 @@
                 context: document.body
               })
             }
+            swal("Đã xóa thành công.!", {
+            });
           }
-          swal("Đã xóa thành công.!", {
-          });
+          
           location.reload();
         });
     }
@@ -250,9 +255,7 @@
     //In dữ liệu
     var myApp = new function () {
       this.printTable = function () {
-        var tab = document.getElementById('sampleTable');
-        var win = window.open('', '', 'height=700,width=700');
-        win.document.write(tab.outerHTML);
+        var win = window.open('/get_print_data_employees', '', 'height=700,width=1400');
         win.document.close();
         win.print();
       }

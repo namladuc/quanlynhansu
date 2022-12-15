@@ -1,0 +1,28 @@
+<table class="table table-hover table-bordered js-copytextarea" cellpadding="0" cellspacing="0" border="1"
+    id="sampleTable">
+    <thead>
+    <tr>
+        <th>ID nhân viên</th>
+        <th>Họ và tên</th>
+        <th>Địa chỉ</th>
+        <th>Ngày sinh</th>
+        <th>Giới tính</th>
+        <th>SĐT</th>
+        <th>Chức vụ</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for data in nhanvien %}
+    <tr>
+        <td>{{data[0]}}</td>
+        <td>{{data[1]}}</td>
+        <td>{{data[3]}}</td>
+        <td>{{data[4]}}</td>
+        <td>{{data[5]}}</td>
+        <td>{{data[6]}}</td>
+        <td>{{data[7]}}</td>
+    </tr>
+    {% endfor %}
+
+    </tbody>
+</table>
