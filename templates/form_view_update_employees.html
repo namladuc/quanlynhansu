@@ -208,6 +208,14 @@
                     <a class="btn btn-add btn-sm" href="/form_add_trinhdohocvan"><b><i
                       class="fas fa-folder-plus"></i> Tạo trình độ học vấn mới</b></a>
                   </div>
+                  <div class="col-sm-2">
+                    <a class="btn btn-delete btn-sm print-file" type="button" title="In" onclick="myApp.printTable()"><i
+                        class="fas fa-print"></i> In thông tin</a>
+                  </div>
+                  <div class="col-sm-2">
+                    <a class="btn btn-delete btn-sm pdf-file" type="button" title="In" href="/get_pdf_data_employees"><i
+                        class="fas fa-file-pdf"></i> Xuất PDF</a>
+                  </div>
 
             </div>
             <form class="row" action="/form_view_update_employees/{{data_default[0]}}_Y" method="post" enctype="multipart/form-data">

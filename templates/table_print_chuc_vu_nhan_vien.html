@@ -1,0 +1,24 @@
+<table class="table table-hover table-bordered js-copytextarea" cellpadding="0" cellspacing="0" border="1"
+              id="sampleTable">
+              <thead>
+                <tr>
+                  <th width="100">Mã nhân viên</th>
+                  <th width="400">Tên nhân viên</th>
+                  <th width="200">Ngày sinh <br> (dd-mm-yyyy)</th>
+                  <th width="200">Điện thoại</th>
+                  <th width="400">Tên chức vụ</th>
+                  <th width="200">Ngày nhận chức <br> (dd-mm-yyyy)</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for data in nv_chuc_vu %}
+                <tr>
+                  <td>{{data[0]}}</td>
+                  <td>{{data[1]}}</td>
+                  <td>{{data[2]}}</td>
+                  <td>{{data[3]}}</td>
+                  <td>{{data[4]}}</td>
+                  <td>{{data[5]}}</td>
+                {% endfor %}
+              </tbody>
+            </table>

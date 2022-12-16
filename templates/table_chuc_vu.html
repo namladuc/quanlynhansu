@@ -2,7 +2,7 @@
 <html lang="en">
 
 <head>
-  <title>Danh sách nhân viên</title>
+  <title>Danh sách chức vụ | {{congty[0]}}</title>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -80,6 +80,14 @@
     </div>
 
     <div class="row">
+
+        <div class="col-md-12" id="take_no_people" style="display: none">
+            <div class="alert alert-danger" style="text-align: left; font-size: 12px; background-color: red;">
+            <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
+            <strong id="errordelete" style="display: none"></strong> 
+            </div>
+        </div>
+
       <div class="col-md-12">
         <div class="tile">
           <div class="tile-body">
@@ -96,7 +104,7 @@
               </div>
 
               <div class="col-sm-2">
-                <a class="btn btn-delete btn-sm print-file" type="button" title="In" onclick="myApp.printTable()"><i
+                <a class="btn btn-delete btn-sm print-file" type="button" title="In" onclick="myApp.printTableChucVu()"><i
                     class="fas fa-print"></i> In dữ liệu</a>
               </div>
               <div class="col-sm-2">
@@ -105,15 +113,15 @@
               </div>
 
               <div class="col-sm-2">
-                <a class="btn btn-excel btn-sm" href="" title="In"><i class="fas fa-file-excel"></i> Xuất Excel</a>
+                <a class="btn btn-excel btn-sm" href="/get_chuc_vu_table_excel" title="In"><i class="fas fa-file-excel"></i> Xuất Excel</a>
               </div>
               <div class="col-sm-2">
-                <a class="btn btn-delete btn-sm pdf-file" type="button" title="In" onclick="myFunction(this)"><i
+                <a class="btn btn-delete btn-sm pdf-file" type="button" title="In" href="/get_chuc_vu_table_pdf"><i
                     class="fas fa-file-pdf"></i> Xuất PDF</a>
               </div>
               <div class="col-sm-2">
-                <a class="btn btn-delete btn-sm" type="button" title="Xóa" onclick="myFunction(this)"><i
-                    class="fas fa-trash-alt"></i> Xóa tất cả </a>
+                <a class="btn btn-delete btn-sm" type="button" title="Xóa" onclick="deleteMoreChucVuRow(this)"><i
+                    class="fas fa-trash-alt"></i> Xóa tất cả các mục đã chọn</a>
               </div>
             </div>
             <table class="table table-hover table-bordered js-copytextarea" cellpadding="0" cellspacing="0" border="0"
@@ -163,27 +171,51 @@
   <script src="{{url_for('static', filename='doc/js/plugins/dataTables.bootstrap.min.js')}}"></script>
   <script type="text/javascript">$('#sampleTable').DataTable();</script>
   <script>
-    function deleteRow(r) {
-      var i = r.parentNode.parentNode.rowIndex;
-      document.getElementById("myTable").deleteRow(i);
-    }
-    jQuery(function () {
-      jQuery(".trash").click(function () {
-        swal({
-          title: "Cảnh báo",
-
-          text: "Bạn có chắc chắn là muốn xóa nhân viên này?",
-          buttons: ["Hủy bỏ", "Đồng ý"],
-        })
-          .then((willDelete) => {
-            if (willDelete) {
-              swal("Đã xóa thành công.!", {
-
-              });
-            }
-          });
+    // Xóa các mục đã chọn
+    function deleteMoreChucVuRow(r) {
+      var numRow = document.getElementById("sampleTable").rows.length;
+      var id_cv = [];
+      var name_cv = [];
+      var num_people = [];
+      $('#sampleTable tbody :checkbox').each(function () {
+          let i = this.parentNode.parentNode.rowIndex;
+          if (this.checked) {
+            id_cv.push(this.parentNode.parentNode.childNodes[3].textContent);
+            name_cv.push(this.parentNode.parentNode.childNodes[5].textContent);
+            num_people.push(this.parentNode.parentNode.childNodes[7].textContent.replace("\n","").trim());
+          }
       });
-    });
+
+      swal({
+        title: "Cảnh báo",
+        text: "Bạn có chắc chắn là muốn xóa các nhân viên này?", // index = 3
+        buttons: ["Hủy bỏ", "Đồng ý"],
+      })
+        .then((willDelete) => {
+          if (willDelete) {
+            var check = false;
+            for (let i = 0; i < id_cv.length; i++) {
+              if (num_people[i] == 0) {
+                $.ajax({
+                  url:"/delete_chuc_vu/" + id_cv[i],
+                  context: document.body
+                })
+              } else {
+                check = true;
+                $('#take_no_people').show();
+                $('#errordelete').text(name_cv[i] + " có số nhân viên không trống !").show();
+                break;
+              }
+            }
+
+            if (!check) {
+              location.reload();
+            }
+          }
+          
+        });
+    }
+
     oTable = $('#sampleTable').dataTable();
     $('#all').click(function (e) {
       $('#sampleTable tbody :checkbox').prop('checked', $(this).is(':checked'));
@@ -192,22 +224,36 @@
 
     //In dữ liệu
     var myApp = new function () {
-      this.printTable = function () {
-        var tab = document.getElementById('sampleTable');
-        var win = window.open('', '', 'height=700,width=700');
-        win.document.write(tab.outerHTML);
+      this.printTableChucVu = function () {
+        var win = window.open('/table_print_chuc_vu', '', 'height=700,width=1400');
         win.document.close();
         win.print();
       }
     }
     
     //Sao chép dữ liệu
-    var copyTextareaBtn = document.querySelector('.js-textareacopybtn');
+    var copyChucVuareaBtn = document.querySelector('.js-textareacopybtn');
 
-    copyTextareaBtn.addEventListener('click', function (event) {
+    copyChucVuareaBtn.addEventListener('click', function (event) {
       var copyTextarea = document.querySelector('.js-copytextarea');
       copyTextarea.focus();
-      copyTextarea.select();
+
+      var mytext = copyTextarea.textContent.substring(167,copyTextarea.textContent.length).split("\n")
+
+      var index = 0;
+      var data = [];
+      mytext.forEach(function (text) {
+        if (text.trim().length != 0) {
+            data.push(text.trim());
+            index += 1;
+            if (index == 3) {
+              data.push("\n")
+              index = 0;
+            }
+        }
+      });
+
+      navigator.clipboard.writeText(data.join(" "));
 
       try {
         var successful = document.execCommand('copy');

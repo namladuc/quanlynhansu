@@ -2,7 +2,7 @@
 <html lang="en">
 
 <head>
-  <title>Danh sách nhân viên</title>
+  <title>Danh sách nhân viên chức vụ - {{tenCV[0][0]}} | {{congty[0]}}</title>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -78,7 +78,7 @@
     <div class="app-title">
       <ul class="app-breadcrumb breadcrumb side">
         <li class="breadcrumb-item"><a href="/table_chuc_vu"><b>Danh sách chức vụ</b></a></li>
-        <li class="breadcrumb-item active"><a href="/#">Danh sách nhân viên chức vụ - {{tenCV[0][0]}}</a></li>
+        <li class="breadcrumb-item active">Danh sách nhân viên chức vụ - {{tenCV[0][0]}}</li>
       </ul>
       <div id="clock"></div>
     </div>
@@ -90,41 +90,32 @@
 
             <div class="row element-button">
               <div class="col-sm-2">
-
-                <a class="btn btn-add btn-sm" href="form_add_chuc_vu" title="Thêm"><i class="fas fa-plus"></i>
+                <a class="btn btn-add btn-sm" href="/form_add_chuc_vu" title="Thêm"><i class="fas fa-plus"></i>
                   Tạo mới chức vụ</a>
               </div>
-              <div class="col-sm-2">
-                <a class="btn btn-delete btn-sm nhap-tu-file" type="button" title="Nhập" onclick="myFunction(this)"><i
-                    class="fas fa-file-upload"></i> Tải từ file</a>
-              </div>
 
               <div class="col-sm-2">
-                <a class="btn btn-delete btn-sm print-file" type="button" title="In" onclick="myApp.printTable()"><i
+                <a class="btn btn-delete btn-sm print-file" type="button" title="In" onclick="myApp.printNhanVienChucVuTable()"><i
                     class="fas fa-print"></i> In dữ liệu</a>
               </div>
+
               <div class="col-sm-2">
                 <a class="btn btn-delete btn-sm print-file js-textareacopybtn" type="button" title="Sao chép"><i
                     class="fas fa-copy"></i> Sao chép</a>
               </div>
 
               <div class="col-sm-2">
-                <a class="btn btn-excel btn-sm" href="" title="In"><i class="fas fa-file-excel"></i> Xuất Excel</a>
+                <a class="btn btn-excel btn-sm" href="/get_nhan_vien_chuc_vu_table_excel/{{maCV}}" title="In"><i class="fas fa-file-excel"></i> Xuất Excel</a>
               </div>
               <div class="col-sm-2">
-                <a class="btn btn-delete btn-sm pdf-file" type="button" title="In" onclick="myFunction(this)"><i
+                <a class="btn btn-delete btn-sm pdf-file" type="button" title="In" href="/get_nhan_vien_chuc_vu_table_pdf/{{maCV}}"><i
                     class="fas fa-file-pdf"></i> Xuất PDF</a>
-              </div>
-              <div class="col-sm-2">
-                <a class="btn btn-delete btn-sm" type="button" title="Xóa" onclick="myFunction(this)"><i
-                    class="fas fa-trash-alt"></i> Xóa tất cả </a>
               </div>
             </div>
             <table class="table table-hover table-bordered js-copytextarea" cellpadding="0" cellspacing="0" border="0"
               id="sampleTable">
               <thead>
                 <tr>
-                  <th width="10"><input type="checkbox" id="all"></th>
                   <th width="100">Mã nhân viên</th>
                   <th width="400">Tên nhân viên</th>
                   <th width="200">Ngày sinh <br> (dd-mm-yyyy)</th>
@@ -136,7 +127,6 @@
               <tbody>
                 {% for data in nv_chuc_vu %}
                 <tr>
-                  <td width="10"><input type="checkbox" name="check1" value="1"></td>
                   <td>{{data[0]}}</td>
                   <td>{{data[1]}}</td>
                   <td>{{data[2]}}</td>
@@ -190,29 +180,38 @@
           });
       });
     });
-    oTable = $('#sampleTable').dataTable();
-    $('#all').click(function (e) {
-      $('#sampleTable tbody :checkbox').prop('checked', $(this).is(':checked'));
-      e.stopImmediatePropagation();
-    });
 
     //In dữ liệu
     var myApp = new function () {
-      this.printTable = function () {
-        var tab = document.getElementById('sampleTable');
-        var win = window.open('', '', 'height=700,width=700');
-        win.document.write(tab.outerHTML);
+      this.printNhanVienChucVuTable = function () {
+        var win = window.open('/table_print_chuc_vu_nhan_vien/{{maCV}}', '', 'height=700,width=1400');
         win.document.close();
         win.print();
       }
     }
     //     //Sao chép dữ liệu
-    var copyTextareaBtn = document.querySelector('.js-textareacopybtn');
+    var copyNhanVienChucVuareaBtn = document.querySelector('.js-textareacopybtn');
 
-    copyTextareaBtn.addEventListener('click', function (event) {
+    copyNhanVienChucVuareaBtn.addEventListener('click', function (event) {
       var copyTextarea = document.querySelector('.js-copytextarea');
       copyTextarea.focus();
-      copyTextarea.select();
+
+      var mytext = copyTextarea.textContent.substring(212,copyTextarea.textContent.length).split("\n")
+
+      var index = 0;
+      var data = [];
+      mytext.forEach(function (text) {
+        if (text.trim().length != 0) {
+            data.push(text.trim());
+            index += 1;
+            if (index == 6) {
+              data.push("\n")
+              index = 0;
+            }
+        }
+      });
+
+      navigator.clipboard.writeText(data.join(" "));
 
       try {
         var successful = document.execCommand('copy');
@@ -221,12 +220,6 @@
       } catch (err) {
         console.log('Oops, unable to copy');
       }
-    });
-
-
-    //Modal
-    $("#show-emp").on("click", function () {
-      $("#ModalUP").modal({ backdrop: false, keyboard: false })
     });
   </script>
 </body>

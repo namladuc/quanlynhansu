@@ -1,11 +1,12 @@
 import hashlib
-from flask import Flask, render_template, request, redirect, url_for, session, json, jsonify, send_file
+from flask import Flask, render_template, request, redirect, url_for, session, json, jsonify, send_file, render_template_string
 from flask_mysqldb import MySQL
 from werkzeug.utils import secure_filename
 import os
 import MySQLdb.cursors
 import pandas as pd
 import functools
+import pdfkit
 import re
 
 app = Flask(__name__)
@@ -13,6 +14,8 @@ app.secret_key = 'la nam'
 
 UPLOAD_FOLDER = 'static/web'
 UPLOAD_FOLDER_IMG = 'static/web/img'
+SAVE_FOLDER_PDF = 'static/web/pdf'
+SAVE_FOLDER_EXCEL = 'static/web/excel'
 
 app.config['MYSQL_HOST'] = 'localhost'
 app.config['MYSQL_USER'] = 'root'
@@ -20,6 +23,8 @@ app.config['MYSQL_PASSWORD'] = ''
 app.config['MYSQL_DB'] = 'quan_ly_nhan_su'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['UPLOAD_FOLDER_IMG'] = UPLOAD_FOLDER_IMG
+app.config['SAVE_FOLDER_PDF'] = SAVE_FOLDER_PDF
+app.config['SAVE_FOLDER_EXCEL'] = SAVE_FOLDER_EXCEL
 
 mysql = MySQL(app)
 
@@ -100,6 +105,25 @@ def home():
 def forgot():
     return render_template('/general/forgot.html', 
                            congty = session['congty'])
+
+#
+# ------------------ EMPLOYEES ------------------------
+#
+@login_required
+@app.route("/table_data_employees")
+def table_data_employees():
+    cur = mysql.connection.cursor()
+    cur.execute("""
+        SELECT nv.MaNhanVien, nv.TenNV, img.PathToImage, nv.DiaChi, DATE_FORMAT(nv.NgaySinh,"%d-%m-%Y"), nv.GioiTinh, nv.DienThoai, cv.TenCV
+        FROM qlnv_nhanvien nv
+        JOIN qlnv_chucvu cv ON nv.MaChucVu = cv.MaCV
+        JOIN qlnv_imagedata img ON nv.ID_profile_image = img.ID_image""")
+    nhanvien = cur.fetchall()
+    cur.close()
+    return render_template('table_data_employees.html',
+                           nhanvien = nhanvien,
+                           congty = session['congty'],
+                           my_user = session['username'])
 
 @login_required
 @app.route("/form_add_data_employees", methods=['GET','POST'])
@@ -456,7 +480,7 @@ def get_data_employees_excel():
         'Email', 'TTHonNhan', 'BHYT', 'BHXH']
     data = pd.DataFrame.from_records(nhanvien, columns=columnName)
     data = data.set_index('MaNhanVien')
-    pathFile = app.config['UPLOAD_FOLDER'] + "/" + "Data_Nhan_Vien.xlsx"
+    pathFile = app.config['SAVE_FOLDER_EXCEL'] + "/" + "Data_Nhan_Vien.xlsx"
     data.to_excel(pathFile)
     return send_file(pathFile, as_attachment=True)
 
@@ -473,6 +497,39 @@ def get_print_data_employees():
     cur.close()
     return render_template("table_print_employees.html", nhanvien = nhanvien)
 
+@login_required
+@app.route("/get_pdf_data_employees")
+def get_pdf_data_employees():
+    pathFile = app.config['SAVE_FOLDER_PDF']  + '/Table Nhan Vien.pdf'
+    pdfkit.from_url("/".join(request.url.split("/")[:-1:]) + '/get_print_data_employees',pathFile)
+    return send_file(pathFile, as_attachment=True)
+
+@login_required
+@app.route("/get_information_one_employee/<string:maNV>")
+def get_infomation_one_employee(maNV):
+    cur = mysql.connection.cursor()
+    cur.execute("""
+        SELECT nv.MaNhanVien, nv.TenNV, nv.GioiTinh, DATE_FORMAT(nv.NgaySinh,"%d-%m-%Y"), nv.DanToc,
+        nv.SoCMT, nv.NgayCMND, nv.NoiCMND, nv.DienThoai, nv.Email, nv.DiaChi, 
+        nv.NoiSinh, nv.BHYT, NV.BHXH, img.PathToImage, pb.TenPB, cv.TenCV,
+        nv.MaHD, nv.Luong, nv.TTHonNhan, concat(hv.TenTDHV," - " , hv.ChuyenNganh),
+        nv.MaChucVu, nv.MaPhongBan, nv.MATDHV, img.ID_image
+        FROM qlnv_nhanvien nv
+        LEFT JOIN qlnv_imagedata img ON nv.ID_profile_image = img.ID_image
+        LEFT JOIN qlnv_phongban pb ON nv.MaPhongBan = pb.MaPB
+        LEFT JOIN qlnv_chucvu cv ON nv.MaChucVu = cv.MaCV
+        LEFT JOIN qlnv_trinhdohocvan hv ON nv.MATDHV = hv.MATDHV
+        WHERE nv.MaNhanVien = \"""" + maNV + "\"" )
+    nhanvien = cur.fetchall()
+    
+    if (len(nhanvien) != 1):
+        return "Error"
+    
+    cur.close()
+    return render_template("form_information_one_employee.html",
+                           congty = session['congty'],
+                           nhanvien = nhanvien[0])
+    
 @login_required
 @app.route("/delete_nhan_vien/<string:maNV>")
 def delete_nhan_vien(maNV):
@@ -493,13 +550,134 @@ def delete_nhan_vien(maNV):
     mysql.connection.commit()
     cur.close()
     return redirect(url_for("table_data_employees"))
+#
+# ------------------ EMPLOYEES ------------------------
+#
+
+#
+# ------------------ Trình độ học vấn ------------------------
+#
+@login_required
+@app.route("/form_add_trinhdohocvan", methods=['GET','POST'])
+def form_add_trinhdohocvan():
+    cur = mysql.connection.cursor()
+    cur.execute("""SELECT * FROM qlnv_trinhdohocvan""")
+    trinhdohocvan = cur.fetchall()
     
+    if request.method == 'POST':
+        details = request.form
+        MATDHV = details['MATDHV'].strip()
+        TenTDHV = details["TenTDHV"].strip()
+        ChuyenNganh = details['ChuyenNganh'].strip()
+        for data in trinhdohocvan:
+            if (MATDHV in data):
+                return render_template("form_add_trinhdohocvan.html", 
+                                       ma_err = "True", 
+                                       congty = session['congty'],
+                                       my_user = session['username'])
+        
+        cur.execute("INSERT INTO qlnv_trinhdohocvan(MATDHV, TenTDHV, ChuyenNganh) VALUES (%s, %s, %s)",
+                    (MATDHV, TenTDHV, ChuyenNganh))
+        mysql.connection.commit()
+        cur.close()
+        
+        return redirect(url_for("table_trinh_do_hoc_van"))
+    return render_template("form_add_trinhdohocvan.html", 
+                           congty = session['congty'],
+                           my_user = session['username'])
+
+@login_required
+@app.route("/table_trinh_do_hoc_van")
+def table_trinh_do_hoc_van():
+    cur = mysql.connection.cursor()
+    cur.execute("""
+                SELECT hv.*, COUNT(nv.MaNhanVien)
+                FROM qlnv_trinhdohocvan hv
+                LEFT JOIN qlnv_nhanvien nv ON hv.MATDHV = nv.MATDHV
+                GROUP BY hv.MATDHV
+                """)
+    trinhdohocvan = cur.fetchall()
+    cur.close()
+    return render_template("table_trinh_do_hoc_van.html", 
+                           trinhdohocvan = trinhdohocvan,
+                           congty = session['congty'],
+                           my_user = session['username'])
+
+@login_required
+@app.route("/table_trinh_do_hoc_van/<string:maTDHV>")
+def table_trinh_do_hoc_van_one(maTDHV):
+    cur = mysql.connection.cursor()
+    cur.execute("""
+                SELECT *
+                FROM qlnv_trinhdohocvan
+                WHERE MATDHV = %s
+                """, (maTDHV, ))
+    tenTDHV = cur.fetchall()
+    if (len(tenTDHV) == 0):
+        return "Error"
+    tenTDHV = tenTDHV[0]
+        
+    cur.execute("""
+                SELECT nv.MaNhanVien, nv.TenNV, DATE_FORMAT(nv.NgaySinh,"%d-%m-%Y"), nv.DienThoai, hv.TenTDHV, HV.ChuyenNganh
+                FROM qlnv_trinhdohocvan hv
+                JOIN qlnv_nhanvien nv ON hv.MATDHV = nv.MATDHV
+                WHERE hv.MATDHV = \"""" + maTDHV + "\"") 
+    trinhdohocvan = cur.fetchall()
+    cur.close()
+    
+    if len(trinhdohocvan) == 0:
+        return "Error"
+    
+    return render_template("table_trinh_do_hoc_van_nhan_vien.html", 
+                           tenTDHV = tenTDHV,
+                           trinhdohocvan = trinhdohocvan,
+                           congty = session['congty'],
+                           my_user = session['username'])
     
 @login_required
-@app.route("/form_add_data_money")
-def form_add_data_money():
-    return render_template('form_add_data_money.html')
+@app.route("/delete_trinh_do_hoc_van/<string:maTDHV>")
+def delete_trinh_do_hoc_van(maTDHV):
+    cur = mysql.connection.cursor()
+    cur.execute("""
+                SELECT COUNT(*)
+                FROM qlnv_trinhdohocvan hv
+                JOIN qlnv_nhanvien nv ON hv.MATDHV = nv.MATDHV
+                WHERE hv.MATDHV = \"""" + maTDHV + "\"") 
+    trinhdohocvan = cur.fetchall()[0][0]
+    
+    if trinhdohocvan != 0:
+        return "Error"
 
+    sql = "DELETE FROM qlnv_trinhdohocvan WHERE MATDHV=%s"
+    val = (maTDHV, )
+    cur.execute(sql,val)
+    mysql.connection.commit()
+    cur.close()
+    return redirect(url_for('table_trinh_do_hoc_van'))
+#
+# ------------------ Trình độ học vấn ------------------------
+#
+
+#
+# ------------------ CHUC VU ------------------------
+#
+@login_required
+@app.route("/table_chuc_vu")
+def table_chuc_vu():
+    cur = mysql.connection.cursor()
+    cur.execute("""
+        SELECT cv.MaCV, cv.TenCV, COUNT(NV.MaNhanVien) 
+        FROM qlnv_chucvu cv
+        LEFT JOIN qlnv_nhanvien nv ON cv.MaCV = nv.MaChucVu
+        LEFT JOIN qlnv_thoigiancongtac tg ON tg.MaNV = nv.MaNhanVien 
+        GROUP BY cv.MaCV""")
+    chucvu = cur.fetchall()
+    cur.close()
+    return render_template("table_chuc_vu.html",
+                           chucvu = chucvu,
+                           congty = session['congty'],
+                           my_user = session['username'])
+    
 @login_required
 @app.route("/form_add_chuc_vu", methods=['GET','POST'])
 def form_add_chuc_vu():
@@ -529,51 +707,6 @@ def form_add_chuc_vu():
                            my_user = session['username'])
 
 @login_required
-@app.route("/form_add_trinhdohocvan", methods=['GET','POST'])
-def form_add_trinhdohocvan():
-    cur = mysql.connection.cursor()
-    cur.execute("""SELECT * FROM qlnv_trinhdohocvan""")
-    trinhdohocvan = cur.fetchall()
-    
-    if request.method == 'POST':
-        details = request.form
-        MATDHV = details['MATDHV'].strip()
-        TenTDHV = details["TenTDHV"].strip()
-        ChuyenNganh = details['ChuyenNganh'].strip()
-        for data in trinhdohocvan:
-            if (MATDHV in data):
-                return render_template("form_add_trinhdohocvan.html", 
-                                       ma_err = "True", 
-                                       congty = session['congty'],
-                                       my_user = session['username'])
-        
-        cur.execute("INSERT INTO qlnv_trinhdohocvan(MATDHV, TenTDHV, ChuyenNganh) VALUES (%s, %s, %s)",(MATDHV, TenTDHV, ChuyenNganh))
-        mysql.connection.commit()
-        cur.close()
-        
-        return redirect(url_for("table_data_employees"))
-    return render_template("form_add_trinhdohocvan.html", 
-                           congty = session['congty'],
-                           my_user = session['username'])
-
-@login_required
-@app.route("/table_chuc_vu")
-def table_chuc_vu():
-    cur = mysql.connection.cursor()
-    cur.execute("""
-        SELECT cv.MaCV, cv.TenCV, COUNT(*) 
-        FROM qlnv_chucvu cv
-        JOIN qlnv_nhanvien nv ON cv.MaCV = nv.MaChucVu
-        JOIN qlnv_thoigiancongtac tg ON tg.MaNV = nv.MaNhanVien 
-        GROUP BY cv.MaCV""")
-    chucvu = cur.fetchall()
-    cur.close()
-    return render_template("table_chuc_vu.html",
-                           chucvu = chucvu,
-                           congty = session['congty'],
-                           my_user = session['username'])
-
-@login_required
 @app.route("/table_chuc_vu/<string:maCV>")
 def table_chuc_vu_nhan_vien(maCV):
     cur = mysql.connection.cursor()
@@ -591,30 +724,142 @@ def table_chuc_vu_nhan_vien(maCV):
         WHERE cv.MaCV = '""" + str(maCV) + """' AND tg.DuongNhiem = 1 """)
     nv_chuc_vu = cur.fetchall()
     
+    if (len(nv_chuc_vu) != 1):
+        return "Error"
+    
     cur.close()
     
     return render_template("table_chuc_vu_nhan_vien.html",
                            tenCV = tenCV,
                            nv_chuc_vu=nv_chuc_vu,
+                           maCV = maCV,
                            congty = session['congty'],
                            my_user = session['username'])
-    
 
 @login_required
-@app.route("/table_data_employees")
-def table_data_employees():
+@app.route("/table_print_chuc_vu")
+def table_print_chuc_vu():
     cur = mysql.connection.cursor()
     cur.execute("""
-        SELECT nv.MaNhanVien, nv.TenNV, img.PathToImage, nv.DiaChi, DATE_FORMAT(nv.NgaySinh,"%d-%m-%Y"), nv.GioiTinh, nv.DienThoai, cv.TenCV
-        FROM qlnv_nhanvien nv
-        JOIN qlnv_chucvu cv ON nv.MaChucVu = cv.MaCV
-        JOIN qlnv_imagedata img ON nv.ID_profile_image = img.ID_image""")
-    nhanvien = cur.fetchall()
+        SELECT cv.MaCV, cv.TenCV, COUNT(NV.MaNhanVien) 
+        FROM qlnv_chucvu cv
+        LEFT JOIN qlnv_nhanvien nv ON cv.MaCV = nv.MaChucVu
+        LEFT JOIN qlnv_thoigiancongtac tg ON tg.MaNV = nv.MaNhanVien 
+        GROUP BY cv.MaCV""")
+    chucvu = cur.fetchall()
     cur.close()
-    return render_template('table_data_employees.html',
-                           nhanvien = nhanvien,
-                           congty = session['congty'],
-                           my_user = session['username'])
+    return render_template('table_print_chuc_vu.html',
+                           chucvu = chucvu)
+
+@login_required
+@app.route("/table_print_chuc_vu_nhan_vien/<string:maCV>")
+def table_print_chuc_vu_nhan_vien(maCV):
+    cur = mysql.connection.cursor()
+    cur.execute("""
+        SELECT TenCV
+        FROM qlnv_chucvu 
+        WHERE MaCV = %s """, (maCV, ))
+    tenCV = cur.fetchall()
+    
+    cur.execute("""
+        SELECT nv.MaNhanVien, nv.TenNV,DATE_FORMAT(nv.NgaySinh,"%d-%m-%Y"), nv.DienThoai, cv.TenCV, DATE_FORMAT(tg.NgayNhanChuc,"%d-%m-%Y")
+        FROM qlnv_chucvu cv
+        JOIN qlnv_thoigiancongtac tg ON tg.MaCV = cv.MaCV
+        JOIN qlnv_nhanvien nv ON tg.MaNV = nv.MaNhanVien
+        WHERE cv.MaCV = '""" + str(maCV) + """' AND tg.DuongNhiem = 1 """)
+    nv_chuc_vu = cur.fetchall()
+    cur.close()
+    return render_template("table_print_chuc_vu_nhan_vien.html",
+                           nv_chuc_vu = nv_chuc_vu)
+
+@login_required
+@app.route("/get_chuc_vu_table_excel")
+def get_chuc_vu_table_excel():
+    cur = mysql.connection.cursor()
+    cur.execute("""
+        SELECT cv.MaCV, cv.TenCV, COUNT(NV.MaNhanVien) 
+        FROM qlnv_chucvu cv
+        LEFT JOIN qlnv_nhanvien nv ON cv.MaCV = nv.MaChucVu
+        LEFT JOIN qlnv_thoigiancongtac tg ON tg.MaNV = nv.MaNhanVien 
+        GROUP BY cv.MaCV""")
+    chucvu = cur.fetchall()
+    cur.close()
+    
+    column_name = ['MaChucVu','TenChucVu','SoNhanVien']
+    data = pd.DataFrame.from_records(chucvu, columns=column_name)
+    data = data.set_index('MaChucVu')
+    pathFile = app.config['SAVE_FOLDER_EXCEL'] + "/" + "Data_Chuc_Vu.xlsx"
+    data.to_excel(pathFile)
+    return send_file(pathFile, as_attachment=True)
+
+@login_required
+@app.route("/get_nhan_vien_chuc_vu_table_excel/<string:maCV>")
+def get_nhan_vien_chuc_vu_table_excel(maCV):
+    cur = mysql.connection.cursor()
+    cur.execute("""
+        SELECT nv.MaNhanVien, nv.TenNV,DATE_FORMAT(nv.NgaySinh,"%d-%m-%Y"), nv.DienThoai, cv.TenCV, DATE_FORMAT(tg.NgayNhanChuc,"%d-%m-%Y")
+        FROM qlnv_chucvu cv
+        JOIN qlnv_thoigiancongtac tg ON tg.MaCV = cv.MaCV
+        JOIN qlnv_nhanvien nv ON tg.MaNV = nv.MaNhanVien
+        WHERE cv.MaCV = '""" + str(maCV) + """' AND tg.DuongNhiem = 1 """)
+    nv_chuc_vu = cur.fetchall()
+    
+    if (len(nv_chuc_vu) == 0):
+        return "Error"
+    
+    cur.close()
+    
+    column_name = ['MaNhanVien','TenNhanVien' ,'NgaySinh', 'DienThoai', 'TenChucVu', 'NgayNhanChuc']
+    data = pd.DataFrame.from_records(nv_chuc_vu, columns=column_name)
+    data = data.set_index('MaNhanVien')
+    pathFile = app.config['SAVE_FOLDER_EXCEL'] + "/" + "Data_Chuc_Vu_" + maCV + ".xlsx"
+    data.to_excel(pathFile)
+    return send_file(pathFile, as_attachment=True)
+
+@login_required
+@app.route("/get_chuc_vu_table_pdf")
+def get_chuc_vu_table_pdf():
+    pathFile = app.config['SAVE_FOLDER_PDF']  + '/Table Chuc Vu.pdf'
+    pdfkit.from_url("/".join(request.url.split("/")[:-1:]) + '/table_print_chuc_vu',pathFile)
+    return send_file(pathFile, as_attachment=True)
+
+@login_required
+@app.route("/get_nhan_vien_chuc_vu_table_pdf/<string:maCV>")
+def get_nhan_vien_chuc_vu_table_pdf(maCV):
+    pathFile = app.config['SAVE_FOLDER_PDF']  + '/Table Chuc Vu _ ' + maCV + '.pdf'
+    pdfkit.from_url("/".join(request.url.split("/")[:-2:]) + '/table_print_chuc_vu_nhan_vien/' + maCV,pathFile)
+    return send_file(pathFile, as_attachment=True)
+
+@login_required
+@app.route("/delete_chuc_vu/<string:maCV>")
+def delete_chuc_vu(maCV):
+    cur = mysql.connection.cursor()
+    cur.execute("""
+        SELECT cv.MaCV, cv.TenCV, COUNT(nv.MaNhanVien) 
+        FROM qlnv_chucvu cv
+        LEFT JOIN qlnv_nhanvien nv ON cv.MaCV = nv.MaChucVu
+        LEFT JOIN qlnv_thoigiancongtac tg ON tg.MaNV = nv.MaNhanVien 
+        WHERE CV.MaCV = %s
+        GROUP BY cv.MaCV""", (maCV, ))
+    chucvu = cur.fetchall()
+    
+    # Check xem chức vụ này còn nhân viên nào không
+    if chucvu[0][2] != 0:
+        return "Error"
+    
+    sql = "DELETE FROM qlnv_chucvu WHERE MaCV=%s"
+    val = (maCV, )
+    cur.execute(sql,val)
+    mysql.connection.commit()
+    return redirect(url_for('table_chuc_vu'))
+#
+# ------------------ CHUC VU ------------------------
+#
+
+@login_required
+@app.route("/form_add_data_money")
+def form_add_data_money():
+    return render_template('form_add_data_money.html')
 
 @login_required
 @app.route("/table_data_money")
