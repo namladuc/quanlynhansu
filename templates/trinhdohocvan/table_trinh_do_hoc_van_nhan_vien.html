@@ -2,7 +2,7 @@
 <html lang="en">
 
 <head>
-  <title>Thêm nhân viên | Quản trị Admin</title>
+  <title>Trình độ học vấn - {{tenTDHV[1]}} - {{tenTDHV[2]}} | {{congty[0]}}</title>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -20,119 +20,9 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.js"></script>
   <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.css">
-  <script>
-
-    function readURL(input, thumbimage) {
-      if (input.files && input.files[0]) { //Sử dụng  cho Firefox - chrome
-        var reader = new FileReader();
-        reader.onload = function (e) {
-          $("#thumbimage").attr('src', e.target.result);
-        }
-        reader.readAsDataURL(input.files[0]);
-      }
-      else { // Sử dụng cho IE
-        $("#thumbimage").attr('src', input.value);
-
-      }
-      $("#thumbimage").show();
-      $('.filename').text($("#uploadfile").val());
-      $('.Choicefile').css('background', '#14142B');
-      $('.Choicefile').css('cursor', 'default');
-      $(".removeimg").show();
-      $(".Choicefile").unbind('click');
-
-    }
-    $(document).ready(function () {
-      $(".Choicefile").bind('click', function () {
-        $("#uploadfile").click();
-
-      });
-      $(".removeimg").click(function () {
-        $("#thumbimage").attr('src', '').hide();
-        $("#myfileupload").html('<input type="file" id="uploadfile"  onchange="readURL(this);" />');
-        $(".removeimg").hide();
-        $(".Choicefile").bind('click', function () {
-          $("#uploadfile").click();
-        });
-        $('.Choicefile').css('background', '#14142B');
-        $('.Choicefile').css('cursor', 'pointer');
-        $(".filename").text("");
-      });
-    })
-  </script>
 </head>
 
 <body class="app sidebar-mini rtl">
-  <style>
-    .Choicefile {
-      display: block;
-      background: #14142B;
-      border: 1px solid #fff;
-      color: #fff;
-      width: 150px;
-      text-align: center;
-      text-decoration: none;
-      cursor: pointer;
-      padding: 5px 0px;
-      border-radius: 5px;
-      font-weight: 500;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .Choicefile:hover {
-      text-decoration: none;
-      color: white;
-    }
-
-    #uploadfile,
-    .removeimg {
-      display: none;
-    }
-
-    #thumbbox {
-      position: relative;
-      width: 100%;
-      margin-bottom: 20px;
-    }
-
-    .removeimg {
-      height: 25px;
-      position: absolute;
-      background-repeat: no-repeat;
-      top: 5px;
-      left: 5px;
-      background-size: 25px;
-      width: 25px;
-      /* border: 3px solid red; */
-      border-radius: 50%;
-
-    }
-
-    .removeimg::before {
-      -webkit-box-sizing: border-box;
-      box-sizing: border-box;
-      content: '';
-      border: 1px solid red;
-      background: red;
-      text-align: center;
-      display: block;
-      margin-top: 11px;
-      transform: rotate(45deg);
-    }
-
-    .removeimg::after {
-      /* color: #FFF; */
-      /* background-color: #DC403B; */
-      content: '';
-      background: red;
-      border: 1px solid red;
-      text-align: center;
-      display: block;
-      transform: rotate(-45deg);
-      margin-top: -2px;
-    }
-  </style>
   <!-- Navbar-->
   <header class="app-header">
     <!-- Sidebar toggle button--><a class="app-sidebar__toggle" href="#" data-toggle="sidebar"
@@ -186,8 +76,8 @@
   <main class="app-content">
     <div class="app-title">
       <ul class="app-breadcrumb breadcrumb">
-        <li class="breadcrumb-item"><a href="/form_add_data_employees">Danh sách nhân viên</a></li>
-        <li class="breadcrumb-item"><a href="/form_add_trinhdohocvan">Thêm trình độ học vấn</a></li>
+        <li class="breadcrumb-item"><a href="/table_trinh_do_hoc_van">Danh sách trình độ học vấn</a></li>
+        <li class="breadcrumb-item"><a href="/table_trinh_do_hoc_van/{{tenTDHV[0]}}">Xem trình độ học vấn - {{tenTDHV[1]}} - {{tenTDHV[2]}}</a></li>
       </ul>
     </div>
     <div class="row">
@@ -195,56 +85,53 @@
 
         <div class="tile">
 
-          <h3 class="tile-title">Tạo mới trình độ học vấn</h3>
+          <h3 class="tile-title">Trình độ học vấn - {{tenTDHV[1]}} - {{tenTDHV[2]}}</h3>
           <div class="tile-body">
             <div class="row element-button">
+
               <div class="col-sm-2">
-                <a class="btn btn-add btn-sm" href="/form_add_data_employees"><b><i
-                      class="fas fa-folder-plus"></i> Tạo nhân viên mới</b></a>
+                <a class="btn btn-delete btn-sm print-file" type="button" title="In" onclick="myApp.printTableTDHVNV()"><i
+                    class="fas fa-print"></i> In dữ liệu</a>
               </div>
               <div class="col-sm-2">
-                <a class="btn btn-add btn-sm" href="/form_add_chuc_vu"><b><i
-                  class="fas fa-folder-plus"></i> Tạo chức vụ mới</b></a>
+                <a class="btn btn-delete btn-sm print-file js-textareacopybtn" type="button" title="Sao chép"><i
+                    class="fas fa-copy"></i> Sao chép</a>
+              </div>
+
+              <div class="col-sm-2">
+                <a class="btn btn-excel btn-sm" href="/get_table_trinh_do_hoc_van_nhan_vien_excel/{{tenTDHV[0]}}" title="Xuất Excel"><i
+                     class="fas fa-file-excel"></i> Xuất Excel</a>
+              </div>
+              <div class="col-sm-2">
+                <a class="btn btn-delete btn-sm pdf-file" type="button" title="In" href="/get_table_trinh_do_hoc_van_nhan_vien_pdf/{{tenTDHV[0]}}"><i
+                    class="fas fa-file-pdf"></i> Xuất PDF</a>
               </div>
             </div>
 
-            <form class="row" method="post" action="/form_add_trinhdohocvan" >
-
-                {% if ma_err %}
-                <div class="form-group col-md-12">
-                    <div class="alert alert-danger" style="text-align: left; font-size: 12px; background-color: red;">
-                    <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
-                    <strong>Mã trình độ học vấn đã tồn tại!</strong> Hãy nhập lại
-                    </div>
-                </div>
-              {% endif %}
-
-              <div class="form-group col-md-4">
-                <label class="control-label">Nhập mã trình độ học vấn mới</label>
-                <input class="form-control" name="MATDHV" type="text" required>
-              </div>
-
-              <div class="form-group col-md-4">
-                <label class="control-label">Nhập tên trình độ học vấn mới</label>
-                <input class="form-control" name="TenTDHV" type="text" required>
-              </div>
-
-              <div class="form-group col-md-12">
-              </div>
-
-              <div class="form-group col-md-4">
-                <label class="control-label">Nhập tên chuyên ngành cho trình độ học vấn</label>
-                <input class="form-control" name="ChuyenNganh" type="text" required>
-              </div>
-
-              <div class="form-group col-md-12">
-              </div>
-
-              <div class="form-group col-md-4">
-                <input class="btn btn-save" type="submit" value="Lưu lại"/>
-                <a class="btn btn-cancel" href="table_chuc_vu">Hủy bỏ</a>
-              </div>
-            </form>
+            <table class="table table-hover table-bordered js-copytextarea" cellpadding="0" cellspacing="0" border="0"
+              id="sampleTable">
+              <thead>
+                <tr>
+                  <th width="100">Mã Nhân viên</th>
+                  <th width="200">Tên nhân viên</th>
+                  <th width="100">Ngày sinh</th>
+                  <th width="100">Số điện thoại</th>
+                  <th width="200">Loại trình độ học vấn</th>
+                  <th width="400">Chuyên ngành</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for data in trinhdohocvan %}
+                <tr>
+                  <td>{{data[0]}}</td>
+                  <td>{{data[1]}}</td>
+                  <td>{{data[2]}}</td>
+                  <td>{{data[3]}}</td>
+                  <td>{{data[4]}}</td>
+                  <td>{{data[5]}}</td>
+                {% endfor %}
+              </tbody>
+            </table>
 
   </main>
   <!-- Essential javascripts for application to work-->
@@ -254,7 +141,56 @@
   <script src="{{url_for('static', filename='doc/js/main.js')}}"></script>
   <!-- The javascript plugin to display page loading on top-->
   <script src="{{url_for('static', filename='doc/js/plugins/pace.min.js')}}"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.js"></script>
+  <!-- Data table plugin-->
+  <!-- <script type="text/javascript" src="js/plugins/jquery.dataTables.min.js"></script> -->
+  <script src="{{url_for('static', filename='doc/js/plugins/jquery.dataTables.min.js')}}"></script>
+  <!-- <script type="text/javascript" src="js/plugins/dataTables.bootstrap.min.js"></script> -->
+  <script src="{{url_for('static', filename='doc/js/plugins/dataTables.bootstrap.min.js')}}"></script>
+  <script type="text/javascript">$('#sampleTable').DataTable();</script>
+  <script>
+    //In dữ liệu
+    var myApp = new function () {
+      this.printTableTDHVNV = function () {
+        var win = window.open('/table_print_trinh_do_hoc_van_nhan_vien/{{tenTDHV[0]}}', '', 'height=700,width=1400');
+        win.document.close();
+        win.print();
+      }
+    }
+    
+    //Sao chép dữ liệu
+    var copyTDHVNVareaBtn = document.querySelector('.js-textareacopybtn');
 
+    copyTDHVNVareaBtn.addEventListener('click', function (event) {
+      var copyTextarea = document.querySelector('.js-copytextarea');
+      copyTextarea.focus();
+
+      var mytext = copyTextarea.textContent.substring(167,copyTextarea.textContent.length).split("\n")
+
+      var index = 0;
+      var data = [];
+      mytext.forEach(function (text) {
+        if (text.trim().length != 0) {
+            data.push(text.trim());
+            index += 1;
+            if (index == 6) {
+              data.push("\n")
+              index = 0;
+            }
+        }
+      });
+
+      navigator.clipboard.writeText(data.join(" "));
+
+      try {
+        var successful = document.execCommand('copy');
+        var msg = successful ? 'successful' : 'unsuccessful';
+        console.log('Copying text command was ' + msg);
+      } catch (err) {
+        console.log('Oops, unable to copy');
+      }
+    });
+  </script>
 </body>
 
 </html>

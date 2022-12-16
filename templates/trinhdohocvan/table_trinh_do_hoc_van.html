@@ -102,7 +102,12 @@
               </div>
 
               <div class="col-sm-2">
-                <a class="btn btn-delete btn-sm print-file" type="button" title="In" onclick="myApp.printTableChucVu()"><i
+                <a class="btn btn-add btn-sm" href="/form_view_update_trinh_do_hoc_van/V_N" title="Thêm"><i class="fa fa-pencil-square-o"></i>
+                  Sửa trình độ học vấn</a>
+              </div>
+
+              <div class="col-sm-2">
+                <a class="btn btn-delete btn-sm print-file" type="button" title="In" onclick="myApp.printTableTDHV ()"><i
                     class="fas fa-print"></i> In dữ liệu</a>
               </div>
               <div class="col-sm-2">
@@ -111,10 +116,10 @@
               </div>
 
               <div class="col-sm-2">
-                <a class="btn btn-excel btn-sm" href="/get_chuc_vu_table_excel" title="In"><i class="fas fa-file-excel"></i> Xuất Excel</a>
+                <a class="btn btn-excel btn-sm" href="/get_table_trinh_do_hoc_van_excel" title="In"><i class="fas fa-file-excel"></i> Xuất Excel</a>
               </div>
               <div class="col-sm-2">
-                <a class="btn btn-delete btn-sm pdf-file" type="button" title="In" href="/get_chuc_vu_table_pdf"><i
+                <a class="btn btn-delete btn-sm pdf-file" type="button" title="In" href="/get_table_trinh_do_hoc_van_pdf"><i
                     class="fas fa-file-pdf"></i> Xuất PDF</a>
               </div>
               <div class="col-sm-2">
@@ -218,8 +223,8 @@
 
     //In dữ liệu
     var myApp = new function () {
-      this.printTableChucVu = function () {
-        var win = window.open('/table_print_chuc_vu', '', 'height=700,width=1400');
+      this.printTableTDHV = function () {
+        var win = window.open('/table_print_trinh_do_hoc_van', '', 'height=700,width=1400');
         win.document.close();
         win.print();
       }
@@ -240,7 +245,7 @@
         if (text.trim().length != 0) {
             data.push(text.trim());
             index += 1;
-            if (index == 3) {
+            if (index == 4) {
               data.push("\n")
               index = 0;
             }

@@ -85,7 +85,6 @@ def login():
     return render_template('/general/login.html',
                            congty = session['congty'])
 
-
 @app.route("/home")
 def home():
     if 'username' in session.keys():
@@ -93,13 +92,6 @@ def home():
                                congty = session['congty'],
                                my_user = session['username'])
     return redirect(url_for("login"))
-
-# Error Handler
-# @app.errorhandler(404)
-# def page_not_found(error):
-#     return render_template('page_not_found.html'), 404
-
-
 
 @app.route("/forgot")
 def forgot():
@@ -120,7 +112,7 @@ def table_data_employees():
         JOIN qlnv_imagedata img ON nv.ID_profile_image = img.ID_image""")
     nhanvien = cur.fetchall()
     cur.close()
-    return render_template('table_data_employees.html',
+    return render_template('employees/table_data_employees.html',
                            nhanvien = nhanvien,
                            congty = session['congty'],
                            my_user = session['username'])
@@ -167,7 +159,7 @@ def form_add_data_employees():
         kiem_tra_ma_nhan_vien = cur.fetchall()
         
         if len(kiem_tra_ma_nhan_vien) != 0:
-            return render_template('form_add_data_employees.html',
+            return render_template('employees/form_add_data_employees.html',
                         ma_err="True",
                         trinhdohocvan = trinhdohocvan, 
                         chucvu = chucvu,
@@ -214,7 +206,7 @@ def form_add_data_employees():
         mysql.connection.commit()
         cur.close()
         return redirect(url_for("table_data_employees"))
-    return render_template('form_add_data_employees.html',
+    return render_template('employees/form_add_data_employees.html',
                            trinhdohocvan = trinhdohocvan, 
                            chucvu = chucvu,
                            phongban = phongban,
@@ -309,9 +301,8 @@ def form_view_update_employees(maNV, canEdit):
             ID_image = "Image_Profile_" + MNV 
             filename = ID_image + "." + secure_filename(image_profile.filename).split(".")[1]
             pathToImage = app.config['UPLOAD_FOLDER_IMG'] + "/" + filename
-            print("Done")
-            # image_profile.save(pathToImage)
-            # take_image_to_save(ID_image, pathToImage)
+            image_profile.save(pathToImage)
+            take_image_to_save(ID_image, pathToImage)
         
         cur.execute("""UPDATE qlnv_nhanvien
             SET MaChucVu = %s, MaPhongBan = %s,
@@ -327,7 +318,7 @@ def form_view_update_employees(maNV, canEdit):
         mysql.connection.commit()
         cur.close()
         return redirect(url_for("table_data_employees"))
-    return render_template('form_view_update_employees.html',
+    return render_template('employees/form_view_update_employees.html',
                            mode=mode,
                            data_default = data_default,
                            trinhdohocvan = trinhdohocvan, 
@@ -350,7 +341,7 @@ def form_add_data_employees_upload_file():
             data_file.save(pathToFile)
             return redirect(url_for("form_add_data_employees_upload_process", filename=filename))
         return redirect(url_for("form_add_data_employees_upload_file"))
-    return render_template('form_add_data_employees_upload_file.html',
+    return render_template('employees/form_add_data_employees_upload_file.html',
                            congty = session['congty'],
                            my_user = session['username'])
 
@@ -372,6 +363,9 @@ def form_add_data_employees_upload_process(filename):
     
     data_nv = pd.read_excel(pathToFile)
     data_column = list(data_nv.columns)
+    
+    if (len(data_column) > len(default_tag_Column)) or len(data_column) < 3:
+        return "Error"
     
     if request.method == 'POST':
         cur = mysql.connection.cursor()
@@ -453,7 +447,7 @@ def form_add_data_employees_upload_process(filename):
         os.remove(pathToFile)
         return redirect(url_for('table_data_employees'))
     
-    return render_template("form_add_data_employees_upload_process.html",
+    return render_template("employees/form_add_data_employees_upload_process.html",
                            filename = filename,
                            congty = session['congty'],
                            my_user = session['username'],
@@ -495,7 +489,7 @@ def get_print_data_employees():
         JOIN qlnv_imagedata img ON nv.ID_profile_image = img.ID_image""")
     nhanvien = cur.fetchall()
     cur.close()
-    return render_template("table_print_employees.html", nhanvien = nhanvien)
+    return render_template("employees/table_print_employees.html", nhanvien = nhanvien)
 
 @login_required
 @app.route("/get_pdf_data_employees")
@@ -526,7 +520,7 @@ def get_infomation_one_employee(maNV):
         return "Error"
     
     cur.close()
-    return render_template("form_information_one_employee.html",
+    return render_template("employees/form_information_one_employee.html",
                            congty = session['congty'],
                            nhanvien = nhanvien[0])
     
@@ -582,7 +576,7 @@ def form_add_trinhdohocvan():
         cur.close()
         
         return redirect(url_for("table_trinh_do_hoc_van"))
-    return render_template("form_add_trinhdohocvan.html", 
+    return render_template("trinhdohocvan/form_add_trinhdohocvan.html", 
                            congty = session['congty'],
                            my_user = session['username'])
 
@@ -598,7 +592,61 @@ def table_trinh_do_hoc_van():
                 """)
     trinhdohocvan = cur.fetchall()
     cur.close()
-    return render_template("table_trinh_do_hoc_van.html", 
+    return render_template("trinhdohocvan/table_trinh_do_hoc_van.html", 
+                           trinhdohocvan = trinhdohocvan,
+                           congty = session['congty'],
+                           my_user = session['username'])
+    
+@login_required
+@app.route("/form_view_update_trinh_do_hoc_van/<string:mode>_<string:maTDHV>", methods=['GET','POST'])
+def form_view_update_trinh_do_hoc_van(mode, maTDHV):
+    cur = mysql.connection.cursor()
+    cur.execute("""
+                SELECT *
+                FROM qlnv_trinhdohocvan
+                """)
+    trinhdohocvan = cur.fetchall()
+    
+    if request.method == 'POST':
+        details = request.form
+        MATDHV = details['MATDHV'].strip()
+        TenTDHV = details["TenTDHV"].strip()
+        ChuyenNganh = details['ChuyenNganh'].strip()
+        
+        if (MATDHV != maTDHV):
+            cur.execute("""
+                UPDATE qlnv_nhanvien
+                SET MATDHV = %s
+                WHERE MATDHV = %s
+                """, (MATDHV, maTDHV))
+        
+        cur.execute("""
+            UPDATE qlnv_trinhdohocvan
+            SET MATDHV = %s, TenTDHV = %s, ChuyenNganh = %s
+            WHERE MATDHV = %s
+            """, (MATDHV, TenTDHV, ChuyenNganh, maTDHV))
+        mysql.connection.commit()
+        return redirect(url_for('table_trinh_do_hoc_van'))
+    
+    if (mode == "E"):
+        cur.execute("""
+        SELECT *
+        FROM qlnv_trinhdohocvan
+        WHERE maTDHV = %s""", (maTDHV, ))
+        trinhdohocvan = cur.fetchall()
+        
+        if (len(trinhdohocvan) == 0):
+            return "Error"
+        
+        return render_template("trinhdohocvan/form_view_update_trinh_do_hoc_van.html", 
+                                edit_view = mode,
+                                maTDHV = maTDHV,
+                                trinhdohocvan = trinhdohocvan[0],
+                                congty = session['congty'],
+                                my_user = session['username'])
+    
+    cur.close()
+    return render_template("trinhdohocvan/form_view_update_trinh_do_hoc_van.html", 
                            trinhdohocvan = trinhdohocvan,
                            congty = session['congty'],
                            my_user = session['username'])
@@ -628,7 +676,7 @@ def table_trinh_do_hoc_van_one(maTDHV):
     if len(trinhdohocvan) == 0:
         return "Error"
     
-    return render_template("table_trinh_do_hoc_van_nhan_vien.html", 
+    return render_template("trinhdohocvan/table_trinh_do_hoc_van_nhan_vien.html", 
                            tenTDHV = tenTDHV,
                            trinhdohocvan = trinhdohocvan,
                            congty = session['congty'],
@@ -654,6 +702,116 @@ def delete_trinh_do_hoc_van(maTDHV):
     mysql.connection.commit()
     cur.close()
     return redirect(url_for('table_trinh_do_hoc_van'))
+
+@login_required
+@app.route("/table_print_trinh_do_hoc_van")
+def table_print_trinh_do_hoc_van():
+    cur = mysql.connection.cursor()
+    cur.execute("""
+                SELECT hv.*, COUNT(nv.MaNhanVien)
+                FROM qlnv_trinhdohocvan hv
+                LEFT JOIN qlnv_nhanvien nv ON hv.MATDHV = nv.MATDHV
+                GROUP BY hv.MATDHV
+                """)
+    trinhdohocvan = cur.fetchall()
+    cur.close()
+    return render_template("trinhdohocvan/table_print_trinh_do_hoc_van.html", 
+                           trinhdohocvan = trinhdohocvan)
+    
+@login_required
+@app.route("/get_table_trinh_do_hoc_van_excel")
+def get_table_trinh_do_hoc_van_excel():
+    cur = mysql.connection.cursor()
+    cur.execute("""
+        SELECT hv.*, COUNT(nv.MaNhanVien)
+        FROM qlnv_trinhdohocvan hv
+        LEFT JOIN qlnv_nhanvien nv ON hv.MATDHV = nv.MATDHV
+        GROUP BY hv.MATDHV
+        """)
+    nhanvien = cur.fetchall()
+    cur.close()
+    columnName = ['MaTDHV', 'LoaiTDHV', 'ChuyenNganh','SoLuongNguoi']
+    data = pd.DataFrame.from_records(nhanvien, columns=columnName)
+    data = data.set_index('MaTDHV')
+    pathFile = app.config['SAVE_FOLDER_EXCEL'] + "/" + "Data_trinh_do_hoc_van.xlsx"
+    data.to_excel(pathFile)
+    return send_file(pathFile, as_attachment=True)
+
+@login_required
+@app.route("/get_table_trinh_do_hoc_van_pdf")
+def get_table_trinh_do_hoc_van_pdf():
+    pathFile = app.config['SAVE_FOLDER_PDF']  + '/Table Trinh Do Hoc Van.pdf'
+    pdfkit.from_url("/".join(request.url.split("/")[:-1:]) + '/table_print_trinh_do_hoc_van',pathFile)
+    return send_file(pathFile, as_attachment=True)
+
+@login_required
+@app.route("/table_print_trinh_do_hoc_van_nhan_vien/<string:maTDHV>")
+def table_print_trinh_do_hoc_van_nhan_vien(maTDHV):
+    cur = mysql.connection.cursor()
+    cur.execute("""
+                SELECT *
+                FROM qlnv_trinhdohocvan
+                WHERE MATDHV = %s
+                """, (maTDHV, ))
+    tenTDHV = cur.fetchall()
+    if (len(tenTDHV) == 0):
+        return "Error"
+    tenTDHV = tenTDHV[0]
+        
+    cur.execute("""
+                SELECT nv.MaNhanVien, nv.TenNV, DATE_FORMAT(nv.NgaySinh,"%d-%m-%Y"), nv.DienThoai, hv.TenTDHV, HV.ChuyenNganh
+                FROM qlnv_trinhdohocvan hv
+                JOIN qlnv_nhanvien nv ON hv.MATDHV = nv.MATDHV
+                WHERE hv.MATDHV = \"""" + maTDHV + "\"") 
+    trinhdohocvan = cur.fetchall()
+    cur.close()
+    
+    if len(trinhdohocvan) == 0:
+        return "Error"
+    
+    return render_template("trinhdohocvan/table_print_trinh_do_hoc_van_nhan_vien.html", 
+                           tenTDHV = tenTDHV,
+                           trinhdohocvan = trinhdohocvan)
+
+@login_required
+@app.route("/get_table_trinh_do_hoc_van_nhan_vien_excel/<string:maTDHV>")
+def get_table_trinh_do_hoc_van_nhan_vien_excel(maTDHV):
+    cur = mysql.connection.cursor()
+    cur.execute("""
+                SELECT *
+                FROM qlnv_trinhdohocvan
+                WHERE MATDHV = %s
+                """, (maTDHV, ))
+    tenTDHV = cur.fetchall()
+    if (len(tenTDHV) == 0):
+        return "Error"
+    tenTDHV = tenTDHV[0]
+        
+    cur.execute("""
+                SELECT nv.MaNhanVien, nv.TenNV, DATE_FORMAT(nv.NgaySinh,"%d-%m-%Y"), nv.DienThoai, hv.TenTDHV, HV.ChuyenNganh
+                FROM qlnv_trinhdohocvan hv
+                JOIN qlnv_nhanvien nv ON hv.MATDHV = nv.MATDHV
+                WHERE hv.MATDHV = \"""" + maTDHV + "\"") 
+    trinhdohocvan = cur.fetchall()
+    cur.close()
+    
+    if len(trinhdohocvan) == 0:
+        return "Error"
+    
+    columnName = ['MaNhanVien', 'TenNhanVien', 'NgaySinh', 'DienThoai', 'TenTDHV', 'ChuyenNganh']
+    data = pd.DataFrame.from_records(trinhdohocvan, columns=columnName)
+    data = data.set_index('MaNhanVien')
+    pathFile = app.config['SAVE_FOLDER_EXCEL'] + "/" + "Data_trinh_do_hoc_van_" + maTDHV + ".xlsx"
+    data.to_excel(pathFile)
+    return send_file(pathFile, as_attachment=True)
+
+@login_required
+@app.route("/get_table_trinh_do_hoc_van_nhan_vien_pdf/<string:maTDHV>")
+def get_table_trinh_do_hoc_van_nhan_vien_pdf(maTDHV):
+    pathFile = app.config['SAVE_FOLDER_PDF']  + '/Table Trinh Do Hoc Van_' + maTDHV + '.pdf'
+    pdfkit.from_url("/".join(request.url.split("/")[:-2:]) + '/table_print_trinh_do_hoc_van_nhan_vien/' + maTDHV,pathFile)
+    return send_file(pathFile, as_attachment=True)
+
 #
 # ------------------ Trình độ học vấn ------------------------
 #
@@ -673,7 +831,58 @@ def table_chuc_vu():
         GROUP BY cv.MaCV""")
     chucvu = cur.fetchall()
     cur.close()
-    return render_template("table_chuc_vu.html",
+    return render_template("chucvu/table_chuc_vu.html",
+                           chucvu = chucvu,
+                           congty = session['congty'],
+                           my_user = session['username'])
+    
+@login_required
+@app.route("/form_view_update_chuc_vu/<string:mode>_<string:maCV>", methods=['GET','POST'])
+def form_view_update_chuc_vu(mode, maCV):
+    cur = mysql.connection.cursor()
+    cur.execute("""
+        SELECT *
+        FROM qlnv_chucvu """)
+    chucvu = cur.fetchall()
+    
+    if request.method == 'POST':
+        details = request.form
+        MaCV = details['MaCV'].strip()
+        TenCV = details["TenCV"].strip()
+        
+        if (MaCV != maCV):
+            cur.execute("""
+                UPDATE qlnv_nhanvien
+                SET MaChucVu = %s
+                WHERE MaChucVu = %s
+                """, (MaCV, maCV))
+        
+        cur.execute("""
+            UPDATE qlnv_chucvu
+            SET MaCV = %s, TenCV = %s
+            WHERE MaCV = %s
+            """, (MaCV, TenCV, maCV))
+        mysql.connection.commit()
+        return redirect(url_for('table_chuc_vu'))
+    
+    if (mode == "E"):
+        cur.execute("""
+        SELECT *
+        FROM qlnv_chucvu
+        WHERE MaCV = %s""", (maCV, ))
+        chucvu = cur.fetchall()
+        
+        if (len(chucvu) == 0):
+            return "Error"
+        
+        return render_template("chucvu/form_view_update_chuc_vu.html", 
+                                edit_view = mode,
+                                maCV = maCV,
+                                chucvu = chucvu[0],
+                                congty = session['congty'],
+                                my_user = session['username'])
+    cur.close()
+    return render_template("chucvu/form_view_update_chuc_vu.html",
                            chucvu = chucvu,
                            congty = session['congty'],
                            my_user = session['username'])
@@ -702,9 +911,92 @@ def form_add_chuc_vu():
         cur.close()
         
         return redirect(url_for("table_chuc_vu"))
-    return render_template("form_add_chuc_vu.html",
+    return render_template("chucvu/form_add_chuc_vu.html",
                            congty=session['congty'],
                            my_user = session['username'])
+
+@login_required
+@app.route("/form_add_data_chuc_vu_upload_file", methods=['GET','POST'])
+def form_add_data_chuc_vu_upload_file():
+    if request.method == 'POST':
+        data_file = request.files['FileDataUpload']
+        if data_file.filename != '':
+            if data_file.filename.split(".")[-1] not in ['txt', 'xlsx', 'csv', 'xls', 'xlsm']:
+                return redirect(url_for("form_add_data_chuc_vu_upload_file"))
+            filename = "TMP_" + data_file.filename 
+            pathToFile = app.config['UPLOAD_FOLDER'] + "/" + filename
+            data_file.save(pathToFile)
+            return redirect(url_for("form_add_chuc_vu_upload_process", filename=filename))
+        return redirect(url_for("form_add_data_chuc_vu_upload_file"))
+    return render_template('chucvu/form_add_data_chuc_vu_upload_file.html',
+                           congty = session['congty'],
+                           my_user = session['username'])
+
+@login_required
+@app.route("/form_add_chuc_vu_upload_process/<string:filename>", methods=['GET','POST'])
+def form_add_chuc_vu_upload_process(filename):
+    pathToFile = app.config['UPLOAD_FOLDER'] + "/" + filename
+    
+    default_tag_Column = ['MaCV', 'TenCV']
+    
+    default_name_Column = ['Mã chức vụ', 'Tên chức vụ']
+    
+    data_nv = pd.read_excel(pathToFile)
+    data_column = list(data_nv.columns)
+    
+    if len(data_column) != 2:
+        return "Error"
+    
+    if request.method == 'POST':
+        cur = mysql.connection.cursor()
+        details = request.form
+        column_link = [details[col] for col in data_column]
+        column_match = [default_name_Column.index(elm) for elm in column_link]
+        
+        # kiểm tra xem có gán hai cột cùng 1 loại cột không
+        if (len(set(column_match)) != len(column_link)):
+            return "Error"
+        
+        
+        tmp = tuple(set(data_nv[data_column[column_match.index(0)]]))
+        # Kiểm tra xem trong tập dữ liệu nhập vào có bị trùng lặp về mã chức vụ không
+        if len(tmp) != data_nv.shape[0]:
+            return "Error"
+        
+        # Kiểm tra xem bản nhập vào có chứa mã chức vụ đã tồn tại không
+        new_tmp = ["\"" + text +"\"" for text in tmp]
+        cur.execute("SELECT MaCV FROM qlnv_chucvu WHERE TenCV IN (" + ", ".join(new_tmp) + ")")
+        data_tuple = cur.fetchall()
+        
+        if len(data_tuple) != 0:
+            return "Error"
+        
+        sql = "INSERT INTO `qlnv_chucvu` ("
+        for index in column_match:
+            sql += default_tag_Column[index] + ","
+        sql = sql[:-1:]
+        sql += ") VALUES "
+        for index_row in range(data_nv.shape[0]):
+            sql += "("
+            for col in data_column:
+                sql +=  "\"" + str(data_nv[col][index_row]) + "\"" + ","
+            sql = sql[:-1:]
+            sql += "),"
+        sql = sql[:-1:]    
+        
+        cur.execute(sql)
+        mysql.connection.commit()
+        cur.close()
+        os.remove(pathToFile)
+        return redirect(url_for('table_chuc_vu'))
+    
+    return render_template("chucvu/form_add_data_chuc_vu_upload_process.html",
+                           filename = filename,
+                           congty = session['congty'],
+                           my_user = session['username'],
+                           name_column = default_name_Column,
+                           index_column = data_column)
+
 
 @login_required
 @app.route("/table_chuc_vu/<string:maCV>")
@@ -715,6 +1007,8 @@ def table_chuc_vu_nhan_vien(maCV):
         FROM qlnv_chucvu 
         WHERE MaCV = %s """, (maCV, ))
     tenCV = cur.fetchall()
+    if (len(tenCV) != 1):
+        return "Error"
     
     cur.execute("""
         SELECT nv.MaNhanVien, nv.TenNV,DATE_FORMAT(nv.NgaySinh,"%d-%m-%Y"), nv.DienThoai, cv.TenCV, DATE_FORMAT(tg.NgayNhanChuc,"%d-%m-%Y")
@@ -724,12 +1018,8 @@ def table_chuc_vu_nhan_vien(maCV):
         WHERE cv.MaCV = '""" + str(maCV) + """' AND tg.DuongNhiem = 1 """)
     nv_chuc_vu = cur.fetchall()
     
-    if (len(nv_chuc_vu) != 1):
-        return "Error"
-    
     cur.close()
-    
-    return render_template("table_chuc_vu_nhan_vien.html",
+    return render_template("chucvu/table_chuc_vu_nhan_vien.html",
                            tenCV = tenCV,
                            nv_chuc_vu=nv_chuc_vu,
                            maCV = maCV,
@@ -748,7 +1038,7 @@ def table_print_chuc_vu():
         GROUP BY cv.MaCV""")
     chucvu = cur.fetchall()
     cur.close()
-    return render_template('table_print_chuc_vu.html',
+    return render_template('chucvu/table_print_chuc_vu.html',
                            chucvu = chucvu)
 
 @login_required
@@ -760,6 +1050,8 @@ def table_print_chuc_vu_nhan_vien(maCV):
         FROM qlnv_chucvu 
         WHERE MaCV = %s """, (maCV, ))
     tenCV = cur.fetchall()
+    if (len(tenCV) == 0):
+        return "Error"
     
     cur.execute("""
         SELECT nv.MaNhanVien, nv.TenNV,DATE_FORMAT(nv.NgaySinh,"%d-%m-%Y"), nv.DienThoai, cv.TenCV, DATE_FORMAT(tg.NgayNhanChuc,"%d-%m-%Y")
@@ -768,8 +1060,10 @@ def table_print_chuc_vu_nhan_vien(maCV):
         JOIN qlnv_nhanvien nv ON tg.MaNV = nv.MaNhanVien
         WHERE cv.MaCV = '""" + str(maCV) + """' AND tg.DuongNhiem = 1 """)
     nv_chuc_vu = cur.fetchall()
+    if (len(nv_chuc_vu) == 0):
+        return "Error"
     cur.close()
-    return render_template("table_print_chuc_vu_nhan_vien.html",
+    return render_template("chucvu/table_print_chuc_vu_nhan_vien.html",
                            nv_chuc_vu = nv_chuc_vu)
 
 @login_required
@@ -896,6 +1190,10 @@ def danh_sach_hop_dong():
                            congty = session['congty'],
                            my_user = session['username'])
 
+# Error Handler
+# @app.errorhandler(404)
+# def page_not_found(error):
+#     return render_template('page_not_found.html'), 404
 
 def take_image_to_save(id_image, path_to_img):
     cur = mysql.connection.cursor()
