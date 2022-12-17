@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Dec 13, 2022 at 04:32 PM
+-- Generation Time: Dec 17, 2022 at 05:22 PM
 -- Server version: 10.4.21-MariaDB
 -- PHP Version: 8.0.10
 
@@ -33,10 +33,61 @@ CREATE TABLE `qlnv_chamcong` (
   `Ngay` date NOT NULL,
   `GioVao` time NOT NULL,
   `GioRa` time NOT NULL,
-  `ThoiGianLamViec` double NOT NULL,
-  `ThoiGianTangCa` double NOT NULL,
-  `OT` tinyint(1) NOT NULL
+  `OT` tinyint(1) NOT NULL,
+  `ThoiGianLamViec` time NOT NULL,
+  `ThoiGian_thap_phan` float NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `qlnv_chamcong`
+--
+
+INSERT INTO `qlnv_chamcong` (`id`, `MaNV`, `Ngay`, `GioVao`, `GioRa`, `OT`, `ThoiGianLamViec`, `ThoiGian_thap_phan`) VALUES
+(17, 'MNV01', '2022-12-17', '13:00:00', '17:00:00', 0, '04:00:00', 4),
+(25, 'MNV01', '2022-12-17', '07:30:00', '11:30:00', 0, '04:00:00', 4),
+(26, 'MNV02', '2022-11-28', '07:30:00', '11:30:00', 0, '04:00:00', 4),
+(27, 'MNV02', '2022-11-01', '07:30:00', '11:30:00', 0, '04:00:00', 4),
+(28, 'MNV02', '2022-11-02', '07:30:00', '11:30:00', 0, '04:00:00', 4),
+(29, 'MNV03', '2022-10-01', '07:30:00', '11:30:00', 0, '04:00:00', 4),
+(30, 'MNV03', '2022-10-02', '13:00:00', '17:00:00', 0, '04:00:00', 4),
+(31, 'MNV03', '2022-10-03', '13:00:00', '17:00:00', 0, '04:00:00', 4),
+(32, 'MNV03', '2022-10-04', '13:00:00', '17:00:00', 0, '04:00:00', 4),
+(33, 'MNV03', '2022-10-05', '13:00:00', '17:00:00', 0, '04:00:00', 4),
+(34, 'MNV03', '2022-10-06', '13:00:00', '17:00:00', 0, '04:00:00', 4),
+(35, 'MNV03', '2022-10-10', '13:00:00', '17:00:00', 0, '04:00:00', 4),
+(43, 'MNV04', '2022-11-01', '07:30:00', '11:30:00', 0, '04:00:00', 4);
+
+--
+-- Triggers `qlnv_chamcong`
+--
+DELIMITER $$
+CREATE TRIGGER `before_insert_to_cham_cong` BEFORE INSERT ON `qlnv_chamcong` FOR EACH ROW BEGIN
+       		IF (NEW.GioRa > NEW.GioVao) THEN
+           		SET NEW.ThoiGianLamViec = TIMEDIFF(NEW.GioRa,NEW.GioVao);
+                SET NEW.ThoiGian_thap_phan =   ROUND(CAST(LEFT(NEW.ThoiGianLamViec, 2) AS int) +
+    CAST(SUBSTRING(NEW.ThoiGianLamViec, 4, 2) AS int) / 60.0 +
+    CAST(SUBSTRING(NEW.ThoiGianLamViec, 7, 2) AS int) / (60.0*60.0),1);
+            ELSE
+            	SET NEW.ThoiGianLamViec = 0;
+                SET NEW.ThoiGian_thap_phan = 0;
+            END IF;
+       END
+$$
+DELIMITER ;
+DELIMITER $$
+CREATE TRIGGER `before_update_to_cham_cong` BEFORE UPDATE ON `qlnv_chamcong` FOR EACH ROW BEGIN
+       		IF (NEW.GioRa > NEW.GioVao) THEN
+           		SET NEW.ThoiGianLamViec = TIMEDIFF(NEW.GioRa,NEW.GioVao);
+                SET NEW.ThoiGian_thap_phan =   ROUND(CAST(LEFT(NEW.ThoiGianLamViec, 2) AS int) +
+    CAST(SUBSTRING(NEW.ThoiGianLamViec, 4, 2) AS int) / 60.0 +
+    CAST(SUBSTRING(NEW.ThoiGianLamViec, 7, 2) AS int) / (60.0*60.0),1);
+            ELSE
+            	SET NEW.ThoiGianLamViec = 0;
+                SET NEW.ThoiGian_thap_phan = 0;
+            END IF;
+       END
+$$
+DELIMITER ;
 
 -- --------------------------------------------------------
 
@@ -47,44 +98,112 @@ CREATE TABLE `qlnv_chamcong` (
 CREATE TABLE `qlnv_chamcongngay` (
   `MaChamCong` int(11) NOT NULL,
   `MaNV` varchar(8) NOT NULL,
+  `Nam` year(4) NOT NULL DEFAULT current_timestamp(),
   `Thang` int(11) NOT NULL,
   `SoNgayThang` int(11) NOT NULL,
-  `Ngay1` varchar(15) NOT NULL,
-  `Ngay2` varchar(15) NOT NULL,
-  `Ngay3` varchar(15) NOT NULL,
-  `Ngay4` varchar(15) NOT NULL,
-  `Ngay5` varchar(15) NOT NULL,
-  `Ngay6` varchar(15) NOT NULL,
-  `Ngay7` varchar(15) NOT NULL,
-  `Ngay8` varchar(15) NOT NULL,
-  `Ngay9` varchar(15) NOT NULL,
-  `Ngay10` varchar(15) NOT NULL,
-  `Ngay11` varchar(15) NOT NULL,
-  `Ngay12` varchar(15) NOT NULL,
-  `Ngay13` varchar(15) NOT NULL,
-  `Ngay14` varchar(15) NOT NULL,
-  `Ngay15` varchar(15) NOT NULL,
-  `Ngay16` varchar(15) NOT NULL,
-  `Ngay17` varchar(15) NOT NULL,
-  `Ngay18` varchar(15) NOT NULL,
-  `Ngay19` varchar(15) NOT NULL,
-  `Ngay20` varchar(15) NOT NULL,
-  `Ngay21` varchar(15) NOT NULL,
-  `Ngay22` varchar(15) NOT NULL,
-  `Ngay23` varchar(15) NOT NULL,
-  `Ngay24` varchar(15) NOT NULL,
-  `Ngay25` varchar(15) NOT NULL,
-  `Ngay26` varchar(15) NOT NULL,
-  `Ngay27` varchar(15) NOT NULL,
-  `Ngay28` varchar(15) NOT NULL,
-  `Ngay29` varchar(15) NOT NULL,
-  `Ngay30` varchar(15) NOT NULL,
-  `Ngay31` varchar(15) NOT NULL,
-  `SoNgayDiLam` int(11) NOT NULL,
-  `SoNgayDiVang` int(11) NOT NULL,
-  `SoNgayTangCa` int(11) NOT NULL,
-  `TongSoNgay` int(11) NOT NULL
+  `Ngay1` float NOT NULL DEFAULT -1,
+  `Ngay2` float NOT NULL DEFAULT -1,
+  `Ngay3` float NOT NULL DEFAULT -1,
+  `Ngay4` float NOT NULL DEFAULT -1,
+  `Ngay5` float NOT NULL DEFAULT -1,
+  `Ngay6` float NOT NULL DEFAULT -1,
+  `Ngay7` float NOT NULL DEFAULT -1,
+  `Ngay8` float NOT NULL DEFAULT -1,
+  `Ngay9` float NOT NULL DEFAULT -1,
+  `Ngay10` float NOT NULL DEFAULT -1,
+  `Ngay11` float NOT NULL DEFAULT -1,
+  `Ngay12` float NOT NULL DEFAULT -1,
+  `Ngay13` float NOT NULL DEFAULT -1,
+  `Ngay14` float NOT NULL DEFAULT -1,
+  `Ngay15` float NOT NULL DEFAULT -1,
+  `Ngay16` float NOT NULL DEFAULT -1,
+  `Ngay17` float NOT NULL DEFAULT -1,
+  `Ngay18` float NOT NULL DEFAULT -1,
+  `Ngay19` float NOT NULL DEFAULT -1,
+  `Ngay20` float NOT NULL DEFAULT -1,
+  `Ngay21` float NOT NULL DEFAULT -1,
+  `Ngay22` float NOT NULL DEFAULT -1,
+  `Ngay23` float NOT NULL DEFAULT -1,
+  `Ngay24` float NOT NULL DEFAULT -1,
+  `Ngay25` float NOT NULL DEFAULT -1,
+  `Ngay26` float NOT NULL DEFAULT -1,
+  `Ngay27` float NOT NULL DEFAULT -1,
+  `Ngay28` float NOT NULL DEFAULT -1,
+  `Ngay29` float NOT NULL DEFAULT -1,
+  `Ngay30` float NOT NULL DEFAULT -1,
+  `Ngay31` float NOT NULL DEFAULT -1
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `qlnv_chamcongngay`
+--
+
+INSERT INTO `qlnv_chamcongngay` (`MaChamCong`, `MaNV`, `Nam`, `Thang`, `SoNgayThang`, `Ngay1`, `Ngay2`, `Ngay3`, `Ngay4`, `Ngay5`, `Ngay6`, `Ngay7`, `Ngay8`, `Ngay9`, `Ngay10`, `Ngay11`, `Ngay12`, `Ngay13`, `Ngay14`, `Ngay15`, `Ngay16`, `Ngay17`, `Ngay18`, `Ngay19`, `Ngay20`, `Ngay21`, `Ngay22`, `Ngay23`, `Ngay24`, `Ngay25`, `Ngay26`, `Ngay27`, `Ngay28`, `Ngay29`, `Ngay30`, `Ngay31`) VALUES
+(25, 'MNV01', 2022, 12, 31, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 8, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1),
+(27, 'MNV02', 2022, 11, 30, 4, 4, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 4, -1, -1, -1),
+(28, 'MNV03', 2022, 10, 31, 4, 4, 4, 4, 4, 4, -1, -1, -1, 4, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1),
+(31, 'MNV04', 2022, 11, 30, 4, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `qlnv_chamcongthang`
+--
+
+CREATE TABLE `qlnv_chamcongthang` (
+  `id` int(11) NOT NULL,
+  `MaNV` varchar(8) NOT NULL,
+  `Nam` year(4) NOT NULL DEFAULT current_timestamp(),
+  `T1` float NOT NULL DEFAULT -1,
+  `T2` float NOT NULL DEFAULT -1,
+  `T3` float NOT NULL DEFAULT -1,
+  `T4` float NOT NULL DEFAULT -1,
+  `T5` float NOT NULL DEFAULT -1,
+  `T6` float NOT NULL DEFAULT -1,
+  `T7` float NOT NULL DEFAULT -1,
+  `T8` float NOT NULL DEFAULT -1,
+  `T9` float NOT NULL DEFAULT -1,
+  `T10` float NOT NULL DEFAULT -1,
+  `T11` float NOT NULL DEFAULT -1,
+  `T12` float NOT NULL DEFAULT -1
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `qlnv_chamcongthang`
+--
+
+INSERT INTO `qlnv_chamcongthang` (`id`, `MaNV`, `Nam`, `T1`, `T2`, `T3`, `T4`, `T5`, `T6`, `T7`, `T8`, `T9`, `T10`, `T11`, `T12`) VALUES
+(5, 'MNV01', 2022, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 8),
+(7, 'MNV02', 2022, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 12, -1),
+(8, 'MNV03', 2022, -1, -1, -1, -1, -1, -1, -1, -1, -1, 28, -1, -1),
+(11, 'MNV04', 2022, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 4, -1);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `qlnv_chamcongtongketthang`
+--
+
+CREATE TABLE `qlnv_chamcongtongketthang` (
+  `Id` int(11) NOT NULL,
+  `MaNhanVien` varchar(8) NOT NULL,
+  `Nam` year(4) NOT NULL,
+  `Thang` int(11) NOT NULL,
+  `SoNgayDiLam` int(11) NOT NULL DEFAULT 0,
+  `SoNgayDiVang` int(11) NOT NULL DEFAULT 0,
+  `SoNgayTangCa` int(11) NOT NULL DEFAULT 0,
+  `TongSoNgay` int(11) NOT NULL DEFAULT 0
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `qlnv_chamcongtongketthang`
+--
+
+INSERT INTO `qlnv_chamcongtongketthang` (`Id`, `MaNhanVien`, `Nam`, `Thang`, `SoNgayDiLam`, `SoNgayDiVang`, `SoNgayTangCa`, `TongSoNgay`) VALUES
+(2, 'MNV01', 2022, 12, 1, 26, 0, 1),
+(5, 'MNV02', 2022, 11, 3, 23, 0, 3),
+(6, 'MNV03', 2022, 10, 7, 19, 0, 7),
+(9, 'MNV04', 2022, 11, 1, 25, 0, 1);
 
 -- --------------------------------------------------------
 
@@ -190,7 +309,9 @@ INSERT INTO `qlnv_nhanvien` (`MaNhanVien`, `MaChucVu`, `MaPhongBan`, `Luong`, `G
 ('MNV07', 'NV', 'MPB03', 0.15, 'Nữ', 'MHD07', 'Vu Mai Anh', '2002-08-05', '', '123456789', '0655745341', 'Ha Noi', 'anhvm@gmail.com', 'Độc thân', 'Kinh', 'SV002', NULL, NULL, '', '', 'none_image_profile'),
 ('MNV08', 'NV', 'MPB02', 700000, 'Nữ', 'MHD07', 'Nguyễn Thị Cẩm Tiên', '2002-09-09', '', '123456789', '0877567893', 'Hà Nội', 'tiennc@gmail.com', 'Độc thân', 'Kinh', 'SV002', '2019-05-03', 'Bắc Giang', '', '', 'none_image_profile'),
 ('MNV10', 'NV', 'MPB01', 20000000, 'Nam', 'HDMNV10', 'Lê Tài Linh', '2002-12-12', 'Thôn Xuân Tân - Xuân Hưng - Thọ Xuân - Thanh Hoá  - Việt Nam', '001206064297', '0916578134', 'Làng sinh viên Hacinco - Nhân Chính - Thanh Xuân - Hà Nội - Việt Nam', 'linhle@gmail.com', 'Độc thân', 'Kinh', 'SV002', '2020-03-18', 'Thọ Xuân', 'SV40101208765', '0118000001', 'none_image_profile'),
-('MNV12', 'TTS', 'MPB02', 1000000, 'Nam', 'HDMNV12', 'Trần Hoàng Anh', '2002-02-14', 'Đồng Họa - Xã Vạn Hòa - Huyện Nông Cống - Thanh Hóa', '001234957163', '0945875315', 'Làng sinh viên Hacinco - Nhân Chính - Thanh Xuân - Hà Nội - Việt Nam', 'tranhaicau@gmail.com', 'Độc thân', 'Kinh', 'SV001', '2019-04-05', 'Thanh Hóa', 'SV401975831', '0118648251', 'none_image_profile');
+('MNV12', 'TTS', 'MPB02', 1000000, 'Nam', 'HDMNV12', 'Trần Hoàng Anh', '2002-02-14', 'Đồng Họa - Xã Vạn Hòa - Huyện Nông Cống - Thanh Hóa', '001234957163', '0945875315', 'Làng sinh viên Hacinco - Nhân Chính - Thanh Xuân - Hà Nội - Việt Nam', 'tranhaicau@gmail.com', 'Độc thân', 'Kinh', 'SV001', '2019-04-05', 'Thanh Hóa', 'SV401975831', '0118648251', 'none_image_profile'),
+('MNV24', 'NV', 'MPB01', 950000, 'Nam', 'HDMNV24', 'Phan Quốc Minh', '2002-07-07', 'Khánh Hòa', '1234965137', '856865245', 'Ha Noi', 'minhpq@gmail.com', 'Đã kết hôn', 'Kinh', 'SV003', '2020-07-07', 'Khánh Hòa', 'SV401658965', '118046701', 'none_image_profile'),
+('MNV36', 'NV', 'MPB01', 900000, 'Nam', '', 'Nguyễn Quang Minh', '2002-11-30', 'Thái Bình', '1262596315', '558466648', 'Ha Noi', 'nqm@gmail.com', 'Độc thân', 'Kinh', NULL, '2020-07-07', 'Thái Bình', 'SV401658583', '118124001', 'none_image_profile');
 
 -- --------------------------------------------------------
 
@@ -304,6 +425,7 @@ CREATE TABLE `qlnv_trinhdohocvan` (
 INSERT INTO `qlnv_trinhdohocvan` (`MATDHV`, `TenTDHV`, `ChuyenNganh`) VALUES
 ('SV001', 'Chưa tốt nghiệp', 'Khoa học dữ liệu'),
 ('SV002', 'Chưa tốt nghiệp', 'Hóa Dược'),
+('SV003', 'Chưa tốt nghiệp', 'Vật Lý'),
 ('TNKHMTTT', 'Tốt Nghiệp', 'Khoa học máy tính và thông tin'),
 ('TS001', 'Thạc Sĩ', 'Khoa học dữ liệu');
 
@@ -346,6 +468,18 @@ ALTER TABLE `qlnv_chamcong`
 --
 ALTER TABLE `qlnv_chamcongngay`
   ADD PRIMARY KEY (`MaChamCong`);
+
+--
+-- Indexes for table `qlnv_chamcongthang`
+--
+ALTER TABLE `qlnv_chamcongthang`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `qlnv_chamcongtongketthang`
+--
+ALTER TABLE `qlnv_chamcongtongketthang`
+  ADD PRIMARY KEY (`Id`);
 
 --
 -- Indexes for table `qlnv_chucvu`
@@ -409,7 +543,25 @@ ALTER TABLE `qlnv_user`
 -- AUTO_INCREMENT for table `qlnv_chamcong`
 --
 ALTER TABLE `qlnv_chamcong`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=45;
+
+--
+-- AUTO_INCREMENT for table `qlnv_chamcongngay`
+--
+ALTER TABLE `qlnv_chamcongngay`
+  MODIFY `MaChamCong` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=32;
+
+--
+-- AUTO_INCREMENT for table `qlnv_chamcongthang`
+--
+ALTER TABLE `qlnv_chamcongthang`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+
+--
+-- AUTO_INCREMENT for table `qlnv_chamcongtongketthang`
+--
+ALTER TABLE `qlnv_chamcongtongketthang`
+  MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT for table `qlnv_thuongphat`
