@@ -4,7 +4,11 @@ from flask_mysqldb import MySQL
 from werkzeug.utils import secure_filename
 import os
 import MySQLdb.cursors
+import datetime
+import calendar
+from calendar import monthrange
 import pandas as pd
+import numpy as np
 import functools
 import pdfkit
 import re
@@ -1150,6 +1154,723 @@ def delete_chuc_vu(maCV):
 # ------------------ CHUC VU ------------------------
 #
 
+#
+# ------------------ CHAM CONG ------------------------
+#
+@login_required
+@app.route("/danh_sach_cham_cong", methods=['GET','POST'])
+def danh_sach_cham_cong():
+    cur = mysql.connection.cursor()
+    
+    mucPhanLoaiChamCong = [10,20]
+    Nam = datetime.datetime.now().year
+    cur.execute("""
+                SELECT * 
+                FROM qlnv_chamcongthang
+                WHERE Nam = %s
+                """, (Nam, ))
+    chamcongtheocacthang = cur.fetchall()
+    
+    if request.method == 'POST':
+        detail = request.form
+        Nam = int(detail['Year'].strip())
+        cur.execute("""
+                SELECT * 
+                FROM qlnv_chamcongthang
+                WHERE Nam = %s
+                """, (Nam, ))
+        chamcongtheocacthang = cur.fetchall()
+        
+    
+    cur.close()
+    return render_template('chamcong/bang_cham_cong_thang.html',
+                           mucPhanLoaiChamCong = mucPhanLoaiChamCong,
+                           Nam = Nam,
+                           chamcongtheocacthang = chamcongtheocacthang,
+                           congty = session['congty'],
+                           my_user = session['username'])
+
+@login_required
+@app.route("/table_cham_cong_tong_ket_thang/<string:maNV>_<string:year>")
+def table_cham_cong_tong_ket_thang(maNV,year):
+    cur = mysql.connection.cursor()
+    cur.execute("""
+                SELECT TenNV
+                FROM qlnv_nhanvien
+                WHERE MaNhanVien = %s
+                """, (maNV,))
+    tenNV = cur.fetchall()
+    
+    if (len(tenNV) == 0):
+        return "Error"
+    
+    tenNV = tenNV[0][0]
+    
+    cur.execute("""
+                SELECT * 
+                FROM qlnv_chamcongtongketthang
+                WHERE MaNhanVien = %s AND Nam = %s 
+                ORDER BY Thang ASC
+                """, (maNV, year))
+    data_tong_ket_thang = cur.fetchall()
+    
+    if (len(data_tong_ket_thang) == 0):
+        return "Error"
+    
+    data_tong_ket_thang = data_tong_ket_thang
+    
+    return render_template('chamcong/bang_cham_cong_thang_tong_ket.html',
+                           TenNV = tenNV,
+                           Nam = year,
+                           MaNV = maNV,
+                           data_tong_ket_thang = data_tong_ket_thang,
+                           congty = session['congty'],
+                           my_user = session['username'])
+
+@login_required
+@app.route("/table_cham_cong_ngay_trong_thang/<string:maNV>_<string:year>_<string:month>")
+def table_cham_cong_ngay_trong_thang(maNV,year,month):
+    sql = """
+        SELECT * 
+        FROM qlnv_chamcong cc 
+        WHERE YEAR(cc.Ngay) = %s AND MONTH(cc.Ngay) = %s AND MaNV = %s
+        ORDER BY cc.Ngay ASC, cc.GioVao ASC;
+    """
+    val = (year, month, maNV)
+    
+    cur = mysql.connection.cursor()
+    
+    cur.execute("""
+                SELECT TenNV
+                FROM qlnv_nhanvien
+                WHERE MaNhanVien = %s
+                """, (maNV,))
+    tenNV = cur.fetchall()
+    
+    if (len(tenNV) == 0):
+        return "Error"
+    
+    tenNV = tenNV[0][0]
+    
+    cur.execute(sql, val)
+    chamcong = cur.fetchall()
+    
+    if (len(chamcong) == 0):
+        return "Error"
+    
+    column_name = ['ID','MaNV','Ngay', 'GioVao','GioRa','OT','ThoiGianLamViec','ThoiGianFloat']
+    data = pd.DataFrame.from_records(chamcong, columns=column_name)
+    
+    # data = data.set_index('ID')
+    # pathFile = app.config['SAVE_FOLDER_EXCEL'] + "/" + "Data_ChamCong_" + maNV + "_" + month + "_" + year +".xlsx"
+    # data.to_excel(pathFile)
+    # return send_file(pathFile, as_attachment=True)
+    
+    data['ThoiGianLamViec']= (pd.to_timedelta(data['GioRa'].astype(str)) - 
+                             pd.to_timedelta(data['GioVao'].astype(str)))
+    data['ThoiGianLamViec'] = pd.to_numeric(data['ThoiGianLamViec']) / (3600 * 10**9) 
+    
+    index_arr = []
+    index = 0
+    date_arr = []
+    id_arr = []
+    time_arr = []
+    for date in data.Ngay.unique():
+        index_arr.append(index)
+        tmp_id_list = []
+        tmp_time_lst = []
+        for elm in data[data['Ngay'] == date].iloc:
+            tmp_id_list.append(elm['ID'])
+            tmp_time_lst.append((elm['GioVao'], elm['GioRa']))
+        time_arr.append(tmp_time_lst)
+        id_arr.append(tmp_id_list)
+        date_arr.append(date)
+        index += 1
+        
+    dict_week_day = {
+        0 : "Thứ hai",
+        1 : "Thứ ba",
+        2 : "Thứ tư",
+        3 : "Thứ năm",
+        4 : "Thứ sáu",
+        5 : "Thứ bảy",
+        6 : "Chủ nhật"
+    }
+    
+    date_str = []
+    date_weekday = []
+    for elm in date_arr:
+        date_weekday.append(dict_week_day[elm.weekday()])
+        date_str.append(elm.strftime("%d-%m-%Y"))
+    
+    day = [int(elm[:2:]) for elm in date_str]
+    
+    time_arr_str = []
+    for elm in time_arr:
+        tmp_index_lst =[]
+        for i in elm:
+            tmp_lst = []
+            for j in i:
+                tmp_lst.append(str(j)[6::])
+            tmp_index_lst.append(tmp_lst)
+        time_arr_str.append(tmp_index_lst)
+        
+    # lấy data tổng kết ngày từ bảng qlnv_chamcongngay
+    sql = "SELECT MaChamCong, MaNV, Nam, Thang, SoNgayThang,"
+    for i in day:
+        sql += "Ngay" + str(i) + ","
+    sql = sql[:-1:]
+    sql += " FROM qlnv_chamcongngay WHERE Thang = %s AND MaNV = %s AND Nam = %s"
+    cur.execute(sql,(month, maNV, year))
+    data_tong_ket = cur.fetchall()
+    
+    if (len(data_tong_ket) == 0):
+        return "Error"
+    data_tong_ket = data_tong_ket[0]
+    data_day_tong_ket = [data_tong_ket[4 + i] for i in range(1,1+len(day))]
+    cur.close()
+
+    return render_template('chamcong/bang_cham_cong_ngay.html',
+                           TenNV = tenNV,
+                           date_weekday = date_weekday,
+                           month = month,
+                           maNV = maNV,
+                           year = year,
+                           data_day_tong_ket = data_day_tong_ket,
+                           day = day,
+                           date_str = date_str,
+                           time_arr_str = time_arr_str,
+                           id_arr = id_arr,
+                           index_arr = index_arr,
+                           congty = session['congty'],
+                           my_user = session['username'])
+
+@login_required
+@app.route('/form_view_update_cham_cong/<string:canEdit>_<string:maNV>_<string:id>_<string:day>_<string:month>_<string:year>', methods = ['GET','POST'])
+def form_view_update_cham_cong(canEdit, maNV, id, day, month, year):
+    sql = """
+        SELECT * 
+        FROM qlnv_chamcong cc 
+        WHERE YEAR(cc.Ngay) = %s AND MONTH(cc.Ngay) = %s AND DAY(cc.Ngay) = %s AND MaNV = %s
+        ORDER BY cc.Ngay ASC, cc.GioVao ASC;
+    """
+    val = (year, month, day, maNV)
+    
+    cur = mysql.connection.cursor()
+    
+    cur.execute("""
+                SELECT TenNV
+                FROM qlnv_nhanvien
+                WHERE MaNhanVien = %s
+                """, (maNV,))
+    tenNV = cur.fetchall()
+    
+    if (len(tenNV) == 0):
+        return "Error"
+    
+    tenNV = tenNV[0][0]
+    
+    cur.execute(sql, val)
+    chamcong = cur.fetchall()
+    
+    if (len(chamcong) == 0):
+        return "Error"
+    
+    column_name = ['ID','MaNV','Ngay', 'GioVao','GioRa','OT','ThoiGianLamViec','ThoiGianFloat']
+    data = pd.DataFrame.from_records(chamcong, columns=column_name)
+    
+    index_arr = []
+    index = 0
+    date_arr = []
+    id_arr = []
+    time_arr = []
+    for date in data.Ngay.unique():
+        for elm in data[data['Ngay'] == date].iloc:
+            index_arr.append(index)
+            id_arr.append(elm['ID'])
+            time_arr.append((elm['GioVao'], elm['GioRa']))
+            index += 1
+        date_arr.append(date)
+    
+    date_arr = date_arr[0]
+    
+    dict_week_day = {
+        0 : "Thứ hai",
+        1 : "Thứ ba",
+        2 : "Thứ tư",
+        3 : "Thứ năm",
+        4 : "Thứ sáu",
+        5 : "Thứ bảy",
+        6 : "Chủ nhật"
+    }
+    
+    date_weekday = dict_week_day[date_arr.weekday()]
+    date_str = date_arr.strftime("%d-%m-%Y")
+    
+    day = int(date_str[:2:])
+    
+    time_arr_str = []
+    for elm in time_arr:
+        tmp_lst = []
+        for j in elm:
+            tmp_lst.append(str(j)[6::])
+        time_arr_str.append(tmp_lst)
+    
+    if request.method == 'POST':
+        detail = request.form
+        NGAY = datetime.datetime(int(year), int(month), int(day))
+        GIOVAO = detail['GioVao']
+        GIORA = detail['GioRa']
+        OT = detail['OT']
+        
+        if (GIORA < GIOVAO):
+            return "Error"
+        
+        sql = """
+            SELECT ThoiGian_thap_phan
+            FROM qlnv_chamcong
+            WHERE id = %s
+            """
+        cur.execute(sql, (id, ))
+        tg_ThapPhan_old = cur.fetchall()
+        
+        if (len(tg_ThapPhan_old) == 0):
+            return "Error"
+        
+        tg_ThapPhan_old = tg_ThapPhan_old[0][0]
+        
+        sql_chamcong = """
+            UPDATE `qlnv_chamcong` 
+            SET GioVao = %s, GioRa = %s, OT = %s
+            WHERE id = %s;
+        """
+        cur.execute(sql_chamcong, (GIOVAO, GIORA, OT, id))
+        mysql.connection.commit()
+        
+        cur.execute("""
+                    SELECT ThoiGian_thap_phan
+                    FROM qlnv_chamcong
+                    WHERE MaNV = %s AND Ngay=%s AND GioVao=%s AND GioRa=%s AND OT =%s
+                    """, (maNV, NGAY.date(), GIOVAO, GIORA, OT))
+        tg_ThapPhan_new = cur.fetchall()[0][0]
+        
+        if (OT == 1):
+            tg_ThapPhan_new *= 2 # tang ca huong luong x2
+            
+        diff = tg_ThapPhan_new - tg_ThapPhan_old
+        
+        #check ton tai
+        cur.execute("""SELECT MaChamCong, SoNgayThang, Ngay""" + str(NGAY.day) + """
+                    FROM qlnv_chamcongngay
+                    WHERE Nam = %s AND Thang = %s AND MaNV = %s""", (NGAY.year, NGAY.month,maNV) )
+        chamCongTheoThang = cur.fetchall()
+        
+        # check ton tai nam
+        cur.execute("""SELECT id, MaNV, T""" + str(NGAY.month) + """
+                    FROM qlnv_chamcongthang
+                    WHERE Nam = %s AND MaNV = %s""", (NGAY.year, maNV) )
+        chamCongTheoNam = cur.fetchall()
+        
+        # Xử lý trong bảng chấm công ngày và trong bảng tổng hợp theo các năm
+        if (len(chamCongTheoThang) == 0 or len(chamCongTheoNam) == 0):
+            return "Error"
+        else:
+            chamCongTheoThang = chamCongTheoThang[0]
+            sql_chamcongngay = "UPDATE qlnv_chamcongngay SET "
+            if chamCongTheoThang[2] == -1:
+                return "Error"
+            else:
+                sql_chamcongngay += "Ngay" + str(NGAY.day) + " = Ngay" + str(NGAY.day) + "+ '" + str(diff) + "'" 
+            sql_chamcongngay += " WHERE MaNV = '" + maNV  + "' AND Nam = '" + str(NGAY.year) + "' AND Thang = '" + str(NGAY.month) + "'"
+            cur.execute(sql_chamcongngay)
+            mysql.connection.commit()
+                    
+            chamCongTheoNam = chamCongTheoNam[0]
+            sql_chamcongthang = "UPDATE qlnv_chamcongthang SET "
+            if chamCongTheoNam[2] == -1:
+                return "Error"
+            else:
+                sql_chamcongthang += "T" + str(NGAY.month) + " = T" + str(NGAY.month) + "+ '" + str(diff) + "'" 
+            sql_chamcongthang += " WHERE MaNV = '" + maNV  + "' AND Nam = '" + str(NGAY.year) + "'"
+            cur.execute(sql_chamcongthang)
+            mysql.connection.commit()
+        mysql.connection.commit()
+        cur.close()
+        return redirect(url_for('table_cham_cong_ngay_trong_thang', maNV = maNV, year = year, month = month))
+    
+    if canEdit == 'E':
+        sql = """
+            SELECT * 
+            FROM qlnv_chamcong cc 
+            WHERE id = %s
+            ORDER BY cc.Ngay ASC, cc.GioVao ASC;
+        """
+        cur.execute(sql, (id, ))
+        
+        chamcong = cur.fetchall()
+        
+        if (len(chamcong) == 0):
+            return "Error"
+        
+        chamcong = chamcong[0]
+        
+        # format data
+        new_chamcong = list(chamcong[0:3:])
+        if len(str(chamcong[3])) != 8:
+            new_chamcong.append("0" + str(chamcong[3]))
+        else:
+            new_chamcong.append(str(chamcong[3]))
+            
+        if len(str(chamcong[4])) != 8:
+            new_chamcong.append("0" + str(chamcong[4]))
+        else:
+            new_chamcong.append(str(chamcong[4]))
+        new_chamcong.append(chamcong[5])
+        
+        return render_template("chamcong/form_view_update_cham_cong.html",
+                           TenNV = tenNV,
+                           edit = 'E',
+                           chamcong = new_chamcong,
+                           MaNV = maNV,
+                           day = day,
+                           month = month,
+                           year = year,
+                           date_weekday = date_weekday,
+                           date_str = date_str,
+                           congty = session['congty'],
+                           my_user = session['username'])
+    
+    cur.close()
+    return render_template("chamcong/form_view_update_cham_cong.html",
+                           TenNV = tenNV,
+                           chamcong = chamcong,
+                           index_arr = index_arr,
+                           time_arr_str = time_arr_str,
+                           MaNV = maNV,
+                           id_arr = id_arr,
+                           day = day,
+                           month = month,
+                           year = year,
+                           date_weekday = date_weekday,
+                           date_str = date_str,
+                           congty = session['congty'],
+                           my_user = session['username'])
+        
+@login_required
+@app.route('/delete_cham_cong/<string:id>')
+def delete_cham_cong(id):
+    sql = """
+        SELECT * 
+        FROM qlnv_chamcong
+        WHERE id = %s
+    """
+    cur = mysql.connection.cursor()
+    
+    cur.execute(sql, (id, ))
+    old_chamcong = cur.fetchall()
+    
+    if (len(old_chamcong) == 0):
+        return "Error 1"
+    
+    old_chamcong = old_chamcong[0]
+    maNV = old_chamcong[1]
+    NGAY = old_chamcong[2]
+    tg_ThapPhan = old_chamcong[7]
+    
+    sql = """
+        DELETE FROM qlnv_chamcong WHERE id = %s
+    """
+    cur.execute(sql, (id, ))
+    mysql.connection.commit()
+    
+    #check ton tai
+    cur.execute("""SELECT MaChamCong, SoNgayThang, Ngay""" + str(NGAY.day) + """
+                FROM qlnv_chamcongngay
+                WHERE Nam = %s AND Thang = %s AND MaNV = %s""", (NGAY.year, NGAY.month,maNV) )
+    chamCongTheoThang = cur.fetchall()
+    
+    # check ton tai nam
+    cur.execute("""SELECT id, MaNV, T""" + str(NGAY.month) + """
+                FROM qlnv_chamcongthang
+                WHERE Nam = %s AND MaNV = %s""", (NGAY.year, maNV) )
+    chamCongTheoNam = cur.fetchall()
+    
+    # Xử lý trong bảng chấm công ngày và trong bảng tổng hợp theo các năm
+    if (len(chamCongTheoThang) == 0 or len(chamCongTheoNam) == 0):
+        return "Error 2"
+    else:
+        chamCongTheoThang = chamCongTheoThang[0]
+        sql_chamcongngay = "UPDATE qlnv_chamcongngay SET "
+        if chamCongTheoThang[2] == -1:
+            return "Error 3"
+        else:
+            sql_chamcongngay += "Ngay" + str(NGAY.day) + " = Ngay" + str(NGAY.day) + "- '" + str(tg_ThapPhan) + "'" 
+        sql_chamcongngay += " WHERE MaNV = '" + maNV  + "' AND Nam = '" + str(NGAY.year) + "' AND Thang = '" + str(NGAY.month) + "'"
+        cur.execute(sql_chamcongngay)
+        mysql.connection.commit()
+        
+        #check xem có trống bản ghi với ngày trong tháng đó không
+        cur.execute("""SELECT MaChamCong, SoNgayThang, Ngay""" + str(NGAY.day) + """
+                FROM qlnv_chamcongngay
+                WHERE Nam = %s AND Thang = %s AND MaNV = %s""", (NGAY.year, NGAY.month,maNV) )
+        chamCongTheoThang = cur.fetchall()[0]
+        if (chamCongTheoThang[2] == 0):
+            sql_chamcongngay = "UPDATE qlnv_chamcongngay SET "
+            sql_chamcongngay += "Ngay" + str(NGAY.day) + " = " + "'" + str(-1) + "'"
+            sql_chamcongngay += " WHERE MaNV = '" + maNV  + "' AND Nam = '" + str(NGAY.year) + "' AND Thang = '" + str(NGAY.month) + "'"
+            cur.execute(sql_chamcongngay) 
+            mysql.connection.commit()
+        
+        cur.execute("""SELECT *
+                FROM qlnv_chamcongngay
+                WHERE Nam = %s AND Thang = %s AND MaNV = %s""", (NGAY.year, NGAY.month,maNV) )
+        chamCongTheoThang = cur.fetchall()[0]
+        check_del = True
+        for elm in chamCongTheoThang[5:36]:
+            if (elm != -1):
+                check_del = False
+                break
+        if (check_del):
+            sql_chamcongngay = "DELETE FROM qlnv_chamcongngay "
+            sql_chamcongngay += " WHERE MaNV = '" + maNV  + "' AND Nam = '" + str(NGAY.year) + "' AND Thang = '" + str(NGAY.month) + "'"
+            cur.execute(sql_chamcongngay) 
+            mysql.connection.commit()
+        
+        chamCongTheoNam = chamCongTheoNam[0]
+        sql_chamcongthang = "UPDATE qlnv_chamcongthang SET "
+        if chamCongTheoNam[2] == -1:
+            return "Error 4"
+        else:
+            sql_chamcongthang += "T" + str(NGAY.month) + " = T" + str(NGAY.month) + "- '" + str(tg_ThapPhan) + "'" 
+        sql_chamcongthang += " WHERE MaNV = '" + maNV  + "' AND Nam = '" + str(NGAY.year) + "'"
+        cur.execute(sql_chamcongthang)
+        mysql.connection.commit()
+        
+        
+        # check xem xem có trống bản ghi trong năm đó không
+        cur.execute("""SELECT id, MaNV, T""" + str(NGAY.month) + """
+                    FROM qlnv_chamcongthang
+                    WHERE Nam = %s AND MaNV = %s""", (NGAY.year, maNV) )
+        chamCongTheoNam = cur.fetchall()
+        chamCongTheoNam = chamCongTheoNam[0]
+        if (chamCongTheoNam[2] == 0):
+            sql_chamcongthang = "UPDATE qlnv_chamcongthang SET "
+            sql_chamcongthang += "T" + str(NGAY.month) + " = " + " '" + str(-1) + "'" 
+            sql_chamcongthang += " WHERE MaNV = '" + maNV  + "' AND Nam = '" + str(NGAY.year) + "'"
+            cur.execute(sql_chamcongthang)
+            mysql.connection.commit()
+        
+        cur.execute("""SELECT *
+                    FROM qlnv_chamcongthang
+                    WHERE Nam = %s AND MaNV = %s""", (NGAY.year, maNV) )
+        chamCongTheoNam = cur.fetchall()[0]
+        check_del = True
+        for elm in chamCongTheoNam[3:15]:
+            if (elm != -1):
+                check_del = False
+                break
+        if (check_del):
+            sql_chamcongthang = "DELETE FROM qlnv_chamcongthang "
+            sql_chamcongthang += " WHERE MaNV = '" + maNV  + "' AND Nam = '" + str(NGAY.year) + "'"
+            cur.execute(sql_chamcongthang)
+            mysql.connection.commit()
+            
+        
+    # Xử lý trong bảng tổng kết tháng    
+    cur.execute("""SELECT *
+                FROM qlnv_chamcongtongketthang
+                WHERE Nam = %s AND Thang = %s AND MaNhanVien = %s""", (NGAY.year, NGAY.month,maNV) )
+    chamCongTongKet = cur.fetchall()
+    
+    day_to_count = calendar.SUNDAY
+    matrix = calendar.monthcalendar(NGAY.year,NGAY.month)
+    num_sun_days = sum(1 for x in matrix if x[day_to_count] != 0)
+    
+    if (len(chamCongTongKet) == 0):
+        return "Error 5"
+    else:
+        cur.execute("""
+                    SELECT COUNT(DISTINCT Ngay)
+                    FROM qlnv_chamcong
+                    WHERE MaNV = %s AND Month(Ngay)=%s AND YEAR(Ngay)=%s
+                    GROUP BY Month(Ngay)
+                    """, (maNV, NGAY.month, NGAY.year))
+        soNgayDiLam = cur.fetchall()
+        if (len(soNgayDiLam) == 0):
+            cur.execute("""
+                        DELETE FROM qlnv_chamcongtongketthang
+                        WHERE MaNhanVien = %s AND Nam = %s AND Thang = %s""",
+                        (maNV, NGAY.year, NGAY.month))
+            mysql.connection.commit()
+            return redirect(url_for('table_cham_cong_ngay_trong_thang', maNV = maNV, year = NGAY.year, month = NGAY.month))
+        else:
+            soNgayDiLam = soNgayDiLam[0][0]
+        soNgayDiVang = monthrange(NGAY.year, NGAY.month)[1] - soNgayDiLam - num_sun_days
+        cur.execute("""
+                    SELECT COUNT(DISTINCT Ngay)
+                    FROM qlnv_chamcong
+                    WHERE MaNV = %s AND Month(Ngay)=%s AND YEAR(Ngay)=%s AND OT = 1
+                    GROUP BY Month(Ngay)
+                    """, (maNV, NGAY.month, NGAY.year))
+        soNgayTangCa = cur.fetchall()
+        if (len(soNgayTangCa) == 0):
+            soNgayTangCa = 0
+        else:
+            soNgayTangCa = soNgayTangCa[0][0]
+        tongSoNgay = soNgayDiLam
+        cur.execute("""UPDATE qlnv_chamcongtongketthang
+                    SET SoNgayDiLam = %s, SoNgayDiVang = %s, SoNgayTangCa=%s, TongSoNgay = %s
+                    WHERE MaNhanVien = %s AND Nam = %s AND Thang = %s""", (soNgayDiLam, soNgayDiVang, soNgayTangCa,
+                                                                            tongSoNgay, maNV, NGAY.year, NGAY.month))
+        mysql.connection.commit()
+    cur.close()
+    return redirect(url_for('danh_sach_cham_cong'))
+    
+@login_required
+@app.route('/form_add_data_cham_cong', methods=['GET','POST'])
+def form_add_data_cham_cong():
+    if request.method == 'POST':
+        cur = mysql.connection.cursor()
+        detail = request.form
+        NGAY = datetime.datetime.strptime(detail['Ngay'].strip(), '%Y-%m-%d')
+        MANV = detail['MANV']
+        GIOVAO = detail['GioVao']
+        GIORA = detail['GioRa']
+        OT = detail['OT']
+        
+        sql_chamcong = """
+            INSERT INTO `qlnv_chamcong` (`id`, `MaNV`, `Ngay`, `GioVao`, `GioRa`, `OT`, `ThoiGianLamViec`, `ThoiGian_thap_phan`) 
+            VALUES (NULL, %s, %s, %s, %s, %s, '', '0');
+        """
+        cur.execute(sql_chamcong, (MANV, NGAY.date(), GIOVAO, GIORA, OT))
+        mysql.connection.commit()
+        
+        
+        cur.execute("""
+                    SELECT ThoiGian_thap_phan
+                    FROM qlnv_chamcong
+                    WHERE MaNV = %s AND Ngay=%s AND GioVao=%s AND GioRa=%s AND OT =%s
+                    """, (MANV, NGAY.date(), GIOVAO, GIORA, OT))
+        tg_ThapPhan = cur.fetchall()[0][0]
+        
+        if (OT == 1):
+            tg_ThapPhan *= 2 # tang ca huong luong x2
+        
+        #check ton tai
+        cur.execute("""SELECT MaChamCong, SoNgayThang, Ngay""" + str(NGAY.day) + """
+                    FROM qlnv_chamcongngay
+                    WHERE Nam = %s AND Thang = %s AND MaNV = %s""", (NGAY.year, NGAY.month,MANV) )
+        chamCongTheoThang = cur.fetchall()
+        
+        # check ton tai nam
+        cur.execute("""SELECT id, MaNV, T""" + str(NGAY.month) + """
+                    FROM qlnv_chamcongthang
+                    WHERE Nam = %s AND MaNV = %s""", (NGAY.year, MANV) )
+        chamCongTheoNam = cur.fetchall()
+        
+        # Xử lý trong bảng chấm công ngày và trong bảng tổng hợp theo các năm
+        if (len(chamCongTheoThang) == 0 and len(chamCongTheoNam) == 0):
+            cur.execute("""INSERT INTO `qlnv_chamcongngay` (`MaChamCong`, `MaNV`, `Nam`, `Thang`, `SoNgayThang`) VALUES
+                        (NULL, %s, %s, %s, %s)""", (MANV, NGAY.year, NGAY.month, monthrange(NGAY.year, NGAY.month)[1]))
+            
+            cur.execute("""INSERT INTO qlnv_chamcongthang (id, MaNV, Nam) VALUES
+                        (NULL, %s, %s)""", (MANV, NGAY.year))
+            mysql.connection.commit()
+            
+            sql_chamcongngay = "UPDATE qlnv_chamcongngay SET "
+            sql_chamcongngay += "Ngay" + str(NGAY.day) + " = '" + str(tg_ThapPhan) + "' "
+            sql_chamcongngay += " WHERE MaNV = '" + MANV  + "' AND Nam = '" + str(NGAY.year) + "' AND Thang = '" + str(NGAY.month) + "'"
+            cur.execute(sql_chamcongngay)
+            mysql.connection.commit()
+            
+            sql_chamcongthang = "UPDATE qlnv_chamcongthang SET "
+            sql_chamcongthang += "T" + str(NGAY.month) + " = '" + str(tg_ThapPhan) + "' "
+            sql_chamcongthang += " WHERE MaNV = '" + MANV  + "' AND Nam = '" + str(NGAY.year) + "'"
+            cur.execute(sql_chamcongthang)
+            mysql.connection.commit()
+        else:
+            chamCongTheoThang = chamCongTheoThang[0]
+            sql_chamcongngay = "UPDATE qlnv_chamcongngay SET "
+            if chamCongTheoThang[2] == -1:
+                sql_chamcongngay += "Ngay" + str(NGAY.day) + " = '" + str(tg_ThapPhan) + "' " 
+            else:
+                sql_chamcongngay += "Ngay" + str(NGAY.day) + " = Ngay" + str(NGAY.day) + "+ '" + str(tg_ThapPhan) + "'" 
+            sql_chamcongngay += " WHERE MaNV = '" + MANV  + "' AND Nam = '" + str(NGAY.year) + "' AND Thang = '" + str(NGAY.month) + "'"
+            cur.execute(sql_chamcongngay)
+            mysql.connection.commit()
+                    
+            chamCongTheoNam = chamCongTheoNam[0]
+            sql_chamcongthang = "UPDATE qlnv_chamcongthang SET "
+            if chamCongTheoNam[2] == -1:
+                sql_chamcongthang += "T" + str(NGAY.month) + " = '" + str(tg_ThapPhan) + "' " 
+            else:
+                sql_chamcongthang += "T" + str(NGAY.month) + " = T" + str(NGAY.month) + "+ '" + str(tg_ThapPhan) + "'" 
+            sql_chamcongthang += " WHERE MaNV = '" + MANV  + "' AND Nam = '" + str(NGAY.year) + "'"
+            cur.execute(sql_chamcongthang)
+            mysql.connection.commit()
+            
+        # Xử lý trong bảng tổng kết tháng    
+        cur.execute("""SELECT *
+                    FROM qlnv_chamcongtongketthang
+                    WHERE Nam = %s AND Thang = %s AND MaNhanVien = %s""", (NGAY.year, NGAY.month,MANV) )
+        chamCongTongKet = cur.fetchall()
+        
+        day_to_count = calendar.SUNDAY
+
+        matrix = calendar.monthcalendar(NGAY.year,NGAY.month)
+
+        num_sun_days = sum(1 for x in matrix if x[day_to_count] != 0)
+        
+        if (len(chamCongTongKet) == 0):
+            soNgayDiLam = 1
+            soNgayDiVang = monthrange(NGAY.year, NGAY.month)[1] - 1 - num_sun_days
+            soNgayTangCa = 0
+            if OT == 1:
+                soNgayTangCa = 1
+            tongSoNgay = 1
+            cur.execute("""INSERT INTO `qlnv_chamcongtongketthang` (`Id`, `MaNhanVien`, `Nam`, `Thang`,
+                        `SoNgayDiLam`, `SoNgayDiVang`, `SoNgayTangCa`, `TongSoNgay`)
+                        VALUES (NULL, %s, %s, %s, %s, %s, %s, %s)""", (MANV, NGAY.year, NGAY.month, soNgayDiLam,
+                                                                       soNgayDiVang, soNgayTangCa, tongSoNgay))
+            mysql.connection.commit()
+        else:
+            cur.execute("""
+                        SELECT COUNT(DISTINCT Ngay)
+                        FROM qlnv_chamcong
+                        WHERE MaNV = %s AND Month(Ngay)=%s AND YEAR(Ngay)=%s
+                        GROUP BY Month(Ngay)
+                        """, (MANV, NGAY.month, NGAY.year))
+            soNgayDiLam = cur.fetchall()[0][0]
+            soNgayDiVang = monthrange(NGAY.year, NGAY.month)[1] - soNgayDiLam - num_sun_days
+            cur.execute("""
+                        SELECT COUNT(DISTINCT Ngay)
+                        FROM qlnv_chamcong
+                        WHERE MaNV = %s AND Month(Ngay)=%s AND YEAR(Ngay)=%s AND OT = 1
+                        GROUP BY Month(Ngay)
+                        """, (MANV, NGAY.month, NGAY.year))
+            soNgayTangCa = cur.fetchall()
+            if (len(soNgayTangCa) == 0):
+                soNgayTangCa = 0
+            else:
+                soNgayTangCa = soNgayTangCa[0][0]
+            tongSoNgay = soNgayDiLam
+            cur.execute("""UPDATE qlnv_chamcongtongketthang
+                        SET SoNgayDiLam = %s, SoNgayDiVang = %s, SoNgayTangCa=%s, TongSoNgay = %s
+                        WHERE MaNhanVien = %s AND Nam = %s AND Thang = %s""", (soNgayDiLam, soNgayDiVang, soNgayTangCa,
+                                                                               tongSoNgay, MANV, NGAY.year, NGAY.month))
+            mysql.connection.commit()
+        mysql.connection.commit()
+        cur.close()
+        return redirect(url_for('danh_sach_cham_cong'))
+    return render_template("chamcong/form_add_cham_cong.html",
+                           congty = session['congty'],
+                           my_user = session['username'])
+
+
+#
+# ------------------ CHAM CONG ------------------------
+#
+
 @login_required
 @app.route("/form_add_data_money")
 def form_add_data_money():
@@ -1159,13 +1880,6 @@ def form_add_data_money():
 @app.route("/table_data_money")
 def table_data_money():
     return render_template('table_data_money.html',
-                           congty = session['congty'],
-                           my_user = session['username'])
-
-@login_required
-@app.route("/danh_sach_cham_cong")
-def danh_sach_cham_cong():
-    return render_template('danh_sach_cham_cong.html', 
                            congty = session['congty'],
                            my_user = session['username'])
 

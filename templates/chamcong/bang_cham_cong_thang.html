@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>Danh sách chấm công</title>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Main CSS-->
+  <link rel="shortcut icon" type="image/x-icon" href="{{ url_for('static', filename=congty[2])}}" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='doc/css/main.css') }}">
+  <script src="{{url_for('static', filename='js/displaytime/displaytime.js')}}"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/boxicons@latest/css/boxicons.min.css">
+  <!-- or -->
+  <link rel="stylesheet" href="https://unpkg.com/boxicons@latest/css/boxicons.min.css">
+
+  <!-- Font-icon css-->
+  <link rel="stylesheet" type="text/css"
+    href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.js"></script>
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.css">
+
+  <!-- Chấm công -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='doc/css/chamcong.css') }}">
+</head>
+
+<body onload="time()" class="app sidebar-mini rtl">
+  <!-- Navbar-->
+  <header class="app-header">
+    <!-- Sidebar toggle button--><a class="app-sidebar__toggle" href="#" data-toggle="sidebar"
+      aria-label="Hide Sidebar"></a>
+    <!-- Navbar Right Menu-->
+    <ul class="app-nav">
+
+
+      <!-- User Menu-->
+      <li><a class="app-nav__item" style="margin: 0 25px 0 0;" href=""><i class='bx bx-bell'></i> </a></li>
+
+      <li><a class="app-nav__item" href="/logout"><i class='bx bx-log-out bx-rotate-180'></i> </a>
+
+      </li>
+    </ul>
+  </header>
+  <!-- Sidebar menu-->
+  <div class="app-sidebar__overlay" data-toggle="sidebar"></div>
+  <aside class="app-sidebar">
+    <div class="app-sidebar__user"><img class="app-sidebar__user-avatar"
+        src="{{ url_for('static', filename=my_user[7]) }}" style="border-radius: 50%;" width="50px" alt="User Image">
+      <div>
+        <p class="app-sidebar__user-name"><b>{{my_user[3]}}</b></p>
+        <p class="app-sidebar__user-designation">Chào mừng bạn trở lại</p>
+      </div>
+    </div>
+    <hr>
+    <ul class="app-menu">
+      <li><a class="app-menu__item haha"><i class='app-menu__icon bx bx-user'></i>
+          <span class="app-menu__label">Quản lý</span></a></li>
+      <li><a class="app-menu__item" href="index"><i class='app-menu__icon bx bx-tachometer'></i><span
+            class="app-menu__label">Bảng điều khiển</span></a></li>
+      <li><a class="app-menu__item" href="table_data_employees"><i class='app-menu__icon bx bx-id-card'></i>
+          <span class="app-menu__label">Quản lý nhân viên</span></a></li>
+      <li><a class="app-menu__item" href="table_chuc_vu"><i class='app-menu__icon bx bxs-book-content'></i>
+          <span class="app-menu__label">Quản lý chức vụ</span></a></li>
+      <li><a class="app-menu__item" href="danh_sach_hop_dong"><i class='app-menu__icon bx bx-user-voice'></i><span
+            class="app-menu__label">Danh sách hợp đồng</span></a></li>
+
+      <li><a class="app-menu__item" href="table-data-banned.html"><i class='app-menu__icon bx bx-run'></i><span
+            class="app-menu__label">Quản lý nội bộ
+          </span></a></li>
+      <li><a class="app-menu__item" href="table_data_money"><i class='app-menu__icon bx bx-dollar'></i><span
+            class="app-menu__label">Bảng kê lương</span></a></li>
+      <li><a class="app-menu__item" href="page_calendar"><i class='app-menu__icon bx bx-calendar-check'></i><span
+            class="app-menu__label">Lịch công tác </span></a></li>
+      <li><a class="app-menu__item active" href="danh_sach_cham_cong"><i class='app-menu__icon bx bx-edit-alt'></i><span
+            class="app-menu__label">Danh sách chấm công</span></a></li>
+      <li><a class="app-menu__item" href="/thoi_gian_cong_tac"><i class='app-menu__icon bx bx-edit-alt'></i><span
+            class="app-menu__label">Thời gian công tác</span></a></li>
+    </ul>
+  </aside>
+  <main class="app-content">
+    <div class="app-title">
+      <ul class="app-breadcrumb breadcrumb side">
+        <li class="breadcrumb-item active"><a href="#"><b>Danh sách chấm công</b></a></li>
+      </ul>
+      <div id="clock"></div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-12">
+        <div class="tile">
+          <div class="tile-body">
+
+            <div class="row element-button">
+              <div class="col-sm-2">
+                <a class="btn btn-add btn-sm" href="/form_add_data_cham_cong" title="Thêm"><i class="fas fa-plus"></i>
+                  Tạo mới chấm công</a>
+              </div>
+
+              <div class="col-sm-2">
+                <a class="btn btn-delete btn-sm nhap-tu-file" type="button" title="Nhập" onclick="myFunction(this)"><i
+                    class="fas fa-file-upload"></i> Tải từ file</a>
+              </div>
+
+              <div class="col-sm-2">
+                <a class="btn btn-info btn-sm" type="button" title="In" href="/table_cham_cong_ngay_trong_thang/MNV01_2021_1"><i
+                    class="fa fa-calendar-check-o"></i> Xem chấm công ngày</a>
+              </div>
+
+              <div class="col-sm-2">
+                <a class="btn btn-delete btn-sm print-file" type="button" title="In" onclick="myApp.printTable()"><i
+                    class="fas fa-print"></i> In dữ liệu</a>
+              </div>
+
+              <div class="col-sm-2">
+                <a class="btn btn-delete btn-sm print-file js-textareacopybtn" type="button" title="Sao chép"><i
+                    class="fas fa-copy"></i> Sao chép</a>
+              </div>
+
+              <div class="col-sm-2">
+                <a class="btn btn-excel btn-sm" href="" title="In"><i class="fas fa-file-excel"></i> Xuất Excel</a>
+              </div>
+              <div class="col-sm-2">
+                <a class="btn btn-delete btn-sm pdf-file" type="button" title="In" onclick="myFunction(this)"><i
+                    class="fas fa-file-pdf"></i> Xuất PDF</a>
+              </div>
+            </div>
+
+            <form class="row" method="post" action="/danh_sach_cham_cong">
+              <div class="col-sm-4">
+                <label class="control-label">Năm</label>
+                <input style="border-radius: 8px; padding-left: 10px" name="Year" type="number" value="{{Nam}}" required>
+                <input class="btn btn-save" style="height: 31px;" type="submit" value="Xem"/>
+              </div>
+            </form>
+            
+
+            <table class="table table-hover table-bordered" id="sampleTable">
+              <thead>
+                <tr>
+                  <th class="center-text" rowspan="2" style="background-color: #eee">Mã nhân viên</th>
+                  <th colspan="12" style="text-align: center; background-color: #eee">Tháng</th>
+                </tr>
+                <tr>
+                  <th class="center" width="50">1</th>
+                  <th class="center" width="50">2</th>
+                  <th class="center" width="50">3</th>
+                  <th class="center" width="50">4</th>
+                  <th class="center" width="50">5</th>
+                  <th class="center" width="50">6</th>
+                  <th class="center" width="50">7</th>
+                  <th class="center" width="50">8</th>
+                  <th class="center" width="50">9</th>
+                  <th class="center" width="50">10</th>
+                  <th class="center" width="50">11</th>
+                  <th class="center" width="50">12</th>
+                </tr>
+              <tbody>
+                {% for data in chamcongtheocacthang %}
+                <tr>
+                  <td class="center">{{data[1]}}</td>
+
+                  {% if data[3] <= -1 %}
+                    <td class="text"><span class="text--error" disabled>- - -</span></td>
+                  {% elif data[3] < mucPhanLoaiChamCong[0] %}
+                    <td class="text"><a href="/table_cham_cong_ngay_trong_thang/{{data[1]}}_{{Nam}}_1" class="text--error">{{data[3]}}</a></td>
+                  {% elif data[3] >= mucPhanLoaiChamCong[0] and data[3] <= mucPhanLoaiChamCong[1] %}
+                    <td class="text"><a href="/table_cham_cong_ngay_trong_thang/{{data[1]}}_{{Nam}}_1" class="text--warning">{{data[3]}}</a></td>
+                  {% else %}
+                    <td class="text"><a href="/table_cham_cong_ngay_trong_thang/{{data[1]}}_{{Nam}}_1" class="text--sucess">{{data[3]}}</a></td>
+                  {% endif %}
+
+                  {% if data[4] <= -1 %}
+                    <td class="text"><span class="text--error" disabled>- - -</span></td>
+                  {% elif data[4] < mucPhanLoaiChamCong[0] %}
+                    <td class="text"><a href="/table_cham_cong_ngay_trong_thang/{{data[1]}}_{{Nam}}_2" class="text--error">{{data[4]}}</a></td>
+                  {% elif data[4] >= mucPhanLoaiChamCong[0] and data[4] <= mucPhanLoaiChamCong[1] %}
+                    <td class="text"><a href="/table_cham_cong_ngay_trong_thang/{{data[1]}}_{{Nam}}_2" class="text--warning">{{data[4]}}</a></td>
+                  {% else %}
+                    <td class="text"><a href="/table_cham_cong_ngay_trong_thang/{{data[1]}}_{{Nam}}_2" class="text--sucess">{{data[4]}}</a></td>
+                  {% endif %}
+
+                  {% if data[5] <= -1 %}
+                    <td class="text"><span class="text--error" disabled>- - -</span></td>
+                  {% elif data[5] < mucPhanLoaiChamCong[0] %}
+                    <td class="text"><a href="/table_cham_cong_ngay_trong_thang/{{data[1]}}_{{Nam}}_3" class="text--error">{{data[5]}}</a></td>
+                  {% elif data[5] >= mucPhanLoaiChamCong[0] and data[5] <= mucPhanLoaiChamCong[1] %}
+                    <td class="text"><a href="/table_cham_cong_ngay_trong_thang/{{data[1]}}_{{Nam}}_3" class="text--warning">{{data[5]}}</a></td>
+                  {% else %}
+                    <td class="text"><a href="/table_cham_cong_ngay_trong_thang/{{data[1]}}_{{Nam}}_3" class="text--sucess">{{data[5]}}</a></td>
+                  {% endif %}
+
+                  {% if data[6] <= -1 %}
+                    <td class="text"><span class="text--error" disabled>- - -</span></td>
+                  {% elif data[6] < mucPhanLoaiChamCong[0] %}
+                    <td class="text"><a href="/table_cham_cong_ngay_trong_thang/{{data[1]}}_{{Nam}}_4" class="text--error">{{data[6]}}</a></td>
+                  {% elif data[6] >= mucPhanLoaiChamCong[0] and data[6] <= mucPhanLoaiChamCong[1] %}
+                    <td class="text"><a href="/table_cham_cong_ngay_trong_thang/{{data[1]}}_{{Nam}}_4" class="text--warning">{{data[6]}}</a></td>
+                  {% else %}
+                    <td class="text"><a href="/table_cham_cong_ngay_trong_thang/{{data[1]}}_{{Nam}}_4" class="text--sucess">{{data[6]}}</a></td>
+                  {% endif %}
+
+                  {% if data[7] <= -1 %}
+                    <td class="text"><span class="text--error" disabled>- - -</span></td>
+                  {% elif data[7] < mucPhanLoaiChamCong[0] %}
+                    <td class="text"><a href="/table_cham_cong_ngay_trong_thang/{{data[1]}}_{{Nam}}_5" class="text--error">{{data[7]}}</a></td>
+                  {% elif data[7] >= mucPhanLoaiChamCong[0] and data[7] <= mucPhanLoaiChamCong[1] %}
+                    <td class="text"><a href="/table_cham_cong_ngay_trong_thang/{{data[1]}}_{{Nam}}_5" class="text--warning">{{data[7]}}</a></td>
+                  {% else %}
+                    <td class="text"><a href="/table_cham_cong_ngay_trong_thang/{{data[1]}}_{{Nam}}_5" class="text--sucess">{{data[7]}}</a></td>
+                  {% endif %}
+
+                  {% if data[8] <= -1 %}
+                    <td class="text"><span class="text--error" disabled>- - -</span></td>
+                  {% elif data[8] < mucPhanLoaiChamCong[0] %}
+                    <td class="text"><a href="/table_cham_cong_ngay_trong_thang/{{data[1]}}_{{Nam}}_6" class="text--error">{{data[8]}}</a></td>
+                  {% elif data[8] >= mucPhanLoaiChamCong[0] and data[8] <= mucPhanLoaiChamCong[1] %}
+                    <td class="text"><a href="/table_cham_cong_ngay_trong_thang/{{data[1]}}_{{Nam}}_6" class="text--warning">{{data[8]}}</a></td>
+                  {% else %}
+                    <td class="text"><a href="/table_cham_cong_ngay_trong_thang/{{data[1]}}_{{Nam}}_6" class="text--sucess">{{data[8]}}</a></td>
+                  {% endif %}
+
+                  {% if data[9] <= -1 %}
+                    <td class="text"><span class="text--error" disabled>- - -</span></td>
+                  {% elif data[9] < mucPhanLoaiChamCong[0] %}
+                    <td class="text"><a href="/table_cham_cong_ngay_trong_thang/{{data[1]}}_{{Nam}}_7" class="text--error">{{data[9]}}</a></td>
+                  {% elif data[9] >= mucPhanLoaiChamCong[0] and data[9] <= mucPhanLoaiChamCong[1] %}
+                    <td class="text"><a href="/table_cham_cong_ngay_trong_thang/{{data[1]}}_{{Nam}}_7" class="text--warning">{{data[9]}}</a></td>
+                  {% else %}
+                    <td class="text"><a href="/table_cham_cong_ngay_trong_thang/{{data[1]}}_{{Nam}}_7" class="text--sucess">{{data[9]}}</a></td>
+                  {% endif %}
+
+                  {% if data[10] <= -1 %}
+                    <td class="text"><span class="text--error" disabled>- - -</span></td>
+                  {% elif data[10] < mucPhanLoaiChamCong[0] %}
+                    <td class="text"><a href="/table_cham_cong_ngay_trong_thang/{{data[1]}}_{{Nam}}_8" class="text--error">{{data[10]}}</a></td>
+                  {% elif data[10] >= mucPhanLoaiChamCong[0] and data[10] <= mucPhanLoaiChamCong[1] %}
+                    <td class="text"><a href="/table_cham_cong_ngay_trong_thang/{{data[1]}}_{{Nam}}_8" class="text--warning">{{data[10]}}</a></td>
+                  {% else %}
+                    <td class="text"><a href="/table_cham_cong_ngay_trong_thang/{{data[1]}}_{{Nam}}_8" class="text--sucess">{{data[10]}}</a></td>
+                  {% endif %}
+
+                  {% if data[11] <= -1 %}
+                    <td class="text"><span class="text--error" disabled>- - -</span></td>
+                  {% elif data[11] < mucPhanLoaiChamCong[0] %}
+                    <td class="text"><a href="/table_cham_cong_ngay_trong_thang/{{data[1]}}_{{Nam}}_9" class="text--error">{{data[11]}}</a></td>
+                  {% elif data[11] >= mucPhanLoaiChamCong[0] and data[11] <= mucPhanLoaiChamCong[1] %}
+                    <td class="text"><a href="/table_cham_cong_ngay_trong_thang/{{data[1]}}_{{Nam}}_9" class="text--warning">{{data[11]}}</a></td>
+                  {% else %}
+                    <td class="text"><a href="/table_cham_cong_ngay_trong_thang/{{data[1]}}_{{Nam}}_9" class="text--sucess">{{data[11]}}</a></td>
+                  {% endif %}
+
+                  {% if data[12] <= -1 %}
+                    <td class="text"><span class="text--error" disabled>- - -</span></td>
+                  {% elif data[12] < mucPhanLoaiChamCong[0] %}
+                    <td class="text"><a href="/table_cham_cong_ngay_trong_thang/{{data[1]}}_{{Nam}}_10" class="text--error">{{data[12]}}</a></td>
+                  {% elif data[12] >= mucPhanLoaiChamCong[0] and data[12] <= mucPhanLoaiChamCong[1] %}
+                    <td class="text"><a href="/table_cham_cong_ngay_trong_thang/{{data[1]}}_{{Nam}}_10" class="text--warning">{{data[12]}}</a></td>
+                  {% else %}
+                    <td class="text"><a href="/table_cham_cong_ngay_trong_thang/{{data[1]}}_{{Nam}}_10" class="text--sucess">{{data[12]}}</a></td>
+                  {% endif %}
+
+                  {% if data[13] <= -1 %}
+                    <td class="text"><span class="text--error" disabled>- - -</span></td>
+                  {% elif data[13] < mucPhanLoaiChamCong[0] %}
+                    <td class="text"><a href="/table_cham_cong_ngay_trong_thang/{{data[1]}}_{{Nam}}_11" class="text--error">{{data[13]}}</a></td>
+                  {% elif data[13] >= mucPhanLoaiChamCong[0] and data[13] <= mucPhanLoaiChamCong[1] %}
+                    <td class="text"><a href="/table_cham_cong_ngay_trong_thang/{{data[1]}}_{{Nam}}_11" class="text--warning">{{data[13]}}</a></td>
+                  {% else %}
+                    <td class="text"><a href="/table_cham_cong_ngay_trong_thang/{{data[1]}}_{{Nam}}_11" class="text--sucess">{{data[13]}}</a></td>
+                  {% endif %}
+
+                  {% if data[14] <= -1 %}
+                    <td class="text"><span class="text--error" disabled>- - -</span></td>
+                  {% elif data[14] < mucPhanLoaiChamCong[0] %}
+                    <td class="text"><a href="/table_cham_cong_ngay_trong_thang/{{data[1]}}_{{Nam}}_12" class="text--error">{{data[14]}}</a></td>
+                  {% elif data[14] >= mucPhanLoaiChamCong[0] and data[14] <= mucPhanLoaiChamCong[1] %}
+                    <td class="text"><a href="/table_cham_cong_ngay_trong_thang/{{data[1]}}_{{Nam}}_12" class="text--warning">{{data[14]}}</a></td>
+                  {% else %}
+                    <td class="text"><a href="/table_cham_cong_ngay_trong_thang/{{data[1]}}_{{Nam}}_12" class="text--sucess">{{data[14]}}</a></td>
+                  {% endif %}
+                </tr>
+                {% endfor %}
+              </tbody>
+              </thead>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!--
+  MODAL
+-->
+
+  <!-- Essential javascripts for application to work-->
+  <script src="{{url_for('static', filename='doc/js/jquery-3.2.1.min.js')}}"></script>
+  <script src="{{url_for('static', filename='doc/js/popper.min.js')}}"></script>
+  <script src="{{url_for('static', filename='doc/js/bootstrap.min.js')}}"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+  <script src="{{url_for('static', filename='doc/js/main.js')}}"></script>
+  <!-- The javascript plugin to display page loading on top-->
+  <script src="{{url_for('static', filename='doc/js/plugins/pace.min.js')}}"></script>
+  <!-- Page specific javascripts-->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.js"></script>
+  <!-- Data table plugin-->
+  <!-- <script type="text/javascript" src="js/plugins/jquery.dataTables.min.js"></script> -->
+  <script src="{{url_for('static', filename='doc/js/plugins/jquery.dataTables.min.js')}}"></script>
+  <!-- <script type="text/javascript" src="js/plugins/dataTables.bootstrap.min.js"></script> -->
+  <script src="{{url_for('static', filename='doc/js/plugins/dataTables.bootstrap.min.js')}}"></script>
+  <script type="text/javascript">$('#sampleTable').DataTable();</script>
+  <script>
+    function deleteRow(r) {
+      var i = r.parentNode.parentNode.rowIndex;
+      document.getElementById("myTable").deleteRow(i);
+    }
+    jQuery(function () {
+      jQuery(".trash").click(function () {
+        swal({
+          title: "Cảnh báo",
+
+          text: "Bạn có chắc chắn là muốn xóa nhân viên này?",
+          buttons: ["Hủy bỏ", "Đồng ý"],
+        })
+          .then((willDelete) => {
+            if (willDelete) {
+              swal("Đã xóa thành công.!", {
+
+              });
+            }
+          });
+      });
+    });
+
+    oTable = $('#sampleTable').dataTable();
+    $('#all').click(function (e) {
+      $('#sampleTable tbody :checkbox').prop('checked', $(this).is(':checked'));
+      e.stopImmediatePropagation();
+    });
+
+    //In dữ liệu
+    var myApp = new function () {
+      this.printTable = function () {
+        var tab = document.getElementById('sampleTable');
+        var win = window.open('', '', 'height=700,width=700');
+        win.document.write(tab.outerHTML);
+        win.document.close();
+        win.print();
+      }
+    }
+    function dieu_huong() {
+      //     //Sao chép dữ liệu
+      var copyTextareaBtn = document.querySelector('.js-textareacopybtn');
+
+      copyTextareaBtn.addEventListener('click', function (event) {
+        var copyTextarea = document.querySelector('.js-copytextarea');
+        copyTextarea.focus();
+        copyTextarea.select();
+
+        try {
+          var successful = document.execCommand('copy');
+          var msg = successful ? 'successful' : 'unsuccessful';
+          console.log('Copying text command was ' + msg);
+        } catch (err) {
+          console.log('Oops, unable to copy');
+        }
+      });
+    }
+
+  </script>
+</body>
+
+</html>
