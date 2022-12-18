@@ -79,8 +79,8 @@
     <main class="app-content">
         <div class="app-title">
             <ul class="app-breadcrumb breadcrumb">
-                <li class="breadcrumb-item">Danh sách nhân viên</li>
-                <li class="breadcrumb-item"><a href="#">Thêm nhân viên</a></li>
+                <li class="breadcrumb-item"><a href="/table_data_employees">Thưởng-phạt</a></li>
+                <li class="breadcrumb-item"><a href="#">Thêm khen thưởng-phạt</a></li>
             </ul>
         </div>
         <div class="row">
@@ -88,59 +88,60 @@
 
                 <div class="tile">
 
-                    <h3 class="tile-title">Phòng ban</h3>
+                    <h3 class="tile-title">Thêm khen thưởng-phạt</h3>
                     <div class="tile-body">
-                        <div class="row element-button">
-                            <div class="col-sm-2">
-                                <a class="btn btn-add btn-sm" data-toggle="modal"
-                                    data-target="#exampleModalCenter" href="/form_tao_moi_phong_ban"><b><i class="fas fa-folder-plus"></i> Tạo phòng
-                                        ban
-                                        mới</b></a>
+                        <form class="row" method="post" action="/form_thuong_phat" enctype="multipart/form-data">
+                            <div class="form-group col-md-3">
+                                <label class="control-label">STT</label>
+                                <input class="form-control" type="text" name="id" required>
                             </div>
-
-                        </div>
-                        <div class="row">
-                            <div class="col-md-6 col-lg-3">
-                                <div class="widget-small primary coloured-icon"><a class='icon fa-3x bx bxs-devices'
-                                        href="phong_ban_dsnv"></a>
-                                    <div class="info">
-                                        <h4>Công nghệ thông tin</h4>
-                                    </div>
-                                </div>
+                            <div class="form-group col-md-3">
+                                <label class="control-label">Mã nhân viên</label>
+                                <input class="form-control" type="text" name="MaNV" required>
                             </div>
-                            <div class="col-md-6 col-lg-3">
-                                <div class="widget-small info coloured-icon"><a class='icon fa-3x bx bxs-book-content'
-                                        href=""></a>
-                                    <div class="info">
-                                        <h4>Marketing</h4>
-                                    </div>
-                                </div>
+                            <div class="form-group col-md-6">
                             </div>
-                            <div class="col-md-6 col-lg-3">
-                                <div class="widget-small warning coloured-icon"><a class='icon fa-3x bx bx-dollar'
-                                        href=""></a>
-                                    <div class="info">
-                                        <h4>Kế toán</h4>
-                                    </div>
-                                </div>
+                            <div class="form-group col-md-3">
+                                <label class="control-label">Loại</label>
+                                <select class="form-control" id="exampleSelect3" name="Loai" required>
+                                  <option>-- Loại --</option>
+                                  {% for data in abc %}
+                
+                                  <option>{{data[1]}} </option>
+                
+                                  {% endfor %}
+                                </select>
+                              </div>
+                            <div class="form-group col-md-9">
+                                <label class="control-label">Lý do</label>
+                                <input class="form-control" type="text" name="LyDo" required>
                             </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-12">
-                                <div class="tile">
-                                    <div>
-                                        <h3 class="tile-title">Chưa biết thêm gì</h3>
-                                    </div>
-                                    <div class="tile-body">
-                                    </div>
-                                </div>
+                            <div class="form-group col-md-3">
+                                <label class="control-label">Tiền</label>
+                                <input class="form-control" type="text" name="Tien" required>
                             </div>
-                        </div>
+                            <div class="form-group col-md-9">
+                                <label class="control-label">Ngày</label>
+                                <input class="form-control" type="date" name="Ngay" required>
+                            </div>
+                            <div class="form-group col-md-12">
+                                <label class="control-label">Ghi chú</label>
+                                <input class="form-control" type="text" name="TENNV" required>
+                            </div>
+                            <div id="toast">
+                            </div>
+                            <div class="form-group col-md-4">
+                                <input class="btn btn-save" type="submit" onclick="showSuccessToast();"
+                                    value="Lưu lại" />
+                                <a class="btn btn-cancel" href="table_data_employees">Hủy bỏ</a>
+                                <!-- <div onclick="showSuccessToast();" class="btn btn--success">Show success</div>
+                    <div onclick="showErrorToast();" class="btn btn--danger">Show eroor</div> -->
+                            </div>
+                        </form>
                     </div>
                 </div>
             </div>
         </div>
     </main>
 </body>
-
 </html>

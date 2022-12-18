@@ -90,21 +90,29 @@
 
                     <h3 class="tile-title">Tạo mới phòng ban</h3>
                     <div class="tile-body">
-                        <form class="row" method="post" action="/form_add_data_employees" enctype="multipart/form-data">
-                            <div class="form-group col-md-12">
+                        <form class="row" method="post" action="/form_tao_moi_phong_ban" enctype="multipart/form-data">
+                            <div class="form-group col-md-3">
                                 <label class="control-label">Mã phòng ban</label>
                                 <input class="form-control" type="text" name="MNV" required>
                             </div>
-                            <div class="form-group col-md-12">
+                            <div class="form-group col-md-3">
                                 <label class="control-label">Tên phòng ban</label>
                                 <input class="form-control" type="text" name="TENNV" required>
                             </div>
-                            <div class="form-group col-md-12">
-                                <label class="control-label">Địa chỉ</label>
+                            <div class="form-group col-md-6">
+                            </div>
+                            <div class="form-group col-md-3">
+                                <label class="control-label">Số điện thoại</label>
                                 <input class="form-control" type="text" name="TENNV" required>
                             </div>
+                            <div class="form-group col-md-3">
+                                <label class="control-label">Mã trưởng phòng</label>
+                                <input class="form-control" type="text" name="TENNV" required>
+                            </div>
+                            <div class="form-group col-md-6">
+                            </div>
                             <div class="form-group col-md-12">
-                                <label class="control-label">Số điện thoại</label>
+                                <label class="control-label">Địa chỉ</label>
                                 <input class="form-control" type="text" name="TENNV" required>
                             </div>
                             <div id="toast">
@@ -122,3 +130,5 @@
             </div>
         </div>
     </main>
+</body>
+</html>

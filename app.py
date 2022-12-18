@@ -1961,8 +1961,28 @@ def form_tao_moi_phong_ban():
                            my_user = session['username'])
     
 @login_required
-@app.route("/phong_CNTT")
-def phong_CNTT():
-    return render_template('phongban/phong_CNTT.html', 
+@app.route("/phong_ban_dsnv")
+def phong_ban_dsnv():
+    return render_template('phongban/phong_ban_dsnv.html', 
+                           congty = session['congty'],
+                           my_user = session['username'])
+@login_required
+@app.route("/form_thuong_phat")
+def form_thuong_phat():
+    return render_template('phongban/form_thuong_phat.html', 
+                           congty = session['congty'],
+                           my_user = session['username'])
+
+@login_required
+@app.route("/phong_ban_thuong")
+def phong_ban_thuong():
+    return render_template('phongban/phong_ban_thuong.html', 
+                           congty = session['congty'],
+                           my_user = session['username'])
+    
+@login_required
+@app.route("/phong_ban_phat")
+def phong_ban_phat():
+    return render_template('phongban/phong_ban_phat.html', 
                            congty = session['congty'],
                            my_user = session['username'])

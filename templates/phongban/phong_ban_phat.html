@@ -19,6 +19,9 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.js"></script>
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.css">
+
+    <!-- Phòng ban -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='doc/css/phongban.css') }}">
 </head>
 
 <body onload="time()" class="app sidebar-mini rtl">
@@ -79,8 +82,8 @@
     <main class="app-content">
         <div class="app-title">
             <ul class="app-breadcrumb breadcrumb">
-                <li class="breadcrumb-item">Danh sách nhân viên</li>
-                <li class="breadcrumb-item"><a href="#">Thêm nhân viên</a></li>
+                <li class="breadcrumb-item">Phòng ban</li>
+                <li class="breadcrumb-item"><a href="#">Phòng Công nghệ thông tin</a></li>
             </ul>
         </div>
         <div class="row">
@@ -88,52 +91,90 @@
 
                 <div class="tile">
 
-                    <h3 class="tile-title">Phòng ban</h3>
+                    <h3 class="tile-title">Tổng quan</h3>
                     <div class="tile-body">
-                        <div class="row element-button">
-                            <div class="col-sm-2">
-                                <a class="btn btn-add btn-sm" data-toggle="modal"
-                                    data-target="#exampleModalCenter" href="/form_tao_moi_phong_ban"><b><i class="fas fa-folder-plus"></i> Tạo phòng
-                                        ban
-                                        mới</b></a>
-                            </div>
-
-                        </div>
-                        <div class="row">
-                            <div class="col-md-6 col-lg-3">
-                                <div class="widget-small primary coloured-icon"><a class='icon fa-3x bx bxs-devices'
-                                        href="phong_ban_dsnv"></a>
-                                    <div class="info">
-                                        <h4>Công nghệ thông tin</h4>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-6 col-lg-3">
-                                <div class="widget-small info coloured-icon"><a class='icon fa-3x bx bxs-book-content'
-                                        href=""></a>
-                                    <div class="info">
-                                        <h4>Marketing</h4>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-6 col-lg-3">
-                                <div class="widget-small warning coloured-icon"><a class='icon fa-3x bx bx-dollar'
-                                        href=""></a>
-                                    <div class="info">
-                                        <h4>Kế toán</h4>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-12">
-                                <div class="tile">
+                        <div class="dash-cards">
+                            <div class="card-single">
+                                <div class="card-body">
+                                    <span class='bx bx-user-pin'></span>
                                     <div>
-                                        <h3 class="tile-title">Chưa biết thêm gì</h3>
-                                    </div>
-                                    <div class="tile-body">
+                                        <h5>Tống số nhân viên</h5>
+                                        <h4>10</h4>
                                     </div>
                                 </div>
+                                <div class="card-footer">
+                                    <a href="/phong_ban_dsnv">View all</a>
+
+                                </div>
+                            </div>
+                            <div class="card-single" style="background-color: #228B22;">
+                                <div class="card-body">
+                                    <span class="bx bxs-award"></span>
+                                    <div>
+                                        <h5>Thưởng</h5>
+                                        <h4>3</h4>
+                                    </div>
+                                </div>
+                                <div class="card-footer">
+                                    <a href="/phong_ban_thuong">View all</a>
+
+                                </div>
+                            </div>
+                            <div class="card-single" style="background-color: #DAA520;">
+                                <div class="card-body">
+                                    <span class='bx bx-info-square'></span>
+                                    <div>
+                                        <h5>Vi phạm</h5>
+                                        <h4>3</h4>
+                                    </div>
+                                </div>
+                                <div class="card-footer">
+                                    <a href="/phong_ban_phat">View all</a>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-12">
+
+                        <div class="tile">
+
+                            <h3 class="tile-title">Danh sách vi phạm</h3>
+                            <div class="tile-body">
+                                <div class="row element-button">
+                                    <div class="col-sm-2">
+                                        <a class="btn btn-add btn-sm" data-toggle="modal"
+                                            data-target="#exampleModalCenter" href="/form_thuong_phat"><b><i class="fas fa-folder-plus"></i> Thêm nhân viên
+                                              vi phạm</b></a>
+                                    </div>
+        
+                                </div>
+                                <table class="table table-hover table-bordered js-copytextarea" cellpadding="0"
+                                    cellspacing="0" border="0" id="sampleTable">
+                                    <thead>
+                                        <tr>
+                                            <th width="10"><input type="checkbox" id="all"></th>
+                                            <th>STT</th>
+                                            <th width="170">Mã nhân viên</th>
+                                            <th width="250">Nội dung vi phạm</th>
+                                            <th width="200">Hình thức kỷ luật</th>
+                                            <th width="200">Ghi chú</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <th width="10"><input type="checkbox" id="all"></th>
+                                            <td>1</td>
+                                            <td>2</td>
+                                            <td>3</td>
+                                            <td>4</td>
+                                            <td>5</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
                     </div>
@@ -141,6 +182,24 @@
             </div>
         </div>
     </main>
+    <!-- Essential javascripts for application to work-->
+    <script src="{{url_for('static', filename='doc/js/jquery-3.2.1.min.js')}}"></script>
+    <script src="{{url_for('static', filename='doc/js/popper.min.js')}}"></script>
+    <script src="{{url_for('static', filename='doc/js/bootstrap.min.js')}}"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script src="src/jquery.table2excel.js"></script>
+    <script src="{{url_for('static', filename='doc/js/main.js')}}"></script>
+    <!-- The javascript plugin to display page loading on top-->
+    <script src="{{url_for('static', filename='doc/js/plugins/pace.min.js')}}"></script>
+    <!-- Page specific javascripts-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.js"></script>
+    <!-- Data table plugin-->
+    <!-- <script type="text/javascript" src="js/plugins/jquery.dataTables.min.js"></script> -->
+    <script src="{{url_for('static', filename='doc/js/plugins/jquery.dataTables.min.js')}}"></script>
+    <!-- <script type="text/javascript" src="js/plugins/dataTables.bootstrap.min.js"></script> -->
+    <script src="{{url_for('static', filename='doc/js/plugins/dataTables.bootstrap.min.js')}}"></script>
+    <script type="text/javascript">$('#sampleTable').DataTable();</script>
+
 </body>
 
 </html>
