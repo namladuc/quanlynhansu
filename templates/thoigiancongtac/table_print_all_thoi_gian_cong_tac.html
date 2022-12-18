@@ -22,22 +22,23 @@
               <thead>
                 <tr>
                   <th width="100">Mã nhân viên</th>
-                  <th width="400">Tên nhân viên</th>
-                  <th width="200">Ngày sinh <br> (dd-mm-yyyy)</th>
-                  <th width="200">Điện thoại</th>
-                  <th width="400">Tên chức vụ</th>
-                  <th width="200">Ngày nhận chức <br> (dd-mm-yyyy)</th>
+                  <th width="300">Tên nhân viên</th>
+                  <th width="300">Tên chức vụ hiện tại</th>
+                  <th width="300">Phòng ban hiện tại</th>
+                  <th width="100">Số chức vụ đã làm</th>
                 </tr>
               </thead>
               <tbody>
-                {% for data in nv_chuc_vu %}
+                {% for data in thoigiancongtac %}
                 <tr>
                   <td>{{data[0]}}</td>
                   <td>{{data[1]}}</td>
                   <td>{{data[2]}}</td>
                   <td>{{data[3]}}</td>
-                  <td>{{data[4]}}</td>
-                  <td>{{data[5]}}</td>
+
+                  <td class="table-td-center">
+                    {{data[4]}}
+                  </td>
                 {% endfor %}
               </tbody>
             </table>

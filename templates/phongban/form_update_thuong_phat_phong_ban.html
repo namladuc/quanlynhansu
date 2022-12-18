@@ -80,7 +80,7 @@
         <div class="app-title">
             <ul class="app-breadcrumb breadcrumb">
                 <li class="breadcrumb-item"><a href="/view_all_phong_ban">Phòng ban</a></li>
-                <li class="breadcrumb-item"><a href="">Thêm phòng ban</a></li>
+                <li class="breadcrumb-item"><a href="">Sửa khen thưởng - phạt</a></li>
             </ul>
         </div>
         <div class="row">
@@ -88,50 +88,70 @@
 
                 <div class="tile">
 
-                    <h3 class="tile-title">Tạo mới phòng ban</h3>
+                    <h3 class="tile-title">Sửa khen thưởng-phạt</h3>
                     <div class="tile-body">
-                        {% if err %}
-                        <div class="form-group col-md-12">
-                            <div class="alert alert-danger" style="text-align: left; font-size: 12px; background-color: red;">
-                            <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
-                            <strong>{{err}}</strong> 
+                        <form class="row" method="post" action="/form_update_thuong_phat_phong_ban/{{maPB}}_{{thuongphat[0]}}" enctype="multipart/form-data">
+                            {% if err %}
+                            <div class="form-group col-md-12">
+                                <div class="alert alert-danger" style="text-align: left; font-size: 12px; background-color: red;">
+                                <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
+                                <strong>{{err}}</strong> 
+                                </div>
                             </div>
-                        </div>
-                      {% endif %}
+                          {% endif %}
 
-                        <form class="row" method="post" action="/form_add_data_phong_ban" enctype="multipart/form-data">
                             <div class="form-group col-md-3">
-                                <label class="control-label">Mã phòng ban</label>
-                                <input class="form-control" type="text" name="MaPB" required>
+                                <label class="control-label">Mã nhân viên</label>
+                                <input class="form-control" type="text" value="{{thuongphat[1]}}" name="MaNV" disabled>
                             </div>
+                            <div class="form-group col-md-9">
+                            </div>
+      
+                            <div class="form-group col-md-9">
+                                <label class="control-label">Lý do</label>
+                                <input class="form-control" type="text" value="{{thuongphat[3]}}" name="LyDo" required>
+                            </div>
+
+                            
                             <div class="form-group col-md-3">
-                                <label class="control-label">Tên phòng ban</label>
-                                <input class="form-control" type="text" name="TenPB" required>
                             </div>
+
+                            <div class="form-group col-md-3">
+                                <label class="control-label">Loại</label>
+                                <select class="form-control" id="exampleSelect3" name="Loai" required>
+                                    {% if thuongphat[2] == 0 %}
+                                    <option>Thưởng</option>
+                                    <option>Kỷ luật</option>
+                                    {% else %}
+                                    <option>Kỷ luật</option>
+                                    <option>Thưởng</option>
+                                    {% endif %}
+                                </select>
+                              </div>
+
+                            <div class="form-group col-md-3">
+                                <label class="control-label">Số tiền</label>
+                                <input class="form-control" type="text" value="{{thuongphat[4]}}" name="Tien" required>
+                            </div>
+
+                            
                             <div class="form-group col-md-6">
                             </div>
-                            <div class="form-group col-md-3">
-                                <label class="control-label">Số điện thoại</label>
-                                <input class="form-control" type="text" name="SDT" required>
-                            </div>
-                            <div class="form-group col-md-3">
-                                <label class="control-label">Mã trưởng phòng</label>
-                                <input class="form-control" type="text" name="MaTP" required>
-                            </div>
-                            <div class="form-group col-md-6">
-                            </div>
-                            <div class="form-group col-md-8">
-                                <label class="control-label">Địa chỉ</label>
-                                <input class="form-control" type="text" name="DIACHI" required>
+
+                            <div class="form-group col-md-9">
+                                <label class="control-label">Ngày</label>
+                                <input class="form-control" type="date" value="{{thuongphat[5]}}" name="Ngay" required>
                             </div>
                             <div class="form-group col-md-12">
+                                <label class="control-label">Ghi chú</label>
+                                <input class="form-control" type="text" value="{{thuongphat[-1]}}"  name="GhiChu" >
                             </div>
                             <div id="toast">
                             </div>
                             <div class="form-group col-md-4">
                                 <input class="btn btn-save" type="submit" onclick="showSuccessToast();"
                                     value="Thêm" />
-                                <a class="btn btn-cancel" href="/view_all_phong_ban">Hủy bỏ</a>
+                                <a class="btn btn-cancel" href="table_data_employees">Hủy bỏ</a>
                             </div>
                         </form>
                     </div>

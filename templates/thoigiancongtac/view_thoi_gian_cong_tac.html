@@ -66,14 +66,14 @@
             class="app-menu__label">Lịch công tác </span></a></li>
       <li><a class="app-menu__item" href="/danh_sach_cham_cong"><i class='app-menu__icon bx bx-edit-alt'></i><span
             class="app-menu__label">Danh sách chấm công</span></a></li>
-      <li><a class="app-menu__item active" href="/view_all_thoi_gian_cong_tac"><i class='app-menu__icon bx bx-edit-alt'></i><span
+      <li><a class="app-menu__item active" href="/view_all_thoi_gian_cong_tac"><i class='app-menu__icon bx bx-history'></i><span
         class="app-menu__label">Thời gian công tác</span></a></li>
     </ul>
   </aside>
   <main class="app-content">
     <div class="app-title">
       <ul class="app-breadcrumb breadcrumb side">
-        <li class="breadcrumb-item active"><a href="#"><b>Danh sách thời gian công tác</b></a></li>
+        <li class="breadcrumb-item active"><a href="/view_all_thoi_gian_cong_tac"><b>Danh sách thời gian công tác</b></a></li>
         <li class="breadcrumb-item active"><a href=""><b>Thời gian công tác {{TenNV}}</b></a></li>
       </ul>
       <div id="clock"></div>
@@ -93,22 +93,17 @@
           <div class="tile-body">
             <div class="row element-button">
               <div class="col-sm-2">
-                <a class="btn btn-add btn-sm" href="/form_add_chuc_vu" title="Thêm"><i class="fas fa-plus"></i>
-                  Tạo mới thời gian công tác</a>
-              </div>
-
-              <div class="col-sm-2">
-                <a class="btn btn-delete btn-sm print-file" type="button" title="In" onclick="myApp.printTableChucVu()"><i
+                <a class="btn btn-delete btn-sm print-file" type="button" title="In" onclick="myApp.printTGcongtacmanv()"><i
                     class="fas fa-print"></i> In dữ liệu</a>
               </div>
 
               <div class="col-sm-2">
-                <a class="btn btn-excel btn-sm" href="/get_chuc_vu_table_excel" title="In"><i class="fas fa-file-excel"></i
+                <a class="btn btn-excel btn-sm" href="/get_thoi_gian_cong_tac_excel/{{MaNV}}" title="In"><i class="fas fa-file-excel"></i
                     > Xuất Excel</a>
               </div>
 
               <div class="col-sm-2">
-                <a class="btn btn-delete btn-sm pdf-file" type="button" title="In" href="/get_chuc_vu_table_pdf"><i
+                <a class="btn btn-delete btn-sm pdf-file" type="button" title="In" href="/get_thoi_gian_cong_tac_pdf/{{MaNV}}"><i
                     class="fas fa-file-pdf"></i> Xuất PDF</a>
               </div>
             </div>
@@ -117,7 +112,6 @@
               id="sampleTable">
               <thead>
                 <tr>
-                    <th width="10"><input type="checkbox" id="all"></th>
                   <th width="300">Tên chức vụ</th>
                   <th width="300">Ngày nhận chức</th>
                   <th width="300">Ngày kết thúc</th>
@@ -127,13 +121,12 @@
               <tbody>
                 {% for data in thoigiancongtac %}
                 <tr>
-                    <td width="10"><input type="checkbox" id="myChecker" name="check1" value="1"></td>
                   <td>{{data[-1]}}</td>
                   <td>{{data[3]}}</td>
                   <td>{{data[4]}}</td>
                   <td class="table-td-center">
                     <button class="btn btn-primary btn-sm trash" type="button" title="Xóa"
-                      onclick="deleteRow(this)"><i class="fas fa-trash-alt"></i>
+                      onclick="deleteTGRow({{data[0]}})"><i class="fas fa-trash-alt"></i>
                     </button>
                     <button class="btn btn-primary btn-sm edit" type="button" title="Sửa" id="show-emp">
                         <a href=""><i class="fa fa-eye" aria-hidden="true"></i></a>
@@ -165,48 +158,20 @@
   <script src="{{url_for('static', filename='doc/js/plugins/dataTables.bootstrap.min.js')}}"></script>
   <script type="text/javascript">$('#sampleTable').DataTable();</script>
   <script>
-    // Xóa các mục đã chọn
-    function deleteMoreChucVuRow(r) {
-      var numRow = document.getElementById("sampleTable").rows.length;
-      var id_cv = [];
-      var name_cv = [];
-      var num_people = [];
-      $('#sampleTable tbody :checkbox').each(function () {
-          let i = this.parentNode.parentNode.rowIndex;
-          if (this.checked) {
-            id_cv.push(this.parentNode.parentNode.childNodes[3].textContent);
-            name_cv.push(this.parentNode.parentNode.childNodes[5].textContent);
-            num_people.push(this.parentNode.parentNode.childNodes[7].textContent.replace("\n","").trim());
-          }
-      });
-
+    function deleteTGRow(id) {
       swal({
         title: "Cảnh báo",
-        text: "Bạn có chắc chắn là muốn xóa các nhân viên này?", // index = 3
+        text: "Bạn có chắc chắn là muốn xóa bản ghi này?", // index = 3
         buttons: ["Hủy bỏ", "Đồng ý"],
       })
         .then((willDelete) => {
           if (willDelete) {
-            var check = false;
-            for (let i = 0; i < id_cv.length; i++) {
-              if (num_people[i] == 0) {
-                $.ajax({
-                  url:"/delete_chuc_vu/" + id_cv[i],
-                  context: document.body
-                })
-              } else {
-                check = true;
-                $('#take_no_people').show();
-                $('#errordelete').text(name_cv[i] + " có số nhân viên không trống !").show();
-                break;
-              }
-            }
-
-            if (!check) {
-              location.reload();
-            }
+            $.ajax({
+              url:"/delete_thoi_gian_cong_tac/" + id,
+              context: document.body
+            })
+            location.href="/view_all_thoi_gian_cong_tac";
           }
-          
         });
     }
 
@@ -218,8 +183,8 @@
 
     //In dữ liệu
     var myApp = new function () {
-      this.printTableChucVu = function () {
-        var win = window.open('/table_print_chuc_vu', '', 'height=700,width=1400');
+      this.printTGcongtacmanv = function () {
+        var win = window.open('/get_print_thoi_gian_cong_tac/{{MaNV}}', '', 'height=700,width=1400');
         win.document.close();
         win.print();
       }

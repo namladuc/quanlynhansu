@@ -267,7 +267,7 @@ def form_view_update_employees(maNV, canEdit):
     
     if request.method == 'POST':
         details = request.form
-        MNV = details['MNV'].strip()
+        MNV = maNV
         TENNV = details['TENNV'].strip()
         MAIL = details['MAIL'].strip()
         DIACHI = details['DIACHI'].strip()
@@ -837,7 +837,8 @@ def table_chuc_vu():
         SELECT cv.MaCV, cv.TenCV, COUNT(NV.MaNhanVien) 
         FROM qlnv_chucvu cv
         LEFT JOIN qlnv_nhanvien nv ON cv.MaCV = nv.MaChucVu
-        LEFT JOIN qlnv_thoigiancongtac tg ON tg.MaNV = nv.MaNhanVien 
+        LEFT JOIN qlnv_thoigiancongtac tg ON tg.MaNV = nv.MaNhanVien
+        WHERE tg.DuongNhiem = 1 
         GROUP BY cv.MaCV""")
     chucvu = cur.fetchall()
     cur.close()
@@ -2296,7 +2297,6 @@ def view_all_phong_ban():
                            congty = session['congty'],
                            my_user = session['username'])
         
-    
 @login_required
 @app.route('/view_phong_ban/<string:maPB>')
 def view_phong_ban(maPB):
@@ -2339,13 +2339,400 @@ def view_phong_ban(maPB):
                 """, (phongban[4], ))
     truongphong = cur.fetchall()[0]
     
+    cur.execute("""
+                SELECT COUNT(*)
+                FROM qlnv_thuongphat tp
+                JOIN qlnv_nhanvien nv ON tp.MaNV = nv.MaNhanVien
+                WHERE nv.MaPhongBan = %s
+                AND tp.Loai = 1
+                ORDER BY tp.Ngay DESC
+                """, (maPB, ))
+    num_phat = cur.fetchall()[0][0]
+    
+    cur.execute("""
+                SELECT COUNT(*)
+                FROM qlnv_thuongphat tp
+                JOIN qlnv_nhanvien nv ON tp.MaNV = nv.MaNhanVien
+                WHERE nv.MaPhongBan = %s
+                AND tp.Loai = 0
+                ORDER BY tp.Ngay DESC
+                """, (maPB, ))
+    num_thuong = cur.fetchall()[0][0]
+    
     return render_template('phongban/view_phong_ban.html',
+                           num_thuong = num_thuong,
+                           num_phat = num_phat,
                            truongphong = truongphong,
                            nhanvien = nhanvien,
                            phongban = phongban,
                            congty = session['congty'],
                            my_user = session['username'])
 
+@login_required
+@app.route('/form_update_phong_ban/<string:maPB>', methods=['GET', 'POST'])
+def form_update_phong_ban(maPB):
+    cur = mysql.connection.cursor()
+    
+    cur.execute("""
+                SELECT * FROM qlnv_phongban
+                WHERE MaPB = %s
+                """, (maPB, ))
+    phongban = cur.fetchall()
+    
+    if (len(phongban) == 0):
+        return "Error"
+    
+    phongban = phongban[0]
+    
+    if request.method == 'POST':
+        detail = request.form
+        MaPB = maPB
+        TenPB = detail['TenPB']
+        SDT = detail['SDT']
+        MaTP = detail['MaTP']
+        DIACHI = detail['DIACHI']
+        
+        if MaTP != phongban[4]:
+            cur.execute("""
+                        SELECT * 
+                        FROM qlnv_nhanvien
+                        WHERE MaNhanVien = %s 
+                        """, (MaTP, ))
+
+            if (len(cur.fetchall()) != 1):
+                return render_template('phongban/form_add_data_phong_ban.html',
+                                    err = "Không tồn lại mã nhân viên " + MaTP,
+                                    phongban = phongban,
+                            congty = session['congty'],
+                            my_user = session['username'])
+        
+            cur.execute("""
+                        SELECT * 
+                        FROM qlnv_phongban
+                        WHERE MaTruongPhong = %s 
+                        """, (MaTP, ))
+            
+            if (len(cur.fetchall()) != 0):
+                return render_template('phongban/form_add_data_phong_ban.html',
+                                    phongban = phongban,
+                                    err = "Nhân viên " + MaTP + " đã làm trưởng phòng phòng khác",
+                            congty = session['congty'],
+                            my_user = session['username'])
+            
+        cur.execute("""
+                    UPDATE `qlnv_phongban`
+                    SET `TenPB` = %s, `diachi` = %s, `sodt`=%s, `MaTruongPhong`=%s 
+                    WHERE MaPB = %s;
+                    """, ( TenPB, DIACHI, SDT, MaTP,MaPB))
+        mysql.connection.commit()
+        return redirect(url_for('view_all_phong_ban'))
+    
+    return render_template('phongban/form_update_phong_ban.html',
+                           phongban = phongban,
+                           congty = session['congty'],
+                           my_user = session['username'])
+
+@login_required
+@app.route('/delete_phong_ban/<string:maPB>')
+def delete_phong_ban(maPB):
+    cur = mysql.connection.cursor()
+
+    cur.execute("""
+                SELECT COUNT(*)
+                FROM qlnv_nhanvien
+                WHERE MaPhongBan = %s
+                """, (maPB, ))
+
+    if (cur.fetchall()[0][0] != 0):
+        return "Error"
+    
+    cur.execute("""
+                DELETE FROM qlnv_phongban
+                WHERE MaPB = %s
+                """, (maPB, ))
+    mysql.connection.commit()
+    return redirect(url_for('view_all_phong_ban'))
+    
+@login_required
+@app.route('/form_add_data_phong_ban', methods=['GET','POST'])
+def form_add_data_phong_ban():
+    cur = mysql.connection.cursor()
+
+    if request.method == 'POST':
+        detail = request.form
+        MaPB = detail['MaPB']
+        TenPB = detail['TenPB']
+        SDT = detail['SDT']
+        MaTP = detail['MaTP']
+        DIACHI = detail['DIACHI']
+        
+        cur.execute("""
+                    SELECT * 
+                    FROM qlnv_nhanvien
+                    WHERE MaNhanVien = %s 
+                    """, (MaTP, ))
+
+        if (len(cur.fetchall()) != 1):
+            return render_template('phongban/form_add_data_phong_ban.html',
+                                   err = "Không tồn lại mã nhân viên " + MaTP,
+                           congty = session['congty'],
+                           my_user = session['username'])
+        
+        cur.execute("""
+                    SELECT * 
+                    FROM qlnv_phongban
+                    WHERE MaTruongPhong = %s 
+                    """, (MaTP, ))
+        
+        if (len(cur.fetchall()) != 0):
+            return render_template('phongban/form_add_data_phong_ban.html',
+                                   err = "Nhân viên " + MaTP + " đã làm trưởng phòng phòng khác",
+                           congty = session['congty'],
+                           my_user = session['username'])
+            
+        cur.execute("""
+                    SELECT * 
+                    FROM qlnv_phongban
+                    WHERE MaPB = %s 
+                    """, (MaPB, ))
+        
+        if (len(cur.fetchall()) != 0):
+            return render_template('phongban/form_add_data_phong_ban.html',
+                                   err = "Mã " + MaPB + " đã tồn tại",
+                           congty = session['congty'],
+                           my_user = session['username'])
+        cur.execute("""
+                    INSERT INTO `qlnv_phongban` (`MaPB`, `TenPB`, `diachi`, `sodt`, `MaTruongPhong`) 
+                    VALUES (%s, %s, %s, %s, %s);
+                    """, (MaPB, TenPB, DIACHI, SDT, MaTP))
+        mysql.connection.commit()
+        return redirect(url_for('view_all_phong_ban'))
+    return render_template('phongban/form_add_data_phong_ban.html',
+                           congty = session['congty'],
+                           my_user = session['username'])
+
+@login_required
+@app.route('/form_add_thuong_phat_phong_ban/<string:maPB>', methods=['GET','POST'])
+def form_add_thuong_phat_phong_ban(maPB):
+    cur = mysql.connection.cursor()
+    
+    dct_type = {
+        'Thưởng':0,
+        'Kỷ luật':1
+    }
+    
+    if request.method == 'POST':
+        detail = request.form
+        MaNV = detail['MaNV']
+        LyDo = detail['LyDo']
+        Loai = dct_type[detail['Loai']]
+        Tien = detail['Tien']
+        Ngay = detail['Ngay']
+        GhiChu = detail['GhiChu']
+        
+        cur.execute("""
+                    SELECT * 
+                    FROM qlnv_nhanvien
+                    WHERE MaNhanVien = %s AND MaPhongBan = %s
+                    """, (MaNV, maPB))
+
+        if (len(cur.fetchall()) != 1):
+            return render_template('phongban/form_add_thuong_phat_phong_ban.html',
+                                   err = "Không tồn lại mã nhân viên " + MaNV + " ở phòng ban này",
+                                   maPB = maPB,
+                                    type = list(dct_type.keys()),
+                           congty = session['congty'],
+                           my_user = session['username'])
+            
+        cur.execute("""
+                    INSERT INTO `qlnv_thuongphat` (`id`, `MaNV`, `Loai`, `LyDo`, `Tien`, `Ngay`, `GhiChu`)
+                    VALUES (NULL, %s, %s, %s, %s, %s, %s);
+                    """, (MaNV, Loai, LyDo, Tien, Ngay, GhiChu ))
+        mysql.connection.commit()
+        return redirect(url_for('view_phong_ban', maPB = maPB))
+    
+    return render_template('phongban/form_add_thuong_phat_phong_ban.html',
+                           maPB = maPB,
+                           type = list(dct_type.keys()),
+                           congty = session['congty'],
+                           my_user = session['username'])
+    
+@login_required
+@app.route('/view_phat_phong_ban/<string:maPB>')
+def view_phat_phong_ban(maPB):
+    cur = mysql.connection.cursor()
+    
+    cur.execute("""SELECT *
+                FROM qlnv_phongban
+                WHERE MaPB = %s
+                ORDER BY MaPB ASC""", (maPB, ))
+    raw_data = cur.fetchall()
+    
+    if (len(raw_data) == 0):
+        return "Error"
+    
+    cur.execute("""SELECT COUNT(nv.MaNhanVien)
+                FROM qlnv_nhanvien nv
+                RIGHT JOIN qlnv_phongban pb ON nv.MaPhongBan = pb.MaPB
+                WHERE MaPB = %s
+                GROUP BY MaPB
+                ORDER BY MaPB ASC
+                """, (maPB, ))
+    count_data = cur.fetchall()[0]
+    
+    phongban = []
+    for elm in raw_data[0]:
+        phongban.append(elm)
+    phongban.append(count_data[0])
+    
+    cur.execute("""
+                SELECT COUNT(*)
+                FROM qlnv_thuongphat tp
+                JOIN qlnv_nhanvien nv ON tp.MaNV = nv.MaNhanVien
+                WHERE nv.MaPhongBan = %s
+                AND tp.Loai = 0
+                ORDER BY tp.Ngay DESC
+                """, (maPB, ))
+    num_thuong = cur.fetchall()[0][0]
+    
+    cur.execute("""
+                SELECT tp.* , nv.TenNV
+                FROM qlnv_thuongphat tp
+                JOIN qlnv_nhanvien nv ON tp.MaNV = nv.MaNhanVien
+                WHERE nv.MaPhongBan = %s
+                AND tp.Loai = 1
+                ORDER BY tp.Ngay DESC
+                """, (maPB, ))
+    phat_phong_ban = cur.fetchall()
+    
+    return render_template('phongban/view_phat_phong_ban.html',
+                           num_thuong = num_thuong,
+                           num_phat = len(phat_phong_ban),
+                           phongban = phongban,
+                           phat_phong_ban = phat_phong_ban,
+                           congty = session['congty'],
+                           my_user = session['username'])
+    
+@login_required
+@app.route('/view_thuong_phong_ban/<string:maPB>')
+def view_thuong_phong_ban(maPB):
+    cur = mysql.connection.cursor()
+    
+    cur.execute("""SELECT *
+                FROM qlnv_phongban
+                WHERE MaPB = %s
+                ORDER BY MaPB ASC""", (maPB, ))
+    raw_data = cur.fetchall()
+    
+    if (len(raw_data) == 0):
+        return "Error"
+    
+    cur.execute("""SELECT COUNT(nv.MaNhanVien)
+                FROM qlnv_nhanvien nv
+                RIGHT JOIN qlnv_phongban pb ON nv.MaPhongBan = pb.MaPB
+                WHERE MaPB = %s
+                GROUP BY MaPB
+                ORDER BY MaPB ASC
+                """, (maPB, ))
+    count_data = cur.fetchall()[0]
+    
+    phongban = []
+    for elm in raw_data[0]:
+        phongban.append(elm)
+    phongban.append(count_data[0])
+    
+    cur.execute("""
+                SELECT COUNT(*)
+                FROM qlnv_thuongphat tp
+                JOIN qlnv_nhanvien nv ON tp.MaNV = nv.MaNhanVien
+                WHERE nv.MaPhongBan = %s
+                AND tp.Loai = 1
+                ORDER BY tp.Ngay DESC
+                """, (maPB, ))
+    num_phat = cur.fetchall()[0][0]
+    
+    cur.execute("""
+                SELECT tp.* , nv.TenNV
+                FROM qlnv_thuongphat tp
+                JOIN qlnv_nhanvien nv ON tp.MaNV = nv.MaNhanVien
+                WHERE nv.MaPhongBan = %s
+                AND tp.Loai = 0
+                ORDER BY tp.Ngay DESC
+                """, (maPB, ))
+    thuong_phong_ban = cur.fetchall()
+    
+    return render_template('phongban/view_thuong_phong_ban.html',
+                           num_phat = num_phat,
+                           num_thuong = len(thuong_phong_ban),
+                           phongban = phongban,
+                           thuong_phong_ban = thuong_phong_ban,
+                           congty = session['congty'],
+                           my_user = session['username'])
+
+@login_required
+@app.route('/form_update_thuong_phat_phong_ban/<string:maPB>_<string:id>', methods=['GET','POST'])
+def form_update_thuong_phat_phong_ban(maPB, id):
+    cur = mysql.connection.cursor()
+    
+    dct_type = {
+        'Thưởng':0,
+        'Kỷ luật':1
+    }
+    
+    cur.execute("""
+                SELECT * FROM qlnv_thuongphat
+                WHERE id = %s
+                """, (id, ))
+    thuongphat = cur.fetchall()
+    
+    if (len(thuongphat) == 0):
+        return "Error"
+    
+    thuongphat = thuongphat[0]
+    
+    if request.method == 'POST':
+        detail = request.form
+        MaNV = thuongphat[1]
+        LyDo = detail['LyDo']
+        Loai = dct_type[detail['Loai']]
+        Tien = detail['Tien']
+        Ngay = detail['Ngay']
+        GhiChu = detail['GhiChu']
+            
+        cur.execute("""
+                    UPDATE `qlnv_thuongphat` 
+                    SET `Loai` = %s, `LyDo` = %s, `Tien` = %s, `Ngay` = %s, `GhiChu` = %s
+                    WHERE `id` = %s;
+                    """, (Loai, LyDo, Tien, Ngay, GhiChu, thuongphat[0]))
+        mysql.connection.commit()
+        return redirect(url_for('view_phong_ban', maPB = maPB))
+    
+    return render_template('phongban/form_update_thuong_phat_phong_ban.html',
+                           maPB = maPB,
+                           type = list(dct_type.keys()),
+                           thuongphat = thuongphat,
+                           congty = session['congty'],
+                           my_user = session['username'])
+    
+@login_required
+@app.route('/delete_thuong_phat/<string:maPB>_<string:id>')
+def delete_thuong_phat(maPB, id):
+    cur = mysql.connection.cursor()
+    
+    cur.execute("""
+                SELECT * 
+                FROM qlnv_thuongphat
+                WHERE id = %s
+                """, (id, ))
+    if (len(cur.fetchall()) == 0):
+        return "Error"
+    
+    cur.execute("""
+                DELETE FROM qlnv_thuongphat
+                WHERE id = %s
+                """, (id, ))
+    mysql.connection.commit()
+    return redirect(url_for('view_phong_ban', maPB = maPB))
 #
 # ------------------ PHONG BAN ------------------------
 #
@@ -2374,6 +2761,53 @@ def view_all_thoi_gian_cong_tac():
                            thoigiancongtac = thoigiancongtac,
                            congty = session['congty'],
                            my_user = session['username'])
+
+@login_required
+@app.route("/get_print_all_thoi_gian_cong_tac")
+def get_print_all_thoi_gian_cong_tac():
+    cur = mysql.connection.cursor()
+    cur.execute("""
+                SELECT nv.MaNhanVien, nv.TenNV, cv.TenCV, pb.TenPB, COUNT(tg.MaNV)
+                FROM qlnv_nhanvien nv
+                RIGHT JOIN qlnv_thoigiancongtac tg ON tg.MaNV = nv.MaNhanVien
+                JOIN qlnv_chucvu cv ON cv.MaCV = nv.MaChucVu
+                JOIN qlnv_phongban pb ON pb.MaPB = nv.MaPhongBan
+                GROUP BY nv.MaNhanVien
+                ORDER BY nv.MaNhanVien ASC
+                """)
+    thoigiancongtac = cur.fetchall()
+    
+    return render_template("thoigiancongtac/table_print_all_thoi_gian_cong_tac.html",
+                           thoigiancongtac = thoigiancongtac)
+
+@login_required
+@app.route("/get_all_thoi_gian_cong_tac_pdf")
+def get_all_thoi_gian_cong_tac_pdf():
+    pathFile = app.config['SAVE_FOLDER_PDF']  + "/Thoi_Gian_Cong_Tac.pdf"
+    pdfkit.from_url("/".join(request.url.split("/")[:-1:]) + '/get_print_all_thoi_gian_cong_tac' ,pathFile)
+    return send_file(pathFile, as_attachment=True)
+
+@login_required
+@app.route("/get_all_thoi_gian_cong_tac_excel")
+def get_all_thoi_gian_cong_tac_excel():
+    cur = mysql.connection.cursor()
+    cur.execute("""
+                SELECT nv.MaNhanVien, nv.TenNV, cv.TenCV, pb.TenPB, COUNT(tg.MaNV)
+                FROM qlnv_nhanvien nv
+                RIGHT JOIN qlnv_thoigiancongtac tg ON tg.MaNV = nv.MaNhanVien
+                JOIN qlnv_chucvu cv ON cv.MaCV = nv.MaChucVu
+                JOIN qlnv_phongban pb ON pb.MaPB = nv.MaPhongBan
+                GROUP BY nv.MaNhanVien
+                ORDER BY nv.MaNhanVien ASC
+                """)
+    thoigiancongtac = cur.fetchall()
+    
+    column_name = ['MaNhanVien','TenNV' ,'TenCV_HienTai', 'TenPB', 'SoChuVuDaLam']
+    data = pd.DataFrame.from_records(thoigiancongtac, columns=column_name)
+    data = data.set_index('MaNhanVien')
+    pathFile = app.config['SAVE_FOLDER_EXCEL'] + "/Thoi_Gian_Cong_Tac.xlsx"
+    data.to_excel(pathFile)
+    return send_file(pathFile, as_attachment=True)
 
 @login_required
 @app.route("/view_thoi_gian_cong_tac/<string:maNV>")
@@ -2409,6 +2843,101 @@ def view_thoi_gian_cong_tac(maNV):
                            congty = session['congty'],
                            my_user = session['username'])
     
+@login_required
+@app.route("/delete_thoi_gian_cong_tac/<string:id>")
+def delete_thoi_gian(id):
+    cur = mysql.connection.cursor()
+    cur.execute("""
+                SELECT *
+                FROM qlnv_thoigiancongtac
+                WHERE id = %s
+                """, (id, ))
+    tg_cong_tac = cur.fetchall()
+    
+    if (len(tg_cong_tac) == 0):
+        return "Error"
+    
+    cur.execute("""
+                DELETE FROM qlnv_thoigiancongtac
+                WHERE id = %s
+                """, (id, ))
+    
+    mysql.connection.commit()
+    return redirect(url_for('view_all_thoi_gian_cong_tac'))
+
+@login_required
+@app.route("/get_print_thoi_gian_cong_tac/<string:maNV>")
+def get_print_thoi_gian_cong_tac(maNV):
+    cur = mysql.connection.cursor()
+    cur.execute("""
+                 SELECT nv.TenNV
+                 FROM qlnv_nhanvien nv
+                 WHERE nv.MaNhanVien = %s
+                 """, (maNV, ))
+    TenNV = cur.fetchall()
+    if (len(TenNV) == 0):
+        return "Error"
+    
+    TenNV = TenNV[0][0]
+    
+    cur.execute("""
+                SELECT tg.*, cv.TenCV
+                FROM qlnv_thoigiancongtac tg
+                JOIN qlnv_chucvu cv ON tg.MaCV = cv.MaCV
+                WHERE MaNV = %s
+                ORDER BY NgayNhanChuc DESC
+                """, (maNV, ))
+    thoigiancongtac = cur.fetchall()
+    
+    if (len(thoigiancongtac) == 0):
+        return "Error"
+    
+    return render_template("thoigiancongtac/table_print_thoi_gian_cong_tac.html",
+                           thoigiancongtac = thoigiancongtac,
+                           TenNV = TenNV,
+                           MaNV = maNV)
+
+@login_required
+@app.route("/get_thoi_gian_cong_tac_excel/<string:maNV>")
+def get_thoi_gian_cong_tac_excel(maNV):
+    cur = mysql.connection.cursor()
+    cur.execute("""
+                 SELECT nv.TenNV
+                 FROM qlnv_nhanvien nv
+                 WHERE nv.MaNhanVien = %s
+                 """, (maNV, ))
+    TenNV = cur.fetchall()
+    if (len(TenNV) == 0):
+        return "Error"
+    
+    TenNV = TenNV[0][0]
+    
+    cur.execute("""
+                SELECT tg.*, cv.TenCV
+                FROM qlnv_thoigiancongtac tg
+                JOIN qlnv_chucvu cv ON tg.MaCV = cv.MaCV
+                WHERE MaNV = %s
+                ORDER BY NgayNhanChuc DESC
+                """, (maNV, ))
+    thoigiancongtac = cur.fetchall()
+    
+    if (len(thoigiancongtac) == 0):
+        return "Error"
+    
+    column_name = ['id','MaNV' ,'MaCV', 'NgayNhanChuc', 'NgayKetThuc', 'DuongNhiem', 'TenCV']
+    data = pd.DataFrame.from_records(thoigiancongtac, columns=column_name)
+    data = data.set_index('id')
+    pathFile = app.config['SAVE_FOLDER_EXCEL'] + "/Thoi_Gian_Cong_Tac_"+ maNV + ".xlsx"
+    data.to_excel(pathFile)
+    return send_file(pathFile, as_attachment=True)
+    
+    
+@login_required
+@app.route("/get_thoi_gian_cong_tac_pdf/<string:maNV>")
+def get_thoi_gian_cong_tac_pdf(maNV):
+    pathFile = app.config['SAVE_FOLDER_PDF']  + "/Thoi_Gian_Cong_Tac_"+ maNV + ".pdf"
+    pdfkit.from_url("/".join(request.url.split("/")[:-2:]) + '/get_print_thoi_gian_cong_tac/' + maNV ,pathFile)
+    return send_file(pathFile, as_attachment=True)
 #
 # ------------------ Thoi gian cong tac ------------------------
 #

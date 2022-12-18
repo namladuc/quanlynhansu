@@ -2,46 +2,49 @@
 <html lang="en">
 
 <head>
-    <title>Phòng ban {{phongban[1]}} | Quản trị Admin</title>
+    <title>Phòng ban | Quản trị Admin</title>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- Main CSS-->
     <link rel="stylesheet" href="{{ url_for('static', filename='doc/css/main.css') }}">
     <script src="{{url_for('static', filename='js/displaytime/displaytime.js')}}"></script>
-    <link rel="shortcut icon" type="image/x-icon" href="{{ url_for('static', filename=congty[2])}}"/>
+    <link rel="shortcut icon" type="image/x-icon" href="{{ url_for('static', filename=congty[2])}}" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/boxicons@latest/css/boxicons.min.css">
     <!-- or -->
     <link rel="stylesheet" href="https://unpkg.com/boxicons@latest/css/boxicons.min.css">
-    <!-- Add Update -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='doc/css/addupdate.css') }}">
     <!-- Font-icon css-->
     <link rel="stylesheet" type="text/css"
         href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
-    <script src="http://code.jquery.com/jquery.min.js" type="text/javascript"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.js"></script>
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.css">
+
     <!-- Phòng ban -->
     <link rel="stylesheet" href="{{ url_for('static', filename='doc/css/phongban.css') }}">
 </head>
 
-<body class="app sidebar-mini rtl">
+<body onload="time()" class="app sidebar-mini rtl">
     <!-- Navbar-->
     <header class="app-header">
         <!-- Sidebar toggle button--><a class="app-sidebar__toggle" href="#" data-toggle="sidebar"
             aria-label="Hide Sidebar"></a>
         <!-- Navbar Right Menu-->
         <ul class="app-nav">
+
+
             <!-- User Menu-->
-            <li><a class="app-nav__item" href="login"><i class='bx bx-log-out bx-rotate-180'></i> </a>
+            <li><a class="app-nav__item" style="margin: 0 25px 0 0;" href=""><i class='bx bx-bell'></i> </a></li>
+            <li><a class="app-nav__item" href="/logout"><i class='bx bx-log-out bx-rotate-180'></i> </a>
+
             </li>
         </ul>
     </header>
     <!-- Sidebar menu-->
     <div class="app-sidebar__overlay" data-toggle="sidebar"></div>
     <aside class="app-sidebar">
-        <div class="app-sidebar__user"><img class="app-sidebar__user-avatar" src="{{ url_for('static', filename=my_user[7]) }}" width="50px"
+        <div class="app-sidebar__user"><img class="app-sidebar__user-avatar"
+                src="{{ url_for('static', filename=my_user[7]) }}" style="border-radius: 50%;" width="50px"
                 alt="User Image">
             <div>
                 <p class="app-sidebar__user-name"><b>{{my_user[3]}}</b></p>
@@ -52,60 +55,44 @@
         <ul class="app-menu">
             <li><a class="app-menu__item haha"><i class='app-menu__icon bx bx-user'></i>
                     <span class="app-menu__label">Quản lý</span></a></li>
-            <li><a class="app-menu__item " href="/index"><i class='app-menu__icon bx bx-tachometer'></i><span
+            <li><a class="app-menu__item" href="/index"><i class='app-menu__icon bx bx-tachometer'></i><span
                         class="app-menu__label">Bảng điều khiển</span></a></li>
-            <li><a class="app-menu__item" href="/table_data_employees"><i
-                        class='app-menu__icon bx bx-id-card'></i>
+            <li><a class="app-menu__item" href="/table_data_employees"><i class='app-menu__icon bx bx-id-card'></i>
                     <span class="app-menu__label">Quản lý nhân viên</span></a></li>
-            <li><a class="app-menu__item" href="/danh_sach_hop_dong"><i class='app-menu__icon bx bx-user-voice'></i><span
-                        class="app-menu__label">Danh sách hợp đồng</span></a></li>
-            <li><a class="app-menu__item active" href="/view_all_phong_ban"><i class='app-menu__icon bx bxs-business'></i><span
-                class="app-menu__label">Phòng ban</span></a></li>
+            <li><a class="app-menu__item" href="/table_chuc_vu"><i class='app-menu__icon bx bxs-book-content'></i>
+                    <span class="app-menu__label">Quản lý chức vụ</span></a></li>
+            <li><a class="app-menu__item" href="/danh_sach_hop_dong"><i
+                        class='app-menu__icon bx bx-user-voice'></i><span class="app-menu__label">Danh sách hợp
+                        đồng</span></a></li>
+            <li><a class="app-menu__item" href="/table-data-banned.html"><i class='app-menu__icon bx bx-run'></i><span
+                        class="app-menu__label">Quản lý nội bộ
+                    </span></a></li>
             <li><a class="app-menu__item" href="/table_data_money"><i class='app-menu__icon bx bx-dollar'></i><span
                         class="app-menu__label">Bảng kê lương</span></a></li>
             <li><a class="app-menu__item" href="/page_calendar"><i class='app-menu__icon bx bx-calendar-check'></i><span
                         class="app-menu__label">Lịch công tác </span></a></li>
             <li><a class="app-menu__item" href="/danh_sach_cham_cong"><i class='app-menu__icon bx bx-edit-alt'></i><span
                         class="app-menu__label">Danh sách chấm công</span></a></li>
-            <li><a class="app-menu__item" href="/view_all_thoi_gian_cong_tac"><i class='app-menu__icon bx bx-history'></i><span
-                class="app-menu__label">Thời gian công tác</span></a></li>
-
+            <li><a class="app-menu__item" href="/thoi_gian_cong_tac"><i class='app-menu__icon bx bx-edit-alt'></i><span
+                        class="app-menu__label">Thời gian công tác</span></a></li>
+            <li><a class="app-menu__item active" href="/phong_ban"><i class='app-menu__icon bx bxs-business'></i><span
+                        class="app-menu__label">Phòng ban</span></a></li>
         </ul>
     </aside>
     <main class="app-content">
         <div class="app-title">
             <ul class="app-breadcrumb breadcrumb">
                 <li class="breadcrumb-item"><a href="/view_all_phong_ban">Phòng ban</a></li>
-                <li class="breadcrumb-item active"><a href="">Phòng {{phongban[1]}}</a></li>
+                <li class="breadcrumb-item"><a href="/view_phong_ban/{{phongban[0]}}">Phòng {{phongban[1]}}</a></li>
             </ul>
         </div>
         <div class="row">
             <div class="col-md-12">
+
                 <div class="tile">
+
                     <h3 class="tile-title">Tổng quan</h3>
                     <div class="tile-body">
-                        <div class="row element-button">
-
-                            <div class="col-sm-2">
-                                <a class="btn btn-warning" href="/form_update_phong_ban/{{phongban[0]}}" title="Thêm"><i class="fa fa-pencil-square-o"></i>
-                                  Sửa phòng ban</a>
-                              </div>
-
-                              <div class="col-sm-2">
-                                <a class="btn btn-add btn-sm" href="/form_add_thuong_phat_phong_ban/{{phongban[0]}}" title="Thêm"><i class="fas fa-plus"></i>
-                                  Tạo mới khen thưởng / kỷ luật</a>
-                              </div>
-         
-
-                            {% if phongban[-1] == 0 %}
-                            <div class="col-sm-2">
-                              <a class="btn btn-add btn-sm trash" href="/delete_phong_ban/{{phongban[0]}}" title="Thêm"><i class="fas fa-trash-alt"></i>
-                                Xóa phòng ban</a>
-                            </div>
-                            {% endif %}
-                          </div>
-                       
-
                         <div class="dash-cards">
                             <div class="card-single">
                                 <div class="card-body">
@@ -116,10 +103,10 @@
                                     </div>
                                 </div>
                                 <div class="card-footer">
-                                    Đang xem 
+                                    <a href="/view_phong_ban/{{phongban[0]}}">Xem thêm</a>
                                 </div>
                             </div>
-                            
+
                             <div class="card-single" style="background-color: #228B22;">
                                 <div class="card-body">
                                     <span class="bx bxs-award"></span>
@@ -129,10 +116,10 @@
                                     </div>
                                 </div>
                                 <div class="card-footer">
-                                    <a href="/view_thuong_phong_ban/{{phongban[0]}}">View all</a>
+                                    <a href="/view_thuong_phong_ban/{{phongban[0]}}">Xem thêm</a>
+
                                 </div>
                             </div>
-
                             <div class="card-single" style="background-color: #DAA520;">
                                 <div class="card-body">
                                     <span class='bx bx-info-square'></span>
@@ -142,25 +129,8 @@
                                     </div>
                                 </div>
                                 <div class="card-footer">
-                                    <a href="/view_phat_phong_ban/{{phongban[0]}}">View all</a>
+                                    <a href="/view_phat_phong_ban/{{phongban[0]}}">Đang xem</a>
                                 </div>
-                            </div>
-
-                        </div>
-                    </div>
-                </div>
-                
-                 
-                 <div class="row">
-                    <div class="col-md-12">
-        
-                        <div class="tile">
-                            <h3 class="tile-title">Thông tin phòng ban</h3>
-                            <label class="control-label">Tên trưởng phòng: </label>  <span> {{truongphong[0]}} </span> <br>
-                            <label class="control-label">Địa chỉ phòng ban: </label> <span>{{phongban[2]}}</span> <br>
-                            <label class="control-label">Số điện thoại phòng ban: </label> <span>{{phongban[3]}}</span> <br>
-                            <label class="control-label">Số điện thoại trưởng phòng: </label> <span>{{truongphong[1]}}</span> <br>
-                            <div class="tile-body">
                             </div>
                         </div>
                     </div>
@@ -168,56 +138,58 @@
 
                 <div class="row">
                     <div class="col-md-12">
+
                         <div class="tile">
-                            <h3 class="tile-title">Danh sách nhân viên</h3>
+
+                            <h3 class="tile-title">Danh sách vi phạm</h3>
                             <div class="tile-body">
+                                <div class="row element-button">
+                                    <div class="col-sm-2">
+                                        <a class="btn btn-add btn-sm" href="/form_add_thuong_phat_phong_ban/{{phongban[0]}}"><b><i class="fas fa-folder-plus"></i> Thêm nhân viên
+                                              vi phạm</b></a>
+                                    </div>
+        
+                                </div>
                                 <table class="table table-hover table-bordered js-copytextarea" cellpadding="0"
                                     cellspacing="0" border="0" id="sampleTable">
                                     <thead>
                                         <tr>
-                                            <th width="10"><input type="checkbox" id="all"></th>
-                                            <th>Mã nhân viên</th>
-                                            <th width="150">Họ và tên</th>
-                                            <th width="20">Ảnh thẻ</th>
-                                            <th width="300">Địa chỉ</th>
-                                            <th>Ngày sinh</th>
-                                            <th>Giới tính</th>
-                                            <th>SĐT</th>
-                                            <th>Chức vụ</th>
-                                            <th width="50">Tính năng</th>
+                                            <th width="170">Tên nhân viên</th>
+                                            <th width="250">Nội dung vi phạm</th>
+                                            <th width="200">Ngày vi phạm</th>
+                                            <th width="200">Hình thức kỷ luật</th>
+                                            <th width="200">Ghi chú</th>
+                                            <th width="100">Thao tác</th>
+
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {% for data in nhanvien %}
+                                        {% for data in phat_phong_ban %}
                                         <tr>
-                                          <td width="10"><input type="checkbox" id="myChecker" name="check1" value="1"></td>
-                                          <td>{{data[0]}}</td>
-                                          <td>{{data[1]}}</td>
-                                          <td><img class="img-card-person" style="border-radius: 50%;" src="{{url_for('static', filename=data[2])}}" alt=""></td>
-                                          <td>{{data[3]}}</td>
-                                          <td>{{data[4]}}</td>
-                                          <td>{{data[5]}}</td>
-                                          <td>{{data[6]}}</td>
-                                          <td>{{data[7]}}</td>
-                                          <td class="table-td-center">
-                                            <button class="btn btn-primary btn-sm edit" type="button" title="Sửa" id="show-emp">
-                                                <a href="/form_view_update_employees/{{data[0]}}_N"><i class="fa fa-eye" aria-hidden="true"></i></a>
-                                            </button>
-                                          </td>
+                                            <td>{{data[-1]}}</td>
+                                            <td>{{data[3]}}</td>
+                                            <td>{{data[5]}}</td>
+                                            <td style="color: red; font-style: italic;">{{data[4]}}</td>
+                                            <td>{{data[6]}}</td>
+                                            <td>
+                                                <button class="btn btn-primary btn-sm trash" type="button" title="Xóa"
+                                                onclick="deletePhatRow({{data[0]}})"><i class="fas fa-trash-alt"></i>
+                                                </button>
+                                                <button class="btn btn-primary btn-sm edit" type="button" title="Sửa" id="show-emp">
+                                                    <a href="/form_update_thuong_phat_phong_ban/{{phongban[0]}}_{{data[0]}}"><i class="fa fa-eye" aria-hidden="true"></i></a>
+                                                </button>
+                                            </td>
                                         </tr>
                                         {% endfor %}
-                                      </tbody>
+                                    </tbody>
                                 </table>
                             </div>
                         </div>
                     </div>
                 </div>
-               
-              
             </div>
         </div>
     </main>
-
     <!-- Essential javascripts for application to work-->
     <script src="{{url_for('static', filename='doc/js/jquery-3.2.1.min.js')}}"></script>
     <script src="{{url_for('static', filename='doc/js/popper.min.js')}}"></script>
@@ -234,7 +206,25 @@
     <!-- <script type="text/javascript" src="js/plugins/dataTables.bootstrap.min.js"></script> -->
     <script src="{{url_for('static', filename='doc/js/plugins/dataTables.bootstrap.min.js')}}"></script>
     <script type="text/javascript">$('#sampleTable').DataTable();</script>
+    <script>
 
+        function deletePhatRow(id) {
+            swal({
+              title: "Cảnh báo",
+              text: "Bạn có chắc chắn là muốn xóa bản ghi này?", // index = 3
+              buttons: ["Hủy bỏ", "Đồng ý"],
+            })
+              .then((willDelete) => {
+                if (willDelete) {
+                  $.ajax({
+                    url:"/delete_thuong_phat/{{phongban[0]}}" + "_" + id,
+                    context: document.body
+                  })
+                  location.href="/view_phong_ban/{{phongban[0]}}";
+                }
+              });
+          }
+    </script>
 </body>
 
 </html>

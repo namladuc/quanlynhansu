@@ -66,7 +66,7 @@
             class="app-menu__label">Lịch công tác </span></a></li>
       <li><a class="app-menu__item" href="/danh_sach_cham_cong"><i class='app-menu__icon bx bx-edit-alt'></i><span
             class="app-menu__label">Danh sách chấm công</span></a></li>
-      <li><a class="app-menu__item active" href="/view_all_thoi_gian_cong_tac"><i class='app-menu__icon bx bx-edit-alt'></i><span
+      <li><a class="app-menu__item active" href="/view_all_thoi_gian_cong_tac"><i class='app-menu__icon bx bx-history'></i><span
         class="app-menu__label">Thời gian công tác</span></a></li>
     </ul>
   </aside>
@@ -91,23 +91,19 @@
         <div class="tile">
           <div class="tile-body">
             <div class="row element-button">
+              
               <div class="col-sm-2">
-                <a class="btn btn-add btn-sm" href="/form_add_chuc_vu" title="Thêm"><i class="fas fa-plus"></i>
-                  Tạo mới thời gian công tác</a>
-              </div>
-
-              <div class="col-sm-2">
-                <a class="btn btn-delete btn-sm print-file" type="button" title="In" onclick="myApp.printTableChucVu()"><i
+                <a class="btn btn-delete btn-sm print-file" type="button" title="In" onclick="myApp.printTableTGCT()"><i
                     class="fas fa-print"></i> In dữ liệu</a>
               </div>
 
               <div class="col-sm-2">
-                <a class="btn btn-excel btn-sm" href="/get_chuc_vu_table_excel" title="In"><i class="fas fa-file-excel"></i
+                <a class="btn btn-excel btn-sm" href="/get_all_thoi_gian_cong_tac_excel" title="In"><i class="fas fa-file-excel"></i
                     > Xuất Excel</a>
               </div>
 
               <div class="col-sm-2">
-                <a class="btn btn-delete btn-sm pdf-file" type="button" title="In" href="/get_chuc_vu_table_pdf"><i
+                <a class="btn btn-delete btn-sm pdf-file" type="button" title="In" href="/get_all_thoi_gian_cong_tac_pdf"><i
                     class="fas fa-file-pdf"></i> Xuất PDF</a>
               </div>
 
@@ -207,53 +203,15 @@
         });
     }
 
-    oTable = $('#sampleTable').dataTable();
-    $('#all').click(function (e) {
-      $('#sampleTable tbody :checkbox').prop('checked', $(this).is(':checked'));
-      e.stopImmediatePropagation();
-    });
-
     //In dữ liệu
     var myApp = new function () {
-      this.printTableChucVu = function () {
-        var win = window.open('/table_print_chuc_vu', '', 'height=700,width=1400');
+      this.printTableTGCT = function () {
+        var win = window.open('/get_print_all_thoi_gian_cong_tac', '', 'height=700,width=1400');
         win.document.close();
         win.print();
       }
     }
     
-    //Sao chép dữ liệu
-    var copyChucVuareaBtn = document.querySelector('.js-textareacopybtn');
-
-    copyChucVuareaBtn.addEventListener('click', function (event) {
-      var copyTextarea = document.querySelector('.js-copytextarea');
-      copyTextarea.focus();
-
-      var mytext = copyTextarea.textContent.substring(167,copyTextarea.textContent.length).split("\n")
-
-      var index = 0;
-      var data = [];
-      mytext.forEach(function (text) {
-        if (text.trim().length != 0) {
-            data.push(text.trim());
-            index += 1;
-            if (index == 3) {
-              data.push("\n")
-              index = 0;
-            }
-        }
-      });
-
-      navigator.clipboard.writeText(data.join(" "));
-
-      try {
-        var successful = document.execCommand('copy');
-        var msg = successful ? 'successful' : 'unsuccessful';
-        console.log('Copying text command was ' + msg);
-      } catch (err) {
-        console.log('Oops, unable to copy');
-      }
-    });
   </script>
 </body>
 

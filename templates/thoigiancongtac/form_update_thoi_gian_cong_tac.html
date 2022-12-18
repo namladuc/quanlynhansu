@@ -2,7 +2,7 @@
 <html lang="en">
 
 <head>
-  <title>Trình độ học vấn | {{congty[0]}}</title>
+  <title>Danh sách thời gian công tác | {{congty[0]}}</title>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -13,28 +13,26 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/boxicons@latest/css/boxicons.min.css">
   <!-- or -->
   <link rel="stylesheet" href="https://unpkg.com/boxicons@latest/css/boxicons.min.css">
+
   <!-- Font-icon css-->
   <link rel="stylesheet" type="text/css"
     href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
-  <script src="http://code.jquery.com/jquery.min.js" type="text/javascript"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.js"></script>
   <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.css">
+
 </head>
 
-<body class="app sidebar-mini rtl">
+<body onload="time()" class="app sidebar-mini rtl">
   <!-- Navbar-->
   <header class="app-header">
     <!-- Sidebar toggle button--><a class="app-sidebar__toggle" href="#" data-toggle="sidebar"
       aria-label="Hide Sidebar"></a>
     <!-- Navbar Right Menu-->
     <ul class="app-nav">
-
-
       <!-- User Menu-->
       <li><a class="app-nav__item" style="margin: 0 25px 0 0;" href=""><i class='bx bx-bell'></i> </a></li>
       <li><a class="app-nav__item" href="/logout"><i class='bx bx-log-out bx-rotate-180'></i> </a>
-
       </li>
     </ul>
   </header>
@@ -43,8 +41,8 @@
     <aside class="app-sidebar">
       <div class="app-sidebar__user"><img class="app-sidebar__user-avatar" src="{{ url_for('static', filename=my_user[7]) }}" style="border-radius: 50%;" width="50px"
         alt="User Image">
-            <div>
-                <p class="app-sidebar__user-name"><b>{{my_user[3]}}</b></p>
+        <div>
+            <p class="app-sidebar__user-name"><b>{{my_user[3]}}</b></p>
                 <p class="app-sidebar__user-designation">Chào mừng bạn trở lại</p>
             </div>
         </div>
@@ -54,115 +52,62 @@
           <span class="app-menu__label">Quản lý</span></a></li>
       <li><a class="app-menu__item " href="/index"><i class='app-menu__icon bx bx-tachometer'></i><span
             class="app-menu__label">Bảng điều khiển</span></a></li>
-      <li><a class="app-menu__item active" href="/table_data_employees"><i class='app-menu__icon bx bx-id-card'></i>
+      <li><a class="app-menu__item" href="/table_data_employees"><i class='app-menu__icon bx bx-id-card'></i>
           <span class="app-menu__label">Quản lý nhân viên</span></a></li>
-          <li><a class="app-menu__item" href="/table_chuc_vu"><i class='app-menu__icon bx bxs-book-content'></i>
-            <span class="app-menu__label">Quản lý chức vụ</span></a></li>
+      <li><a class="app-menu__item" href="/table_chuc_vu"><i class='app-menu__icon bx bxs-book-content'></i>
+        <span class="app-menu__label">Quản lý chức vụ</span></a></li>
       <li><a class="app-menu__item" href="/danh_sach_hop_dong"><i class='app-menu__icon bx bx-user-voice'></i><span
             class="app-menu__label">Danh sách hợp đồng</span></a></li>
-      <li><a class="app-menu__item" href="/table-data-banned"><i class='app-menu__icon bx bx-run'></i><span
-            class="app-menu__label">Quản lý nội bộ
-          </span></a></li>
+      <li><a class="app-menu__item" href="/view_all_phong_ban"><i class='app-menu__icon bx bxs-business'></i><span
+                        class="app-menu__label">Phòng ban</span></a></li>
       <li><a class="app-menu__item" href="/table_data_money"><i class='app-menu__icon bx bx-dollar'></i><span
             class="app-menu__label">Bảng kê lương</span></a></li>
       <li><a class="app-menu__item" href="/page_calendar"><i class='app-menu__icon bx bx-calendar-check'></i><span
             class="app-menu__label">Lịch công tác </span></a></li>
       <li><a class="app-menu__item" href="/danh_sach_cham_cong"><i class='app-menu__icon bx bx-edit-alt'></i><span
             class="app-menu__label">Danh sách chấm công</span></a></li>
-      <li><a class="app-menu__item" href="/view_all_thoi_gian_cong_tac"><i class='app-menu__icon bx bx-history'></i><span
+      <li><a class="app-menu__item active" href="/view_all_thoi_gian_cong_tac"><i class='app-menu__icon bx bx-history'></i><span
         class="app-menu__label">Thời gian công tác</span></a></li>
     </ul>
   </aside>
   <main class="app-content">
     <div class="app-title">
-      <ul class="app-breadcrumb breadcrumb">
-        <li class="breadcrumb-item"><a href="/form_add_data_employees">Danh sách nhân viên</a></li>
-        <li class="breadcrumb-item"><a href="/form_add_trinhdohocvan">Danh sách trình độ học vấn</a></li>
+      <ul class="app-breadcrumb breadcrumb side">
+        <li class="breadcrumb-item active"><a href="#"><b>Danh sách thời gian công tác</b></a></li>
       </ul>
+      <div id="clock"></div>
     </div>
+
     <div class="row">
 
-      <div class="col-md-12" id="take_no_people" style="display: none">
-        <div class="alert alert-danger" style="text-align: left; font-size: 12px; background-color: red;">
-        <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
-        <strong id="errordelete" style="display: none"></strong> 
+        <div class="col-md-12" id="take_no_people" style="display: none">
+            <div class="alert alert-danger" style="text-align: left; font-size: 12px; background-color: red;">
+            <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
+            <strong id="errordelete" style="display: none"></strong> 
+            </div>
         </div>
-    </div>
 
       <div class="col-md-12">
-
         <div class="tile">
-
-          <h3 class="tile-title">Trình độ học vấn</h3>
           <div class="tile-body">
-            <div class="row element-button">
-              <div class="col-sm-2">
-                <a class="btn btn-add btn-sm" href="/form_add_trinhdohocvan"><b><i
-                    class="fas fa-folder-plus"></i> Tạo trình độ học vấn mới</b></a>
-              </div>
-
-              <div class="col-sm-2">
-                <a class="btn btn-add btn-sm" href="/form_view_update_trinh_do_hoc_van/V_N" title="Thêm"><i class="fa fa-pencil-square-o"></i>
-                  Sửa trình độ học vấn</a>
-              </div>
-
-              <div class="col-sm-2">
-                <a class="btn btn-delete btn-sm print-file" type="button" title="In" onclick="myApp.printTableTDHV ()"><i
-                    class="fas fa-print"></i> In dữ liệu</a>
-              </div>
-              <div class="col-sm-2">
-                <a class="btn btn-delete btn-sm print-file js-textareacopybtn" type="button" title="Sao chép"><i
-                    class="fas fa-copy"></i> Sao chép</a>
-              </div>
-
-              <div class="col-sm-2">
-                <a class="btn btn-excel btn-sm" href="/get_table_trinh_do_hoc_van_excel" title="In"><i class="fas fa-file-excel"></i> Xuất Excel</a>
-              </div>
-              <div class="col-sm-2">
-                <a class="btn btn-delete btn-sm pdf-file" type="button" title="In" href="/get_table_trinh_do_hoc_van_pdf"><i
-                    class="fas fa-file-pdf"></i> Xuất PDF</a>
-              </div>
-              <div class="col-sm-2">
-                <a class="btn btn-delete btn-sm" type="button" title="Xóa" onclick="deleteMoreTDHVRow(this)"><i
-                    class="fas fa-trash-alt"></i> Xóa tất cả các mục đã chọn</a>
-              </div>
-            </div>
-
-            <table class="table table-hover table-bordered js-copytextarea" cellpadding="0" cellspacing="0" border="0"
-              id="sampleTable">
-              <thead>
-                <tr>
-                  <th width="10"><input type="checkbox" id="all"></th>
-                  <th width="100">Mã TĐHV</th>
-                  <th width="300">Loại Trình độ học vấn</th>
-                  <th width="300">Chuyên ngành</th>
-                  <th width="100">Số người hiện tại</th>
-                </tr>
-              </thead>
-              <tbody>
-                {% for data in trinhdohocvan %}
-                <tr>
-                  <td width="10"><input type="checkbox" name="check1" value="1"></td>
-                  <td>{{data[0]}}</td>
-                  <td>{{data[1]}}</td>
-                  <td>{{data[2]}}</td>
-                  <td class="table-td-center">
-                    <button class="btn btn-outline-primary" type="button" title="Ấn vào để xem các nhân viên có trình độ học vấn là {{data[1]}}-{{data[2]}}"
-                    onclick="location.href='/table_trinh_do_hoc_van/{{data[0]}}';">{{data[3]}}
-                    </button>
-                  </td>
-                {% endfor %}
-              </tbody>
-            </table>
-
+    
+              
+            
+          </div>
+        </div>
+      </div>
+    </div>
   </main>
+
   <!-- Essential javascripts for application to work-->
   <script src="{{url_for('static', filename='doc/js/jquery-3.2.1.min.js')}}"></script>
   <script src="{{url_for('static', filename='doc/js/popper.min.js')}}"></script>
   <script src="{{url_for('static', filename='doc/js/bootstrap.min.js')}}"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
   <script src="{{url_for('static', filename='doc/js/main.js')}}"></script>
   <!-- The javascript plugin to display page loading on top-->
   <script src="{{url_for('static', filename='doc/js/plugins/pace.min.js')}}"></script>
+  <!-- Page specific javascripts-->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.js"></script>
   <!-- Data table plugin-->
   <!-- <script type="text/javascript" src="js/plugins/jquery.dataTables.min.js"></script> -->
@@ -172,46 +117,47 @@
   <script type="text/javascript">$('#sampleTable').DataTable();</script>
   <script>
     // Xóa các mục đã chọn
-    function deleteMoreTDHVRow(r) {
+    function deleteMoreChucVuRow(r) {
       var numRow = document.getElementById("sampleTable").rows.length;
-      var id_tdhv = [];
-      var name_tdhv = [];
+      var id_cv = [];
+      var name_cv = [];
       var num_people = [];
       $('#sampleTable tbody :checkbox').each(function () {
           let i = this.parentNode.parentNode.rowIndex;
           if (this.checked) {
-            id_tdhv.push(this.parentNode.parentNode.childNodes[3].innerText);
-            name_tdhv.push(this.parentNode.parentNode.childNodes[5].innerText + " - " + this.parentNode.parentNode.childNodes[7].innerText);
-            num_people.push(this.parentNode.parentNode.childNodes[9].innerText.replace("\n","").trim());
+            id_cv.push(this.parentNode.parentNode.childNodes[3].textContent);
+            name_cv.push(this.parentNode.parentNode.childNodes[5].textContent);
+            num_people.push(this.parentNode.parentNode.childNodes[7].textContent.replace("\n","").trim());
           }
       });
 
       swal({
         title: "Cảnh báo",
-        text: "Bạn có chắc chắn là muốn xóa các trình độ học vấn này?", // index = 3
+        text: "Bạn có chắc chắn là muốn xóa các nhân viên này?", // index = 3
         buttons: ["Hủy bỏ", "Đồng ý"],
       })
         .then((willDelete) => {
           if (willDelete) {
             var check = false;
-            for (let i = 0; i < id_tdhv.length; i++) {
+            for (let i = 0; i < id_cv.length; i++) {
               if (num_people[i] == 0) {
                 $.ajax({
-                  url:"/delete_trinh_do_hoc_van/" + id_tdhv[i],
+                  url:"/delete_chuc_vu/" + id_cv[i],
                   context: document.body
                 })
               } else {
                 check = true;
                 $('#take_no_people').show();
-                $('#errordelete').text(name_tdhv[i] + " có số người không trống !").show();
+                $('#errordelete').text(name_cv[i] + " có số nhân viên không trống !").show();
                 break;
               }
             }
+
             if (!check) {
               location.reload();
             }
           }
-         
+          
         });
     }
 
@@ -223,8 +169,8 @@
 
     //In dữ liệu
     var myApp = new function () {
-      this.printTableTDHV = function () {
-        var win = window.open('/table_print_trinh_do_hoc_van', '', 'height=700,width=1400');
+      this.printTableChucVu = function () {
+        var win = window.open('/table_print_chuc_vu', '', 'height=700,width=1400');
         win.document.close();
         win.print();
       }
@@ -245,7 +191,7 @@
         if (text.trim().length != 0) {
             data.push(text.trim());
             index += 1;
-            if (index == 4) {
+            if (index == 3) {
               data.push("\n")
               index = 0;
             }
