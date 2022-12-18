@@ -1,8 +1,14 @@
 import hashlib
-from flask import Flask, render_template, request, redirect, url_for, session, json, jsonify, send_file, render_template_string
+from flask import Flask, render_template, request, redirect, url_for, session
+from flask import Response, json, jsonify, send_file, render_template_string
 from flask_mysqldb import MySQL
 from werkzeug.utils import secure_filename
+from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
+from matplotlib.figure import Figure
+import seaborn as sns
+import matplotlib.pyplot as plt
 import os
+import io
 import MySQLdb.cursors
 import datetime
 import calendar
@@ -1473,6 +1479,93 @@ def table_cham_cong_ngay_trong_thang(maNV,year,month):
                            my_user = session['username'])
 
 @login_required
+@app.route("/graph_cham_cong_ngay/<string:maNV>_<string:year>_<string:month>")
+def graph_cham_cong_ngay(maNV,year,month):
+    cur = mysql.connection.cursor()
+    
+    cur.execute("""
+                SELECT TenNV
+                FROM qlnv_nhanvien
+                WHERE MaNhanVien = %s
+                """, (maNV,))
+    tenNV = cur.fetchall()
+    
+    if (len(tenNV) == 0):
+        return "Error"
+    
+    tenNV = tenNV[0][0]
+    
+    return render_template('chamcong/graph_cham_cong_ngay.html',
+                           TenNV = tenNV,
+                           month = month,
+                           maNV = maNV,
+                           year = year,
+                           congty = session['congty'],
+                           my_user = session['username'])
+    
+@login_required
+@app.route("/get_plot_cham_cong_tong_ket_thang/<string:maNV>_<string:year>_<string:month>")
+def get_plot_cham_cong_tong_ket_thang(maNV,year,month):
+    sql = """
+        SELECT * 
+        FROM qlnv_chamcong cc 
+        WHERE YEAR(cc.Ngay) = %s AND MONTH(cc.Ngay) = %s AND MaNV = %s
+        ORDER BY cc.Ngay ASC, cc.GioVao ASC;
+    """
+    val = (year, month, maNV)
+    
+    cur = mysql.connection.cursor()
+    
+    cur.execute("""
+                SELECT TenNV
+                FROM qlnv_nhanvien
+                WHERE MaNhanVien = %s
+                """, (maNV,))
+    tenNV = cur.fetchall()
+    
+    if (len(tenNV) == 0):
+        return "Error"
+    
+    tenNV = tenNV[0][0]
+    
+    cur.execute(sql, val)
+    chamcong = cur.fetchall()
+    
+    if (len(chamcong) == 0):
+        return "Error"
+    
+    date_str = []
+    date_start = datetime.datetime(int(year), int(month), 1)
+    date_step = datetime.timedelta(days=1)
+    while (int(date_start.month) == int(month)):
+        date_str.append(date_start.strftime("%d-%m-%Y")) 
+        date_start += date_step
+        
+    # lấy data tổng kết ngày từ bảng qlnv_chamcongngay
+    sql = "SELECT *"
+    sql += " FROM qlnv_chamcongngay WHERE Thang = %s AND MaNV = %s AND Nam = %s"
+    cur.execute(sql,(month, maNV, year))
+    data_tong_ket = cur.fetchall()
+    
+    if (len(data_tong_ket) == 0):
+        return "Error"
+    
+    data_tong_ket = data_tong_ket[0]
+    data_day_tong_ket = [data_tong_ket[4 + i] if data_tong_ket[4 + i] != -1 else 0 for i in range(1,data_tong_ket[4]+1)]
+    cur.close()
+    
+    fig,axis=plt.subplots(figsize=(7,8))
+    axis=sns.set(style="darkgrid")
+    g = sns.barplot(x= date_str, y =data_day_tong_ket)
+    g.set_title("Biểu đồ cho nhân viên " + tenNV + " trong tháng " + month + " năm " + year)
+    g.set_xlabel("Ngày")
+    g.set_ylabel("Tổng số giờ làm trong ngày")
+    g.set_xticklabels([int(elm[:2:]) for elm in date_str], rotation = (30), fontsize = 7)
+    output = io.BytesIO()
+    FigureCanvas(fig).print_png(output)
+    return Response(output.getvalue(), mimetype='image/png')
+    
+@login_required
 @app.route("/get_print_cham_cong_ngay_trong_thang/<string:maNV>_<string:year>_<string:month>")
 def get_print_cham_cong_ngay_trong_thang(maNV,year,month):
     sql = """
@@ -2166,6 +2259,182 @@ def form_add_data_cham_cong():
 # ------------------ CHAM CONG ------------------------
 #
 
+#
+# ------------------ PHONG BAN ------------------------
+#
+
+@login_required
+@app.route('/view_all_phong_ban')
+def view_all_phong_ban():
+    cur = mysql.connection.cursor()
+    cur.execute("""SELECT *
+                FROM qlnv_phongban
+                ORDER BY MaPB ASC""")
+    raw_data = cur.fetchall()
+    
+    if (len(raw_data) == 0):
+        return "Error"
+    
+    cur.execute("""SELECT COUNT(nv.MaNhanVien)
+                FROM qlnv_nhanvien nv
+                RIGHT JOIN qlnv_phongban pb ON nv.MaPhongBan = pb.MaPB
+                GROUP BY MaPB
+                ORDER BY MaPB ASC
+                """)
+    count_data = cur.fetchall()
+    
+    phongban = []
+    for i in range(len(raw_data)):
+        tmp_lst = []
+        for elm in raw_data[i]:
+            tmp_lst.append(elm)
+        tmp_lst.append(count_data[i][0])
+        phongban.append(tmp_lst)
+    
+    return render_template("phongban/view_all_phong_ban.html",
+                           phongban = phongban,
+                           congty = session['congty'],
+                           my_user = session['username'])
+        
+    
+@login_required
+@app.route('/view_phong_ban/<string:maPB>')
+def view_phong_ban(maPB):
+    cur = mysql.connection.cursor()
+    cur.execute("""SELECT *
+                FROM qlnv_phongban
+                WHERE MaPB = %s
+                ORDER BY MaPB ASC""", (maPB, ))
+    raw_data = cur.fetchall()
+    
+    if (len(raw_data) == 0):
+        return "Error"
+    
+    cur.execute("""SELECT COUNT(nv.MaNhanVien)
+                FROM qlnv_nhanvien nv
+                RIGHT JOIN qlnv_phongban pb ON nv.MaPhongBan = pb.MaPB
+                WHERE MaPB = %s
+                GROUP BY MaPB
+                ORDER BY MaPB ASC
+                """, (maPB, ))
+    count_data = cur.fetchall()[0]
+    
+    cur.execute("""SELECT nv.MaNhanVien, nv.TenNV, img.PathToImage, nv.DiaChi, DATE_FORMAT(nv.NgaySinh,"%d-%m-%Y"), nv.GioiTinh, nv.DienThoai, cv.TenCV
+                FROM qlnv_nhanvien nv
+                RIGHT JOIN qlnv_phongban pb ON nv.MaPhongBan = pb.MaPB
+                JOIN qlnv_chucvu cv ON nv.MaChucVu = cv.MaCV
+                JOIN qlnv_imagedata img ON nv.ID_profile_image = img.ID_image
+                WHERE MaPB = \"""" + maPB +"\"")
+    nhanvien = cur.fetchall()
+    
+    phongban = []
+    for elm in raw_data[0]:
+        phongban.append(elm)
+    phongban.append(count_data[0])
+    
+    cur.execute("""
+                SELECT nv.TenNV, nv.DienThoai
+                FROM qlnv_nhanvien nv
+                WHERE nv.MaNhanVien = %s
+                """, (phongban[4], ))
+    truongphong = cur.fetchall()[0]
+    
+    return render_template('phongban/view_phong_ban.html',
+                           truongphong = truongphong,
+                           nhanvien = nhanvien,
+                           phongban = phongban,
+                           congty = session['congty'],
+                           my_user = session['username'])
+
+#
+# ------------------ PHONG BAN ------------------------
+#
+
+
+#
+# ------------------ Thoi gian cong tac ------------------------
+#
+
+@login_required
+@app.route("/view_all_thoi_gian_cong_tac")
+def view_all_thoi_gian_cong_tac():
+    cur = mysql.connection.cursor()
+    cur.execute("""
+                SELECT nv.MaNhanVien, nv.TenNV, cv.TenCV, pb.TenPB, COUNT(tg.MaNV)
+                FROM qlnv_nhanvien nv
+                RIGHT JOIN qlnv_thoigiancongtac tg ON tg.MaNV = nv.MaNhanVien
+                JOIN qlnv_chucvu cv ON cv.MaCV = nv.MaChucVu
+                JOIN qlnv_phongban pb ON pb.MaPB = nv.MaPhongBan
+                GROUP BY nv.MaNhanVien
+                ORDER BY nv.MaNhanVien ASC
+                """)
+    thoigiancongtac = cur.fetchall()
+    
+    return render_template("thoigiancongtac/view_all_thoi_gian_cong_tac.html",
+                           thoigiancongtac = thoigiancongtac,
+                           congty = session['congty'],
+                           my_user = session['username'])
+
+@login_required
+@app.route("/view_thoi_gian_cong_tac/<string:maNV>")
+def view_thoi_gian_cong_tac(maNV):
+    cur = mysql.connection.cursor()
+    cur.execute("""
+                 SELECT nv.TenNV
+                 FROM qlnv_nhanvien nv
+                 WHERE nv.MaNhanVien = %s
+                 """, (maNV, ))
+    TenNV = cur.fetchall()
+    if (len(TenNV) == 0):
+        return "Error"
+    
+    TenNV = TenNV[0][0]
+    
+    cur.execute("""
+                SELECT tg.*, cv.TenCV
+                FROM qlnv_thoigiancongtac tg
+                JOIN qlnv_chucvu cv ON tg.MaCV = cv.MaCV
+                WHERE MaNV = %s
+                ORDER BY NgayNhanChuc DESC
+                """, (maNV, ))
+    thoigiancongtac = cur.fetchall()
+    
+    if (len(thoigiancongtac) == 0):
+        return "Error"
+    
+    return render_template("thoigiancongtac/view_thoi_gian_cong_tac.html",
+                           thoigiancongtac = thoigiancongtac,
+                           TenNV = TenNV,
+                           MaNV = maNV,
+                           congty = session['congty'],
+                           my_user = session['username'])
+    
+#
+# ------------------ Thoi gian cong tac ------------------------
+#
+
+
+#
+# ------------------ HOP DONG ------------------------
+#
+@login_required
+@app.route("/danh_sach_hop_dong")
+def danh_sach_hop_dong():
+    cur = mysql.connection.cursor()
+    cur.execute("""
+                SELECT * 
+                FROM qlnv_hopdong
+                """)
+    hopdong = cur.fetchall()
+    
+    return render_template('hopdong/danh_sach_hop_dong.html', 
+                           hopdong = hopdong,
+                           congty = session['congty'],
+                           my_user = session['username'])
+#
+# ------------------ HOP DONG ------------------------
+#
+
 @login_required
 @app.route("/form_add_data_money")
 def form_add_data_money():
@@ -2192,12 +2461,7 @@ def page_calendar():
                            congty = session['congty'],
                            my_user = session['username'])
 
-@login_required
-@app.route("/danh_sach_hop_dong")
-def danh_sach_hop_dong():
-    return render_template('danh_sach_hop_dong.html', 
-                           congty = session['congty'],
-                           my_user = session['username'])
+
 
 # Error Handler
 # @app.errorhandler(404)

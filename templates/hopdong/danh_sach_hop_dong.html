@@ -8,8 +8,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- Main CSS-->
     <link rel="stylesheet" href="{{ url_for('static', filename='doc/css/main.css') }}">
-    <link rel="shortcut icon" type="image/x-icon" href="{{ url_for('static', filename=congty[2])}}" />
     <script src="{{url_for('static', filename='js/displaytime/displaytime.js')}}"></script>
+    <link rel="shortcut icon" type="image/x-icon" href="{{ url_for('static', filename=congty[2])}}" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/boxicons@latest/css/boxicons.min.css">
     <!-- or -->
     <link rel="stylesheet" href="https://unpkg.com/boxicons@latest/css/boxicons.min.css">
@@ -34,7 +34,6 @@
 
             <!-- User Menu-->
             <li><a class="app-nav__item" style="margin: 0 25px 0 0;" href=""><i class='bx bx-bell'></i> </a></li>
-
             <li><a class="app-nav__item" href="/logout"><i class='bx bx-log-out bx-rotate-180'></i> </a>
 
             </li>
@@ -43,8 +42,9 @@
     <!-- Sidebar menu-->
     <div class="app-sidebar__overlay" data-toggle="sidebar"></div>
     <aside class="app-sidebar">
-        <div class="app-sidebar__user"><img class="app-sidebar__user-avatar" src="{{ url_for('static', filename=my_user[7]) }}" style="border-radius: 50%;" width="50px"
-            alt="User Image">
+        <div class="app-sidebar__user"><img class="app-sidebar__user-avatar"
+                src="{{ url_for('static', filename=my_user[7]) }}" style="border-radius: 50%;" width="50px"
+                alt="User Image">
             <div>
                 <p class="app-sidebar__user-name"><b>{{my_user[3]}}</b></p>
                 <p class="app-sidebar__user-designation">Chào mừng bạn trở lại</p>
@@ -54,16 +54,15 @@
         <ul class="app-menu">
             <li><a class="app-menu__item haha"><i class='app-menu__icon bx bx-user'></i>
                     <span class="app-menu__label">Quản lý</span></a></li>
-            <li><a class="app-menu__item" href="index"><i class='app-menu__icon bx bx-tachometer'></i><span
+            <li><a class="app-menu__item " href="index"><i class='app-menu__icon bx bx-tachometer'></i><span
                         class="app-menu__label">Bảng điều khiển</span></a></li>
-            <li><a class="app-menu__item" href="table_data_employees"><i
-                        class='app-menu__icon bx bx-id-card'></i>
+            <li><a class="app-menu__item" href="table_data_employees"><i class='app-menu__icon bx bx-id-card'></i>
                     <span class="app-menu__label">Quản lý nhân viên</span></a></li>
             <li><a class="app-menu__item" href="table_chuc_vu"><i class='app-menu__icon bx bxs-book-content'></i>
-                <span class="app-menu__label">Quản lý chức vụ</span></a></li>
-            <li><a class="app-menu__item" href="danh_sach_hop_dong"><i class='app-menu__icon bx bx-user-voice'></i><span
-                        class="app-menu__label">Danh sách hợp đồng</span></a></li>
-       
+                    <span class="app-menu__label">Quản lý chức vụ</span></a></li>
+            <li><a class="app-menu__item active" href="danh_sach_hop_dong"><i
+                        class='app-menu__icon bx bx-user-voice'></i><span class="app-menu__label">Danh sách hợp
+                        đồng</span></a></li>
             <li><a class="app-menu__item" href="table-data-banned.html"><i class='app-menu__icon bx bx-run'></i><span
                         class="app-menu__label">Quản lý nội bộ
                     </span></a></li>
@@ -71,39 +70,87 @@
                         class="app-menu__label">Bảng kê lương</span></a></li>
             <li><a class="app-menu__item" href="page_calendar"><i class='app-menu__icon bx bx-calendar-check'></i><span
                         class="app-menu__label">Lịch công tác </span></a></li>
-            <li><a class="app-menu__item active" href="danh_sach_cham_cong"><i class='app-menu__icon bx bx-edit-alt'></i><span
+            <li><a class="app-menu__item" href="danh_sach_cham_cong"><i class='app-menu__icon bx bx-edit-alt'></i><span
                         class="app-menu__label">Danh sách chấm công</span></a></li>
-            <li><a class="app-menu__item" href="/view_all_thoi_gian_cong_tac"><i class='app-menu__icon bx bx-edit-alt'></i><span
-                class="app-menu__label">Thời gian công tác</span></a></li>
+            <li><a class="app-menu__item" href="/view_all_thoi_gian_cong_tac"><i
+                        class='app-menu__icon bx bx-edit-alt'></i><span class="app-menu__label">Thời gian công
+                        tác</span></a></li>
         </ul>
     </aside>
     <main class="app-content">
         <div class="app-title">
             <ul class="app-breadcrumb breadcrumb side">
-                <li class="breadcrumb-item active"><a href="#"><b>Danh sách nhân viên</b></a></li>
+                <li class="breadcrumb-item active"><a href="#"><b>Danh sách hợp đồng</b></a></li>
             </ul>
             <div id="clock"></div>
         </div>
-        <table class="table table-hover table-bordered js-copytextarea" cellpadding="0" cellspacing="0" border="0"
-            id="sampleTable">
-            <thead>
-                <tr>
-                    <th width="10"><input type="checkbox" id="all"></th>
-                    <th>Mã Nhân Viên</th>
-                    <th width="150">Họ Và Tên</th>
-                    <th>Ngày</th>
-                    <th>Giờ Vào</th>
-                    <th>Giờ Ra</th>
-                    <th width="300">Thời Gian Làm Việc</th>
-                    <th width="300">Thời Gian Tăng Ca</th>
-                    <th>Trạng thái</th>
-                </tr>
-            </thead>
-        </table>
+        <div class="tile-body">
+            <div class="row element-button">
+
+                <div class="col-sm-2">
+                    <a class="btn btn-add btn-sm" href="/form_add_data_employees" title="Thêm"><i
+                            class="fas fa-plus"></i>
+                        Tạo mới hợp đồng</a>
+                </div>
+
+                <div class="col-sm-2">
+                    <a class="btn btn-delete btn-sm print-file" type="button" title="In" onclick="myApp.printTable()"><i
+                            class="fas fa-print"></i> In dữ liệu</a>
+                </div>
+
+                <div class="col-sm-2">
+                    <a class="btn btn-excel btn-sm" href="/get_data_employees_excel" title="In"><i
+                            class="fas fa-file-excel"></i> Xuất Excel</a>
+                </div>
+
+                <div class="col-sm-2">
+                    <a class="btn btn-delete btn-sm pdf-file" type="button" title="In" href="/get_pdf_data_employees"><i
+                            class="fas fa-file-pdf"></i> Xuất PDF</a>
+                </div>
+
+                <div class="col-sm-2">
+                    <a class="btn btn-delete btn-sm" type="button" title="Xóa tát cả các phần tử đã chọn"
+                        onclick="deleteMoreRow(this)"><i class="fas fa-trash-alt"></i> Xóa phần tử đã chọn </a>
+                </div>
+
+            </div>
+
+            <table class="table table-hover table-bordered js-copytextarea" cellpadding="0" cellspacing="0" border="0"
+                id="sampleTable">
+                <thead>
+                    <tr>
+                        <th width="10"><input type="checkbox" id="all"></th>
+                        <th width="300">Mã Hợp Đồng</th>
+                        <th width="300">Loại Hợp Đồng</th>
+                        <th width="300">Ngày Bắt Đầu</th>
+                        <th width="300">Ngày Kết Thúc</th>
+                        <th width="300">Ghi Chú</th>
+                        <th width="100">Thao tác</th>
+
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for data in hopdong %}
+                    <tr>
+                        <td width="10"><input type="checkbox" id="myChecker" name="check1" value="1"></td>
+                        <td>{{data[1]}}</td>
+                        <td>{{data[2]}}</td>
+                        <td>{{data[3]}}</td>
+                        <td>{{data[4]}}</td>
+                        <td>{{data[5]}}</td>
+                        <td class="table-td-center">
+                            <button class="btn btn-primary btn-sm trash" type="button" title="Xóa"
+                                onclick="deleteRow(this)"><i class="fas fa-trash-alt"></i>
+                            </button>
+                            <button class="btn btn-primary btn-sm edit" type="button" title="Sửa" id="show-emp">
+                                <a href=""><i class="fa fa-eye" aria-hidden="true"></i></a>
+                            </button>
+                        </td>
+                        {% endfor %}
+                </tbody>
+            </table>
         </div>
-        </div>
-        </div>
-        </div>
+
     </main>
 
     <!--
@@ -134,21 +181,6 @@
             e.stopImmediatePropagation();
         });
 
-        //EXCEL
-        // $(document).ready(function () {
-        //   $('#').DataTable({
-
-        //     dom: 'Bfrtip',
-        //     "buttons": [
-        //       'excel'
-        //     ]
-        //   });
-        // });
-
-        //Modal
-        $("#show-emp").on("click", function () {
-            $("#ModalUP").modal({ backdrop: false, keyboard: false })
-        });
     </script>
 </body>
 

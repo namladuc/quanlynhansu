@@ -65,16 +65,15 @@
       <li><a class="app-menu__item" href="/danh_sach_hop_dong"><i class='app-menu__icon bx bx-user-voice'></i><span
             class="app-menu__label">Danh sách hợp đồng</span></a></li>
 
-      <li><a class="app-menu__item" href="/table-data-banned.html"><i class='app-menu__icon bx bx-run'></i><span
-            class="app-menu__label">Quản lý nội bộ
-          </span></a></li>
+      <li><a class="app-menu__item" href="/view_all_phong_ban"><i class='app-menu__icon bx bxs-business'></i><span
+                        class="app-menu__label">Phòng ban</span></a></li>
       <li><a class="app-menu__item" href="/table_data_money"><i class='app-menu__icon bx bx-dollar'></i><span
             class="app-menu__label">Bảng kê lương</span></a></li>
       <li><a class="app-menu__item" href="/page_calendar"><i class='app-menu__icon bx bx-calendar-check'></i><span
             class="app-menu__label">Lịch công tác </span></a></li>
       <li><a class="app-menu__item active" href="/danh_sach_cham_cong"><i class='app-menu__icon bx bx-edit-alt'></i><span
             class="app-menu__label">Danh sách chấm công</span></a></li>
-      <li><a class="app-menu__item" href="/thoi_gian_cong_tac"><i class='app-menu__icon bx bx-edit-alt'></i><span
+      <li><a class="app-menu__item" href="/view_all_thoi_gian_cong_tac"><i class='app-menu__icon bx bx-edit-alt'></i><span
             class="app-menu__label">Thời gian công tác</span></a></li>
     </ul>
   </aside>
@@ -100,6 +99,11 @@
               </div>
 
               <div class="col-sm-2">
+                <a class="btn btn-info btn-sm" href="/graph_cham_cong_ngay/{{maNV}}_{{year}}_{{month}}" title="Xem"><i class="fa fa-area-chart"></i>
+                  Xem biểu đồ của nhân viên {{TenNV}}</a>
+              </div>
+
+              <div class="col-sm-2">
                 <a class="btn btn-add btn-sm" href="/form_add_data_cham_cong" title="Thêm"><i class="fas fa-plus"></i>
                   Thêm dữ liệu chấm công cho nhân viên</a>
               </div>
@@ -113,10 +117,13 @@
                 <a class="btn btn-excel btn-sm" href="/get_cham_cong_ngay_trong_thang_excel/{{maNV}}_{{year}}_{{month}}" title="In"><i class="fas fa-file-excel"></i
                   > Xuất Excel</a>
               </div>
+
               <div class="col-sm-2">
                 <a class="btn btn-delete btn-sm pdf-file" type="button" title="In" href="/get_cham_cong_ngay_trong_thang_pdf/{{maNV}}_{{year}}_{{month}}"><i
                     class="fas fa-file-pdf"></i> Xuất PDF</a>
               </div>
+
+              
             </div>
             <table class="table table-hover table-bordered" id="sampleTable">
               <thead>
