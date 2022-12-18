@@ -1,0 +1,49 @@
+<link rel="stylesheet" href="{{ url_for('static', filename='doc/css/main.css') }}">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/boxicons@latest/css/boxicons.min.css">
+<!-- or -->
+<link rel="stylesheet" href="https://unpkg.com/boxicons@latest/css/boxicons.min.css">
+
+<!-- Font-icon css-->
+<link rel="stylesheet" type="text/css"
+  href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.js"></script>
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.css">
+
+<!-- Chấm công -->
+<link rel="stylesheet" href="{{ url_for('static', filename='doc/css/chamcong.css') }}">
+ <!-- Data table plugin-->
+  <!-- <script type="text/javascript" src="js/plugins/jquery.dataTables.min.js"></script> -->
+  <script src="{{url_for('static', filename='doc/js/plugins/jquery.dataTables.min.js')}}"></script>
+  <!-- <script type="text/javascript" src="js/plugins/dataTables.bootstrap.min.js"></script> -->
+  <script src="{{url_for('static', filename='doc/js/plugins/dataTables.bootstrap.min.js')}}"></script>
+  <script type="text/javascript">$('#sampleTable').DataTable();</script>
+
+  <p> Tên nhân viên: {{TenNV}}  |  Mã nhân viên : {{MaNV}}  |  Năm : {{Nam}}</p>  
+
+<table class="table table-hover table-bordered" id="sampleTable">
+    <thead>
+      <tr>
+        <th class="center-text" rowspan="2" style="background-color: #eee">Tháng</th>
+        <th colspan="4" style="text-align: center; background-color: #eee">Thông tin</th>
+      </tr>
+      <tr>
+        <th class="center" width="200">Số ngày đi làm</th>
+        <th class="center" width="200">Số ngày vắng</th>
+        <th class="center" width="200">Số ngày tăng ca</th>
+        <th class="center" width="200">Tổng số ngày</th>
+      </tr>
+    <tbody>
+      {% for data in data_tong_ket_thang %}
+      <tr>
+        <td class="center">{{data[3]}}</td>
+        <td class="center">{{data[4]}}</td>
+        <td class="center">{{data[5]}}</td>
+        <td class="center">{{data[6]}}</td>
+        <td class="center">{{data[7]}}</td>
+      </tr>
+      {% endfor %}
+
+    </tbody>
+    </thead>
+  </table>

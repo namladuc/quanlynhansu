@@ -79,7 +79,7 @@
     <div class="app-title">
       <ul class="app-breadcrumb breadcrumb">
         <li class="breadcrumb-item"><a href="/danh_sach_cham_cong">Danh sách chấm công</a></li>
-        <li class="breadcrumb-item"><a href="">Xem sửa bản ghi cho chấm công - {{TenNV}} - {{day}} / {{month}} / {{year}}</a></li>
+        <li class="breadcrumb-item active"><a href="">Xem sửa bản ghi cho chấm công - {{TenNV}} - {{day}} / {{month}} / {{year}}</a></li>
       </ul>
     </div>
     <div class="row">
@@ -145,13 +145,13 @@
             <table class="table table-hover table-bordered" id="sampleTable">
                 <thead>
                   <tr>
-                    <th class="center-text" rowspan="2" style="background-color: #eee">STT</th>
+                    <th class="center-text" width="60" rowspan="2" style="background-color: #eee">STT</th>
                     <th class="center-text" rowspan="2" style="background-color: #eee">Ngày</th>
                     <th colspan="2" style="text-align: center; background-color: #eee">Thông tin</th>
                   </tr>
-                  <tr>
-                    <th class="center" width="800">Giờ</th>
-                    <th class="center" width="100">Thao tác</th>
+                  <tr >
+                    <th class="center" width="1000">Giờ</th>
+                    <th class="center" width="150">Thao tác</th>
                   </tr>
                 <tbody>
                   {% for i in index_arr %}
@@ -167,7 +167,12 @@
                     </td>
                     <td class="center">
                       <button class="btn btn-primary btn-sm edit" type="button" title="Sửa" id="show-emp">
-                        <a href="/form_view_update_cham_cong/E_{{MaNV}}_{{id_arr[i]}}_{{day}}_{{month}}_{{year}}"><i class="fa fa-pencil-square" aria-hidden="true"></i></a>
+                        <a href="/form_view_update_cham_cong/E_{{MaNV}}_{{id_arr[i]}}_{{day}}_{{month}}_{{year}}">
+                          <i class="fa fa-pencil-square" aria-hidden="true"></i></a>
+                      </button>
+
+                      <button class="btn btn-primary btn-sm trash" type="button" title="Xóa" onclick="deleteChamCong({{id_arr[i]}})" id="show-emp">
+                        <i class="fas fa-trash-alt" aria-hidden="true"></i>
                       </button>
                   </td>
                   </tr>
@@ -188,6 +193,36 @@
   <!-- The javascript plugin to display page loading on top-->
   <script src="{{url_for('static', filename='doc/js/plugins/pace.min.js')}}"></script>
 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.js"></script>
+  <!-- Data table plugin-->
+  <!-- <script type="text/javascript" src="js/plugins/jquery.dataTables.min.js"></script> -->
+  <script src="{{url_for('static', filename='doc/js/plugins/jquery.dataTables.min.js')}}"></script>
+  <!-- <script type="text/javascript" src="js/plugins/dataTables.bootstrap.min.js"></script> -->
+  <script src="{{url_for('static', filename='doc/js/plugins/dataTables.bootstrap.min.js')}}"></script>
+  <script type="text/javascript">$('#sampleTable').DataTable();</script>
+
+  <script>
+    function deleteChamCong(id) {
+      swal({
+        title: "Cảnh báo",
+        text: "Bạn có chắc chắn là muốn xóa bản ghi này?", // index = 3
+        buttons: ["Hủy bỏ", "Đồng ý"],
+      })
+        .then((willDelete) => {
+         
+          if (willDelete) {
+            $.ajax({
+              url:"/delete_cham_cong/" + id,
+              context: document.body
+            })
+            swal("Đã xóa thành công.!", {
+      
+            });
+            location.href = "/danh_sach_cham_cong";
+          }
+        });
+    }
+  </script>
 </body>
 
 </html>

@@ -2,7 +2,7 @@
 <html lang="en">
 
 <head>
-  <title>Bảng chấm công</title>
+  <title>Bảng chấm công các ngày trong tháng</title>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -81,8 +81,8 @@
   <main class="app-content">
     <div class="app-title">
       <ul class="app-breadcrumb breadcrumb side">
-        <li class="breadcrumb-item active"><a href="/danh_sach_cham_cong"><b>Danh sách chấm công </b></a></li>
-        <li class="breadcrumb-item active"><a href=""><b>Chấm công - {{TenNV}} - {{month}} - {{year}} </b></a></li>
+        <li class="breadcrumb-item"><a href="/danh_sach_cham_cong"><b>Danh sách chấm công </b></a></li>
+        <li class="breadcrumb-item active"><a href=""><b>Bảng chấm công các ngày trong tháng -  {{month}} / {{year}} - {{TenNV}}</b></a></li>
 
       </ul>
       <div id="clock"></div>
@@ -105,20 +105,16 @@
               </div>
 
               <div class="col-sm-2">
-                <a class="btn btn-delete btn-sm print-file" type="button" title="In" onclick="myApp.printTable()"><i
+                <a class="btn btn-delete btn-sm print-file" type="button" title="In" onclick="myApp.printChamCongNgayTable()"><i
                     class="fas fa-print"></i> In dữ liệu</a>
-              </div>
-              <div class="col-sm-2">
-                <a class="btn btn-delete btn-sm print-file js-textareacopybtn" type="button" title="Sao chép"><i
-                    class="fas fa-copy"></i> Sao chép</a>
               </div>
 
               <div class="col-sm-2">
-                <a class="btn btn-excel btn-sm" href="" title="In"><i class="fas fa-file-excel"></i
+                <a class="btn btn-excel btn-sm" href="/get_cham_cong_ngay_trong_thang_excel/{{maNV}}_{{year}}_{{month}}" title="In"><i class="fas fa-file-excel"></i
                   > Xuất Excel</a>
               </div>
               <div class="col-sm-2">
-                <a class="btn btn-delete btn-sm pdf-file" type="button" title="In" onclick="myFunction(this)"><i
+                <a class="btn btn-delete btn-sm pdf-file" type="button" title="In" href="/get_cham_cong_ngay_trong_thang_pdf/{{maNV}}_{{year}}_{{month}}"><i
                     class="fas fa-file-pdf"></i> Xuất PDF</a>
               </div>
             </div>
@@ -194,39 +190,11 @@
   <script>
     //In dữ liệu
     var myApp = new function () {
-      this.printTable = function () {
-        var tab = document.getElementById('sampleTable');
-        var win = window.open('', '', 'height=700,width=700');
-        win.document.write(tab.outerHTML);
+      this.printChamCongNgayTable = function () {
+        var win = window.open('/get_print_cham_cong_ngay_trong_thang/{{maNV}}_{{year}}_{{month}}', '', 'height=700,width=1400');
         win.document.close();
         win.print();
       }
-    }
-
-    function dieu_huong() {
-      location.assign("http://127.0.0.1:5000/form_update_data_employees");
-      //     //Sao chép dữ liệu
-      var copyTextareaBtn = document.querySelector('.js-textareacopybtn');
-
-      copyTextareaBtn.addEventListener('click', function (event) {
-        var copyTextarea = document.querySelector('.js-copytextarea');
-        copyTextarea.focus();
-        copyTextarea.select();
-
-        try {
-          var successful = document.execCommand('copy');
-          var msg = successful ? 'successful' : 'unsuccessful';
-          console.log('Copying text command was ' + msg);
-        } catch (err) {
-          console.log('Oops, unable to copy');
-        }
-      });
-
-
-      //Modal
-      $("#show-emp").on("click", function () {
-        $("#ModalUP").modal({ backdrop: false, keyboard: false })
-      });
     }
   </script>
 </body>

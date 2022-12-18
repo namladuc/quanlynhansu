@@ -96,20 +96,16 @@
             <div class="row element-button">
 
               <div class="col-sm-2">
-                <a class="btn btn-delete btn-sm print-file" type="button" title="In" onclick="myApp.printTable()"><i
+                <a class="btn btn-delete btn-sm print-file" type="button" title="In" onclick="myApp.printTongKetThangTable()"><i
                     class="fas fa-print"></i> In dữ liệu</a>
-              </div>
-              <div class="col-sm-2">
-                <a class="btn btn-delete btn-sm print-file js-textareacopybtn" type="button" title="Sao chép"><i
-                    class="fas fa-copy"></i> Sao chép</a>
               </div>
 
               <div class="col-sm-2">
-                <a class="btn btn-excel btn-sm" href="" title="In"><i class="fas fa-file-excel"></i
+                <a class="btn btn-excel btn-sm" href="/get_cham_cong_tong_ket_thang_excel/{{MaNV}}_{{Nam}}" title="In"><i class="fas fa-file-excel"></i
                   > Xuất Excel</a>
               </div>
               <div class="col-sm-2">
-                <a class="btn btn-delete btn-sm pdf-file" type="button" title="In" onclick="myFunction(this)"><i
+                <a class="btn btn-delete btn-sm pdf-file" type="button" title="In" href="/get_cham_cong_tong_ket_thang_pdf/{{MaNV}}_{{Nam}}"><i
                     class="fas fa-file-pdf"></i> Xuất PDF</a>
               </div>
             </div>
@@ -174,10 +170,8 @@
   <script>
     //In dữ liệu
     var myApp = new function () {
-      this.printTable = function () {
-        var tab = document.getElementById('sampleTable');
-        var win = window.open('', '', 'height=700,width=700');
-        win.document.write(tab.outerHTML);
+      this.printTongKetThangTable = function () {
+        var win = window.open('/get_print_cham_cong_tong_ket_thang/{{MaNV}}_{{Nam}}', '', 'height=700,width=1400');
         win.document.close();
         win.print();
       }

@@ -1180,7 +1180,6 @@ def danh_sach_cham_cong():
                 WHERE Nam = %s
                 """, (Nam, ))
         chamcongtheocacthang = cur.fetchall()
-        
     
     cur.close()
     return render_template('chamcong/bang_cham_cong_thang.html',
@@ -1189,6 +1188,59 @@ def danh_sach_cham_cong():
                            chamcongtheocacthang = chamcongtheocacthang,
                            congty = session['congty'],
                            my_user = session['username'])
+
+@login_required
+@app.route('/get_print_danh_sach_cham_cong/<string:year>')
+def get_print_danh_sach_cham_cong(year):
+    cur = mysql.connection.cursor()
+    
+    mucPhanLoaiChamCong = [10,20]
+    Nam = year
+    cur.execute("""
+                SELECT * 
+                FROM qlnv_chamcongthang
+                WHERE Nam = %s
+                """, (year, ))
+    chamcongtheocacthang = cur.fetchall()
+    
+    if (len(chamcongtheocacthang) == 0):
+        return "Error"
+    
+    cur.close()
+    return render_template('chamcong/table_print_cham_cong_theo_nam.html',
+                           mucPhanLoaiChamCong = mucPhanLoaiChamCong,
+                           Nam = Nam,
+                           chamcongtheocacthang = chamcongtheocacthang)
+    
+@login_required
+@app.route('/get_danh_sach_cham_cong_excel/<string:year>')
+def get_danh_sach_cham_cong_excel(year):
+    cur = mysql.connection.cursor()
+    
+    cur.execute("""
+                SELECT * 
+                FROM qlnv_chamcongthang
+                WHERE Nam = %s
+                """, (year, ))
+    chamcongtheocacthang = cur.fetchall()
+    
+    if (len(chamcongtheocacthang) == 0):
+        return "Error"
+    
+    cur.close()
+    column_name = ['id','MaNV','Nam','T1', 'T2', 'T3','T4','T5','T6','T7','T8', 'T9', 'T10', 'T11', 'T12']
+    data = pd.DataFrame.from_records(chamcongtheocacthang, columns=column_name)
+    data = data.set_index('id')
+    pathFile = app.config['SAVE_FOLDER_EXCEL'] + "/" + "Data_Cham_Cong_Thang_Trong_Nam_" + year + ".xlsx"
+    data.to_excel(pathFile)
+    return send_file(pathFile, as_attachment=True)
+
+@login_required
+@app.route('/get_danh_sach_cham_cong_pdf/<string:year>')
+def get_danh_sach_cham_cong_pdf(year):
+    pathFile = app.config['SAVE_FOLDER_PDF']  + '/Data_Cham_Cong_Thang_Trong_Nam_' + year + ".pdf"
+    pdfkit.from_url("/".join(request.url.split("/")[:-2:]) + '/get_print_danh_sach_cham_cong/' + str(year),pathFile)
+    return send_file(pathFile, as_attachment=True)
 
 @login_required
 @app.route("/table_cham_cong_tong_ket_thang/<string:maNV>_<string:year>")
@@ -1227,6 +1279,81 @@ def table_cham_cong_tong_ket_thang(maNV,year):
                            congty = session['congty'],
                            my_user = session['username'])
 
+@login_required
+@app.route("/get_print_cham_cong_tong_ket_thang/<string:maNV>_<string:year>")
+def get_print_cham_cong_tong_ket_thang(maNV,year):
+    cur = mysql.connection.cursor()
+    cur.execute("""
+                SELECT TenNV
+                FROM qlnv_nhanvien
+                WHERE MaNhanVien = %s
+                """, (maNV,))
+    tenNV = cur.fetchall()
+    
+    if (len(tenNV) == 0):
+        return "Error"
+    
+    tenNV = tenNV[0][0]
+    
+    cur.execute("""
+                SELECT * 
+                FROM qlnv_chamcongtongketthang
+                WHERE MaNhanVien = %s AND Nam = %s 
+                ORDER BY Thang ASC
+                """, (maNV, year))
+    data_tong_ket_thang = cur.fetchall()
+    
+    if (len(data_tong_ket_thang) == 0):
+        return "Error"
+    
+    return render_template('chamcong/table_print_cham_cong_tong_ket_thang.html',
+                           TenNV = tenNV,
+                           Nam = year,
+                           MaNV = maNV,
+                           data_tong_ket_thang = data_tong_ket_thang)
+
+@login_required
+@app.route("/get_cham_cong_tong_ket_thang_excel/<string:maNV>_<string:year>")
+def get_cham_cong_tong_ket_thang_excel(maNV, year):
+    cur = mysql.connection.cursor()
+    cur.execute("""
+                SELECT TenNV
+                FROM qlnv_nhanvien
+                WHERE MaNhanVien = %s
+                """, (maNV,))
+    tenNV = cur.fetchall()
+    
+    if (len(tenNV) == 0):
+        return "Error"
+    
+    tenNV = tenNV[0][0]
+    
+    cur.execute("""
+                SELECT * 
+                FROM qlnv_chamcongtongketthang
+                WHERE MaNhanVien = %s AND Nam = %s 
+                ORDER BY Thang ASC
+                """, (maNV, year))
+    data_tong_ket_thang = cur.fetchall()
+    
+    if (len(data_tong_ket_thang) == 0):
+        return "Error"
+    
+    cur.close()
+    column_name = ['id','MaNhanVien','Nam','Thang', 'SoNgayDiLam', 'SoNgayDiVang','SoNgayTangCa','TongSoNgay']
+    data = pd.DataFrame.from_records(data_tong_ket_thang, columns=column_name)
+    data = data.set_index('id')
+    pathFile = app.config['SAVE_FOLDER_EXCEL'] + "/" + "Data_Cham_Cong_Tong_Ket_Thang_Trong_Nam_" + year +"_"+  maNV + ".xlsx"
+    data.to_excel(pathFile)
+    return send_file(pathFile, as_attachment=True)
+
+@login_required
+@app.route("/get_cham_cong_tong_ket_thang_pdf/<string:maNV>_<string:year>")
+def get_cham_cong_tong_ket_thang_pdf(maNV,year):
+    pathFile = app.config['SAVE_FOLDER_PDF']  + "/Data_Cham_Cong_Tong_Ket_Thang_Trong_Nam_" + year  +"_"+  maNV + ".pdf"
+    pdfkit.from_url("/".join(request.url.split("/")[:-2:]) + '/get_print_cham_cong_tong_ket_thang/' + maNV +"_" + str(year),pathFile)
+    return send_file(pathFile, as_attachment=True)
+    
 @login_required
 @app.route("/table_cham_cong_ngay_trong_thang/<string:maNV>_<string:year>_<string:month>")
 def table_cham_cong_ngay_trong_thang(maNV,year,month):
@@ -1344,6 +1471,174 @@ def table_cham_cong_ngay_trong_thang(maNV,year,month):
                            index_arr = index_arr,
                            congty = session['congty'],
                            my_user = session['username'])
+
+@login_required
+@app.route("/get_print_cham_cong_ngay_trong_thang/<string:maNV>_<string:year>_<string:month>")
+def get_print_cham_cong_ngay_trong_thang(maNV,year,month):
+    sql = """
+        SELECT * 
+        FROM qlnv_chamcong cc 
+        WHERE YEAR(cc.Ngay) = %s AND MONTH(cc.Ngay) = %s AND MaNV = %s
+        ORDER BY cc.Ngay ASC, cc.GioVao ASC;
+    """
+    val = (year, month, maNV)
+    
+    cur = mysql.connection.cursor()
+    
+    cur.execute("""
+                SELECT TenNV
+                FROM qlnv_nhanvien
+                WHERE MaNhanVien = %s
+                """, (maNV,))
+    tenNV = cur.fetchall()
+    
+    if (len(tenNV) == 0):
+        return "Error"
+    
+    tenNV = tenNV[0][0]
+    
+    cur.execute(sql, val)
+    chamcong = cur.fetchall()
+    
+    if (len(chamcong) == 0):
+        return "Error"
+    
+    column_name = ['ID','MaNV','Ngay', 'GioVao','GioRa','OT','ThoiGianLamViec','ThoiGianFloat']
+    data = pd.DataFrame.from_records(chamcong, columns=column_name)
+    
+    data['ThoiGianLamViec']= (pd.to_timedelta(data['GioRa'].astype(str)) - 
+                             pd.to_timedelta(data['GioVao'].astype(str)))
+    data['ThoiGianLamViec'] = pd.to_numeric(data['ThoiGianLamViec']) / (3600 * 10**9) 
+    
+    index_arr = []
+    index = 0
+    date_arr = []
+    id_arr = []
+    time_arr = []
+    for date in data.Ngay.unique():
+        index_arr.append(index)
+        tmp_id_list = []
+        tmp_time_lst = []
+        for elm in data[data['Ngay'] == date].iloc:
+            tmp_id_list.append(elm['ID'])
+            tmp_time_lst.append((elm['GioVao'], elm['GioRa']))
+        time_arr.append(tmp_time_lst)
+        id_arr.append(tmp_id_list)
+        date_arr.append(date)
+        index += 1
+        
+    dict_week_day = {
+        0 : "Thứ hai",
+        1 : "Thứ ba",
+        2 : "Thứ tư",
+        3 : "Thứ năm",
+        4 : "Thứ sáu",
+        5 : "Thứ bảy",
+        6 : "Chủ nhật"
+    }
+    
+    date_str = []
+    date_weekday = []
+    for elm in date_arr:
+        date_weekday.append(dict_week_day[elm.weekday()])
+        date_str.append(elm.strftime("%d-%m-%Y"))
+    
+    day = [int(elm[:2:]) for elm in date_str]
+    
+    time_arr_str = []
+    for elm in time_arr:
+        tmp_index_lst =[]
+        for i in elm:
+            tmp_lst = []
+            for j in i:
+                tmp_lst.append(str(j)[6::])
+            tmp_index_lst.append(tmp_lst)
+        time_arr_str.append(tmp_index_lst)
+        
+    # lấy data tổng kết ngày từ bảng qlnv_chamcongngay
+    sql = "SELECT MaChamCong, MaNV, Nam, Thang, SoNgayThang,"
+    for i in day:
+        sql += "Ngay" + str(i) + ","
+    sql = sql[:-1:]
+    sql += " FROM qlnv_chamcongngay WHERE Thang = %s AND MaNV = %s AND Nam = %s"
+    cur.execute(sql,(month, maNV, year))
+    data_tong_ket = cur.fetchall()
+    
+    if (len(data_tong_ket) == 0):
+        return "Error"
+    data_tong_ket = data_tong_ket[0]
+    data_day_tong_ket = [data_tong_ket[4 + i] for i in range(1,1+len(day))]
+    cur.close()
+
+    return render_template('chamcong/table_print_cham_cong_ngay_trong_thang.html',
+                           TenNV = tenNV,
+                           date_weekday = date_weekday,
+                           month = month,
+                           maNV = maNV,
+                           year = year,
+                           data_day_tong_ket = data_day_tong_ket,
+                           day = day,
+                           date_str = date_str,
+                           time_arr_str = time_arr_str,
+                           id_arr = id_arr,
+                           index_arr = index_arr)
+    
+@login_required
+@app.route("/get_cham_cong_ngay_trong_thang_excel/<string:maNV>_<string:year>_<string:month>")
+def get_cham_cong_ngay_trong_thang_excel(maNV,year,month):
+    sql = """
+        SELECT * 
+        FROM qlnv_chamcong cc 
+        WHERE YEAR(cc.Ngay) = %s AND MONTH(cc.Ngay) = %s AND MaNV = %s
+        ORDER BY cc.Ngay ASC, cc.GioVao ASC;
+    """
+    val = (year, month, maNV)
+    
+    cur = mysql.connection.cursor()
+    
+    cur.execute("""
+                SELECT TenNV
+                FROM qlnv_nhanvien
+                WHERE MaNhanVien = %s
+                """, (maNV,))
+    tenNV = cur.fetchall()
+    
+    if (len(tenNV) == 0):
+        return "Error"
+    
+    tenNV = tenNV[0][0]
+    
+    cur.execute(sql, val)
+    chamcong = cur.fetchall()
+    
+    if (len(chamcong) == 0):
+        return "Error"
+    
+    column_name = ['ID','MaNV','Ngay', 'GioVao','GioRa','OT','ThoiGianLamViec','ThoiGianFloat']
+    data = pd.DataFrame.from_records(chamcong, columns=column_name)
+    
+    def splitter(td):
+        td = str(td).split(' ')[-1:][0]
+        return td
+    
+    data['GioVao'] = data['GioVao'].astype(str)
+    data['GioRa'] = data['GioRa'].astype(str)
+    
+    data['GioVao'] = data['GioVao'].apply(splitter)
+    data['GioRa'] = data['GioRa'].apply(splitter)
+    
+    data = data.set_index('ID')
+    pathFile = app.config['SAVE_FOLDER_EXCEL'] + "/" + "Data_Cham_Cong_" + tenNV + "_Thang_" + month + "_Nam_" + year + ".xlsx"
+    data.to_excel(pathFile)
+    
+    return send_file(pathFile, as_attachment=True)
+    
+@login_required
+@app.route("/get_cham_cong_ngay_trong_thang_pdf/<string:maNV>_<string:year>_<string:month>")
+def get_cham_cong_ngay_trong_thang_pdf(maNV,year,month):
+    pathFile = app.config['SAVE_FOLDER_PDF']  + "/Data_Cham_Cong_" + maNV + "_Thang_" + month + "_Nam_" + year + ".pdf"
+    pdfkit.from_url("/".join(request.url.split("/")[:-2:]) + '/get_print_cham_cong_ngay_trong_thang/' + maNV +"_" + str(year) + "_"  + month,pathFile)
+    return send_file(pathFile, as_attachment=True)
 
 @login_required
 @app.route('/form_view_update_cham_cong/<string:canEdit>_<string:maNV>_<string:id>_<string:day>_<string:month>_<string:year>', methods = ['GET','POST'])

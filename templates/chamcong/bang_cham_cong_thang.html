@@ -81,7 +81,7 @@
   <main class="app-content">
     <div class="app-title">
       <ul class="app-breadcrumb breadcrumb side">
-        <li class="breadcrumb-item active"><a href="#"><b>Danh sách chấm công</b></a></li>
+        <li class="breadcrumb-item active"><a href=""><b>Danh sách chấm công năm {{Nam}}</b></a></li>
       </ul>
       <div id="clock"></div>
     </div>
@@ -98,17 +98,7 @@
               </div>
 
               <div class="col-sm-2">
-                <a class="btn btn-delete btn-sm nhap-tu-file" type="button" title="Nhập" onclick="myFunction(this)"><i
-                    class="fas fa-file-upload"></i> Tải từ file</a>
-              </div>
-
-              <div class="col-sm-2">
-                <a class="btn btn-info btn-sm" type="button" title="In" href="/table_cham_cong_ngay_trong_thang/MNV01_2021_1"><i
-                    class="fa fa-calendar-check-o"></i> Xem chấm công ngày</a>
-              </div>
-
-              <div class="col-sm-2">
-                <a class="btn btn-delete btn-sm print-file" type="button" title="In" onclick="myApp.printTable()"><i
+                <a class="btn btn-delete btn-sm print-file" type="button" title="In" onclick="myApp.printChamCongNamTable()"><i
                     class="fas fa-print"></i> In dữ liệu</a>
               </div>
 
@@ -118,10 +108,10 @@
               </div>
 
               <div class="col-sm-2">
-                <a class="btn btn-excel btn-sm" href="" title="In"><i class="fas fa-file-excel"></i> Xuất Excel</a>
+                <a class="btn btn-excel btn-sm" href="/get_danh_sach_cham_cong_excel/{{Nam}}" title="In"><i class="fas fa-file-excel"></i> Xuất Excel</a>
               </div>
               <div class="col-sm-2">
-                <a class="btn btn-delete btn-sm pdf-file" type="button" title="In" onclick="myFunction(this)"><i
+                <a class="btn btn-delete btn-sm pdf-file" type="button" title="In" href="/get_danh_sach_cham_cong_pdf/{{Nam}}"><i
                     class="fas fa-file-pdf"></i> Xuất PDF</a>
               </div>
             </div>
@@ -135,7 +125,7 @@
             </form>
             
 
-            <table class="table table-hover table-bordered" id="sampleTable">
+            <table class="table table-hover table-bordered js-copytextarea" id="sampleTable">
               <thead>
                 <tr>
                   <th class="center-text" rowspan="2" style="background-color: #eee">Mã nhân viên</th>
@@ -341,32 +331,48 @@
 
     //In dữ liệu
     var myApp = new function () {
-      this.printTable = function () {
-        var tab = document.getElementById('sampleTable');
-        var win = window.open('', '', 'height=700,width=700');
-        win.document.write(tab.outerHTML);
+      this.printChamCongNamTable = function () {
+        var win = window.open('/get_print_danh_sach_cham_cong/{{Nam}}', '', 'height=700,width=1400');
         win.document.close();
         win.print();
       }
     }
-    function dieu_huong() {
-      //     //Sao chép dữ liệu
-      var copyTextareaBtn = document.querySelector('.js-textareacopybtn');
 
-      copyTextareaBtn.addEventListener('click', function (event) {
-        var copyTextarea = document.querySelector('.js-copytextarea');
-        copyTextarea.focus();
-        copyTextarea.select();
+    var copyTextareaBtn = document.querySelector('.js-textareacopybtn');
 
-        try {
-          var successful = document.execCommand('copy');
-          var msg = successful ? 'successful' : 'unsuccessful';
-          console.log('Copying text command was ' + msg);
-        } catch (err) {
-          console.log('Oops, unable to copy');
+    copyTextareaBtn.addEventListener('click', function (event) {
+      var copyTextarea = document.querySelector('.js-copytextarea');
+      copyTextarea.focus();
+
+      var mytext = copyTextarea.textContent.substring(220,copyTextarea.textContent.length).split("\n")
+
+      var index = 0;
+      var data = [];
+      mytext.forEach(function (text) {
+        if (text.trim().length != 0) {
+            if (text.trim() == "- - -") {
+              data.push("0");
+            } else {
+              data.push(text.trim());
+            }
+            index += 1;
+            if (index == 13) {
+              data.push("\n")
+              index = 0;
+            }
         }
       });
-    }
+
+      navigator.clipboard.writeText(data.join(" "));
+
+      try {
+        var successful = document.execCommand('copy');
+        var msg = successful ? 'successful' : 'unsuccessful';
+        console.log('Copying text command was ' + msg);
+      } catch (err) {
+        console.log('Oops, unable to copy');
+      }
+    });
 
   </script>
 </body>
