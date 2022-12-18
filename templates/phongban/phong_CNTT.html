@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Phòng ban | Quản trị Admin</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Main CSS-->
+    <link rel="stylesheet" href="{{ url_for('static', filename='doc/css/main.css') }}">
+    <script src="{{url_for('static', filename='js/displaytime/displaytime.js')}}"></script>
+    <link rel="shortcut icon" type="image/x-icon" href="{{ url_for('static', filename=congty[2])}}" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/boxicons@latest/css/boxicons.min.css">
+    <!-- or -->
+    <link rel="stylesheet" href="https://unpkg.com/boxicons@latest/css/boxicons.min.css">
+    <!-- Font-icon css-->
+    <link rel="stylesheet" type="text/css"
+        href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.js"></script>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.css">
+
+    <!-- Phòng ban -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='doc/css/phongban.css') }}">
+</head>
+
+<body onload="time()" class="app sidebar-mini rtl">
+    <!-- Navbar-->
+    <header class="app-header">
+        <!-- Sidebar toggle button--><a class="app-sidebar__toggle" href="#" data-toggle="sidebar"
+            aria-label="Hide Sidebar"></a>
+        <!-- Navbar Right Menu-->
+        <ul class="app-nav">
+
+
+            <!-- User Menu-->
+            <li><a class="app-nav__item" style="margin: 0 25px 0 0;" href=""><i class='bx bx-bell'></i> </a></li>
+            <li><a class="app-nav__item" href="/logout"><i class='bx bx-log-out bx-rotate-180'></i> </a>
+
+            </li>
+        </ul>
+    </header>
+    <!-- Sidebar menu-->
+    <div class="app-sidebar__overlay" data-toggle="sidebar"></div>
+    <aside class="app-sidebar">
+        <div class="app-sidebar__user"><img class="app-sidebar__user-avatar"
+                src="{{ url_for('static', filename=my_user[7]) }}" style="border-radius: 50%;" width="50px"
+                alt="User Image">
+            <div>
+                <p class="app-sidebar__user-name"><b>{{my_user[3]}}</b></p>
+                <p class="app-sidebar__user-designation">Chào mừng bạn trở lại</p>
+            </div>
+        </div>
+        <hr>
+        <ul class="app-menu">
+            <li><a class="app-menu__item haha"><i class='app-menu__icon bx bx-user'></i>
+                    <span class="app-menu__label">Quản lý</span></a></li>
+            <li><a class="app-menu__item" href="/index"><i class='app-menu__icon bx bx-tachometer'></i><span
+                        class="app-menu__label">Bảng điều khiển</span></a></li>
+            <li><a class="app-menu__item" href="/table_data_employees"><i class='app-menu__icon bx bx-id-card'></i>
+                    <span class="app-menu__label">Quản lý nhân viên</span></a></li>
+            <li><a class="app-menu__item" href="/table_chuc_vu"><i class='app-menu__icon bx bxs-book-content'></i>
+                    <span class="app-menu__label">Quản lý chức vụ</span></a></li>
+            <li><a class="app-menu__item" href="/danh_sach_hop_dong"><i
+                        class='app-menu__icon bx bx-user-voice'></i><span class="app-menu__label">Danh sách hợp
+                        đồng</span></a></li>
+            <li><a class="app-menu__item" href="/table-data-banned.html"><i class='app-menu__icon bx bx-run'></i><span
+                        class="app-menu__label">Quản lý nội bộ
+                    </span></a></li>
+            <li><a class="app-menu__item" href="/table_data_money"><i class='app-menu__icon bx bx-dollar'></i><span
+                        class="app-menu__label">Bảng kê lương</span></a></li>
+            <li><a class="app-menu__item" href="/page_calendar"><i class='app-menu__icon bx bx-calendar-check'></i><span
+                        class="app-menu__label">Lịch công tác </span></a></li>
+            <li><a class="app-menu__item" href="/danh_sach_cham_cong"><i class='app-menu__icon bx bx-edit-alt'></i><span
+                        class="app-menu__label">Danh sách chấm công</span></a></li>
+            <li><a class="app-menu__item" href="/thoi_gian_cong_tac"><i class='app-menu__icon bx bx-edit-alt'></i><span
+                        class="app-menu__label">Thời gian công tác</span></a></li>
+            <li><a class="app-menu__item active" href="/phong_ban"><i class='app-menu__icon bx bxs-business'></i><span
+                        class="app-menu__label">Phòng ban</span></a></li>
+        </ul>
+    </aside>
+    <main class="app-content">
+        <div class="app-title">
+            <ul class="app-breadcrumb breadcrumb">
+                <li class="breadcrumb-item">Phòng ban</li>
+                <li class="breadcrumb-item"><a href="#">Phòng Công nghệ thông tin</a></li>
+            </ul>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+
+                <div class="tile">
+
+                    <h3 class="tile-title">Tổng quan</h3>
+                    <div class="tile-body">
+                        <div class="dash-cards">
+                            <div class="card-single">
+                                <div class="card-body">
+                                    <span class='bx bx-user-pin'></span>
+                                    <div>
+                                        <h5>Tống số nhân viên</h5>
+                                        <h4>10</h4>
+                                    </div>
+                                </div>
+                                <div class="card-footer">
+                                    <a href="">View all</a>
+
+                                </div>
+                            </div>
+                            <div class="card-single" style="background-color: #228B22;">
+                                <div class="card-body">
+                                    <span class="bx bxs-award"></span>
+                                    <div>
+                                        <h5>Thưởng</h5>
+                                        <h4>3</h4>
+                                    </div>
+                                </div>
+                                <div class="card-footer">
+                                    <a href="">View all</a>
+
+                                </div>
+                            </div>
+                            <div class="card-single" style="background-color: #DAA520;">
+                                <div class="card-body">
+                                    <span class='bx bx-info-square'></span>
+                                    <div>
+                                        <h5>Vi phạm</h5>
+                                        <h4>3</h4>
+                                    </div>
+                                </div>
+                                <div class="card-footer">
+                                    <a href="">View all</a>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-12">
+
+                        <div class="tile">
+
+                            <h3 class="tile-title">Danh sách nhân viên</h3>
+                            <div class="tile-body">
+                                <table class="table table-hover table-bordered js-copytextarea" cellpadding="0"
+                                    cellspacing="0" border="0" id="sampleTable">
+                                    <thead>
+                                        <tr>
+                                            <th width="10"><input type="checkbox" id="all"></th>
+                                            <th width="170">Mã nhân viên</th>
+                                            <th width="150">Họ và tên</th>
+                                            <th width="20">Ảnh thẻ</th>
+                                            <th width="300">Địa chỉ</th>
+                                            <th width="20">Ngày sinh</th>
+                                            <th>Giới tính</th>
+                                            <th>SĐT</th>
+                                            <th>Chức vụ</th>
+                                            <th width="100">Tính năng</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td width="10"><input type="checkbox" name="check1" value="1"></td>
+                                            <td>#CD12837</td>
+                                            <td>Dương Nam</td>
+                                            <td><img class="img-card-person" src="/img-anhthe/1.jpg" alt=""></td>
+                                            <td>Hà Nội</td>
+                                            <td>12/02/1999</td>
+                                            <td>Nam</td>
+                                            <td>0926737168</td>
+                                            <td>Bán hàng</td>
+                                            <td class="table-td-center"><button class="btn btn-primary btn-sm trash"
+                                                    type="button" title="Xóa" onclick="myFunction(this)"><i
+                                                        class="fas fa-trash-alt"></i>
+                                                </button>
+                                                <button class="btn btn-primary btn-sm edit" type="button" title="Sửa"
+                                                    id="show-emp" data-toggle="modal" data-target="#ModalUP"><i
+                                                        class="fas fa-edit"></i>
+                                                </button>
+                                                <button class="btn btn-primary btn-sm edit" type="button"
+                                                    title="Xem chi tiết" id="show-emp" data-toggle="modal"
+                                                    data-target="#ModalUP"><i class="fas fa-eye"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td width="10"><input type="checkbox" name="check2" value="2"></td>
+                                            <td>#SX22837</td>
+                                            <td>Trần Khả Ái</td>
+                                            <td><img class="img-card-person" src="/img-anhthe/2.jpg" alt=""></td>
+                                            <td>Hà Nội</td>
+                                            <td>22/12/1999</td>
+                                            <td>Nữ</td>
+                                            <td>0931342432</td>
+                                            <td>Bán hàng</td>
+                                            <td><button class="btn btn-primary btn-sm trash" type="button" title="Xóa"
+                                                    onclick="myFunction(this)"><i class="fas fa-trash-alt"></i>
+                                                </button>
+                                                <button class="btn btn-primary btn-sm edit" type="button" title="Sửa"
+                                                    id="show-emp" data-toggle="modal" data-target="#ModalUP"><i
+                                                        class="fas fa-edit"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td width="10"><input type="checkbox" name="check3" value="3"></td>
+                                            <td>#LO2871</td>
+                                            <td>Phạm Thu Cúc</td>
+                                            <td><img class="img-card-person" src="/img-anhthe/3.jpg" alt=""></td>
+                                            <td>Hà Nội</td>
+                                            <td>02/06/1998</td>
+                                            <td>Nữ</td>
+                                            <td>0931491997</td>
+                                            <td>Thu ngân</td>
+                                            <td><button class="btn btn-primary btn-sm trash" type="button" title="Xóa"
+                                                    onclick="myFunction()"><i class="fas fa-trash-alt"></i>
+                                                </button>
+                                                <button class="btn btn-primary btn-sm edit" type="button" title="Sửa"
+                                                    id="show-emp" data-toggle="modal" data-target="#ModalUP"><i
+                                                        class="fas fa-edit"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td width="10"><input type="checkbox"></td>
+                                            <td>#SR28746</td>
+                                            <td>Trần Anh Khoa</td>
+                                            <td><img class="img-card-person" src="/img-anhthe/4.jpg" alt=""></td>
+                                            <td>Hà Nội </td>
+                                            <td>18/02/1995</td>
+                                            <td>Nam</td>
+                                            <td>0916706633</td>
+                                            <td>Tư vấn</td>
+                                            <td><button class="btn btn-primary btn-sm trash" type="button" title="Xóa"
+                                                    onclick="myFunction()"><i class="fas fa-trash-alt"></i>
+                                                </button>
+                                                <button class="btn btn-primary btn-sm edit" type="button" title="Sửa"
+                                                    id="show-emp" data-toggle="modal" data-target="#ModalUP"><i
+                                                        class="fas fa-edit"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td width="10"><input type="checkbox"></td>
+                                            <td>#KJS276</td>
+                                            <td>Nguyễn Thành Nhân</td>
+                                            <td><img class="img-card-person" src="/img-anhthe/5.jpg" alt=""></td>
+                                            <td>Hà Nội</td>
+                                            <td>10/03/1996</td>
+                                            <td>Nam</td>
+                                            <td>0971038066</td>
+                                            <td>Bảo trì</td>
+                                            <td><button class="btn btn-primary btn-sm trash" type="button" title="Xóa"
+                                                    onclick="myFunction()"><i class="fas fa-trash-alt"></i>
+                                                </button>
+                                                <button class="btn btn-primary btn-sm edit" type="button" title="Sửa"
+                                                    id="show-emp" data-toggle="modal" data-target="#ModalUP"><i
+                                                        class="fas fa-edit"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td width="10"><input type="checkbox"></td>
+                                            <td>#BS76228</td>
+                                            <td>Nguyễn Đặng Trọng Nhân</td>
+                                            <td><img class="img-card-person" src="/img-anhthe/6.jpg" alt=""></td>
+                                            <td>Hà Nội</td>
+                                            <td>23/07/1996</td>
+                                            <td>Nam</td>
+                                            <td>0846881155</td>
+                                            <td>Dịch vụ</td>
+                                            <td><button class="btn btn-primary btn-sm trash" type="button" title="Xóa"
+                                                    onclick="myFunction()"><i class="fas fa-trash-alt"></i>
+                                                </button>
+                                                <button class="btn btn-primary btn-sm edit" type="button" title="Sửa"
+                                                    id="show-emp" data-toggle="modal" data-target="#ModalUP"><i
+                                                        class="fas fa-edit"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td width="10"><input type="checkbox"></td>
+                                            <td>#YUI21376</td>
+                                            <td>Nguyễn Thị Mai</td>
+                                            <td><img class="img-card-person" src="/img-anhthe/4.jpg" alt=""></td>
+                                            <td>Hà Nội</td>
+                                            <td>09/12/2000</td>
+                                            <td>Nữ </td>
+                                            <td>0836333037</td>
+                                            <td>Tư vấn</td>
+                                            <td><button class="btn btn-primary btn-sm trash" title="Xóa"
+                                                    onclick="myFunction()"><i class="fas fa-trash-alt"></i>
+                                                </button>
+                                                <button class="btn btn-primary btn-sm edit" title="Sửa"
+                                                    onclick="dieu_huong()"><i class="fas fa-edit"></i>
+                                                </button>
+
+                                            </td>
+                                        </tr>
+
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Khen thưởng -->
+                <div class="row">
+                    <div class="col-md-12">
+
+                        <div class="tile">
+
+                            <h3 class="tile-title">Danh sách khen thưởng</h3>
+                            <div class="tile-body">
+                                <table class="table table-hover table-bordered js-copytextarea" cellpadding="0"
+                                    cellspacing="0" border="0" id="sampleTable">
+                                    <thead>
+                                        <tr>
+                                            <th width="10"><input type="checkbox" id="all"></th>
+                                            <th>STT</th>
+                                            <th width="170">Mã nhân viên</th>
+                                            <th width="150">Họ và tên</th>
+                                            <th width="250">Nội dung khen thưởng</th>
+                                            <th width="200">Hình thức khen thưởng</th>
+                                            <th width="50">Cấp khen</th>
+                                        </tr>
+                                    </thead>
+                                </table>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Kỷ luật -->
+                <div class="row">
+                    <div class="col-md-12">
+
+                        <div class="tile">
+
+                            <h3 class="tile-title">Danh sách vi phạm</h3>
+                            <div class="tile-body">
+                                <table class="table table-hover table-bordered js-copytextarea" cellpadding="0"
+                                    cellspacing="0" border="0" id="sampleTable">
+                                    <thead>
+                                        <tr>
+                                            <th width="10"><input type="checkbox" id="all"></th>
+                                            <th>STT</th>
+                                            <th width="170">Mã nhân viên</th>
+                                            <th width="150">Họ và tên</th>
+                                            <th width="250">Nội dung vi phạm</th>
+                                            <th width="200">Người liên quan</th>
+                                            <th width="200">Hình thức xử lý</th>
+                                            <th width="50"></th>
+                                        </tr>
+                                    </thead>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    <!-- Essential javascripts for application to work-->
+    <script src="{{url_for('static', filename='doc/js/jquery-3.2.1.min.js')}}"></script>
+    <script src="{{url_for('static', filename='doc/js/popper.min.js')}}"></script>
+    <script src="{{url_for('static', filename='doc/js/bootstrap.min.js')}}"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script src="src/jquery.table2excel.js"></script>
+    <script src="{{url_for('static', filename='doc/js/main.js')}}"></script>
+    <!-- The javascript plugin to display page loading on top-->
+    <script src="{{url_for('static', filename='doc/js/plugins/pace.min.js')}}"></script>
+    <!-- Page specific javascripts-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.js"></script>
+    <!-- Data table plugin-->
+    <!-- <script type="text/javascript" src="js/plugins/jquery.dataTables.min.js"></script> -->
+    <script src="{{url_for('static', filename='doc/js/plugins/jquery.dataTables.min.js')}}"></script>
+    <!-- <script type="text/javascript" src="js/plugins/dataTables.bootstrap.min.js"></script> -->
+    <script src="{{url_for('static', filename='doc/js/plugins/dataTables.bootstrap.min.js')}}"></script>
+    <script type="text/javascript">$('#sampleTable').DataTable();</script>
+
+</body>
+
+</html>

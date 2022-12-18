@@ -1941,4 +1941,28 @@ def take_image_to_save(id_image, path_to_img):
     cur.execute(sql,val)
     mysql.connection.commit()
     return True;
+
+
+#
+# ------------------ PHONG BAN ------------------------
+#
+@login_required
+@app.route("/phong_ban")
+def phong_ban():
+    return render_template('phongban/phong_ban.html', 
+                           congty = session['congty'],
+                           my_user = session['username'])
     
+@login_required
+@app.route("/form_tao_moi_phong_ban")
+def form_tao_moi_phong_ban():
+    return render_template('phongban/form_tao_moi_phong_ban.html', 
+                           congty = session['congty'],
+                           my_user = session['username'])
+    
+@login_required
+@app.route("/phong_CNTT")
+def phong_CNTT():
+    return render_template('phongban/phong_CNTT.html', 
+                           congty = session['congty'],
+                           my_user = session['username'])

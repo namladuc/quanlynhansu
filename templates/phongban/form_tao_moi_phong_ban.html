@@ -2,14 +2,14 @@
 <html lang="en">
 
 <head>
-    <title>Danh sách nhân viên | Quản trị Admin</title>
+    <title>Phòng ban | Quản trị Admin</title>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- Main CSS-->
     <link rel="stylesheet" href="{{ url_for('static', filename='doc/css/main.css') }}">
     <script src="{{url_for('static', filename='js/displaytime/displaytime.js')}}"></script>
-    <link rel="shortcut icon" type="image/x-icon" href="{{ url_for('static', filename=congty[2])}}"/>
+    <link rel="shortcut icon" type="image/x-icon" href="{{ url_for('static', filename=congty[2])}}" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/boxicons@latest/css/boxicons.min.css">
     <!-- or -->
     <link rel="stylesheet" href="https://unpkg.com/boxicons@latest/css/boxicons.min.css">
@@ -40,8 +40,9 @@
     <!-- Sidebar menu-->
     <div class="app-sidebar__overlay" data-toggle="sidebar"></div>
     <aside class="app-sidebar">
-        <div class="app-sidebar__user"><img class="app-sidebar__user-avatar" src="{{ url_for('static', filename=my_user[7]) }}" style="border-radius: 50%;" width="50px"
-            alt="User Image">
+        <div class="app-sidebar__user"><img class="app-sidebar__user-avatar"
+                src="{{ url_for('static', filename=my_user[7]) }}" style="border-radius: 50%;" width="50px"
+                alt="User Image">
             <div>
                 <p class="app-sidebar__user-name"><b>{{my_user[3]}}</b></p>
                 <p class="app-sidebar__user-designation">Chào mừng bạn trở lại</p>
@@ -51,15 +52,15 @@
         <ul class="app-menu">
             <li><a class="app-menu__item haha"><i class='app-menu__icon bx bx-user'></i>
                     <span class="app-menu__label">Quản lý</span></a></li>
-            <li><a class="app-menu__item active" href="/index"><i class='app-menu__icon bx bx-tachometer'></i><span
+            <li><a class="app-menu__item" href="/index"><i class='app-menu__icon bx bx-tachometer'></i><span
                         class="app-menu__label">Bảng điều khiển</span></a></li>
-            <li><a class="app-menu__item" href="/table_data_employees"><i
-                        class='app-menu__icon bx bx-id-card'></i>
+            <li><a class="app-menu__item" href="/table_data_employees"><i class='app-menu__icon bx bx-id-card'></i>
                     <span class="app-menu__label">Quản lý nhân viên</span></a></li>
             <li><a class="app-menu__item" href="/table_chuc_vu"><i class='app-menu__icon bx bxs-book-content'></i>
-                <span class="app-menu__label">Quản lý chức vụ</span></a></li>
-            <li><a class="app-menu__item" href="/danh_sach_hop_dong"><i class='app-menu__icon bx bx-user-voice'></i><span
-                        class="app-menu__label">Danh sách hợp đồng</span></a></li>
+                    <span class="app-menu__label">Quản lý chức vụ</span></a></li>
+            <li><a class="app-menu__item" href="/danh_sach_hop_dong"><i
+                        class='app-menu__icon bx bx-user-voice'></i><span class="app-menu__label">Danh sách hợp
+                        đồng</span></a></li>
             <li><a class="app-menu__item" href="/table-data-banned.html"><i class='app-menu__icon bx bx-run'></i><span
                         class="app-menu__label">Quản lý nội bộ
                     </span></a></li>
@@ -71,50 +72,53 @@
                         class="app-menu__label">Danh sách chấm công</span></a></li>
             <li><a class="app-menu__item" href="/thoi_gian_cong_tac"><i class='app-menu__icon bx bx-edit-alt'></i><span
                         class="app-menu__label">Thời gian công tác</span></a></li>
-            <li><a class="app-menu__item" href="/phong_ban"><i class='app-menu__icon bx bxs-business'></i><span
+            <li><a class="app-menu__item active" href="/phong_ban"><i class='app-menu__icon bx bxs-business'></i><span
                         class="app-menu__label">Phòng ban</span></a></li>
         </ul>
     </aside>
     <main class="app-content">
+        <div class="app-title">
+            <ul class="app-breadcrumb breadcrumb">
+                <li class="breadcrumb-item"><a href="/table_data_employees">Phòng ban</a></li>
+                <li class="breadcrumb-item"><a href="#">Thêm phòng ban</a></li>
+            </ul>
+        </div>
         <div class="row">
             <div class="col-md-12">
-                <div class="app-title">
-                    <ul class="app-breadcrumb breadcrumb">
-                        <li class="breadcrumb-item"><a href="#"><b>Bảng điều khiển</b></a></li>
-                    </ul>
-                    <div id="clock"></div>
+
+                <div class="tile">
+
+                    <h3 class="tile-title">Tạo mới phòng ban</h3>
+                    <div class="tile-body">
+                        <form class="row" method="post" action="/form_add_data_employees" enctype="multipart/form-data">
+                            <div class="form-group col-md-12">
+                                <label class="control-label">Mã phòng ban</label>
+                                <input class="form-control" type="text" name="MNV" required>
+                            </div>
+                            <div class="form-group col-md-12">
+                                <label class="control-label">Tên phòng ban</label>
+                                <input class="form-control" type="text" name="TENNV" required>
+                            </div>
+                            <div class="form-group col-md-12">
+                                <label class="control-label">Địa chỉ</label>
+                                <input class="form-control" type="text" name="TENNV" required>
+                            </div>
+                            <div class="form-group col-md-12">
+                                <label class="control-label">Số điện thoại</label>
+                                <input class="form-control" type="text" name="TENNV" required>
+                            </div>
+                            <div id="toast">
+                            </div>
+                            <div class="form-group col-md-4">
+                                <input class="btn btn-save" type="submit" onclick="showSuccessToast();"
+                                    value="Lưu lại" />
+                                <a class="btn btn-cancel" href="table_data_employees">Hủy bỏ</a>
+                                <!-- <div onclick="showSuccessToast();" class="btn btn--success">Show success</div>
+                    <div onclick="showErrorToast();" class="btn btn--danger">Show eroor</div> -->
+                            </div>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
-        <div class="row">
-            <!--Left-->
-            <div class="col-md-12 col-lg-6">
-                <div class="row">
-                    <!-- col-6 -->
-                    <div class="col-md-6">
-                        <div class="widget-small primary coloured-icon"><i class='icon bx bxs-user-account fa-3x'></i>
-                            <div class="info">
-                                <h4><a style="color: red;" href="table_data_employees">Tổng nhân viên</a></h4>
-                                <p><b>7 nhân viên</b></p>
-                                <p class="info-tong">Tổng số nhân viên được quản lý.</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
     </main>
-    <script src="{{url_for('static', filename='doc/js/jquery-3.2.1.min.js')}}"></script>
-    <!--===============================================================================================-->
-    <script src="{{url_for('static', filename='doc/js/popper.min.js')}}"></script>
-    <script src="https://unpkg.com/boxicons@latest/dist/boxicons.js"></script>
-    <!--===============================================================================================-->
-    <script src="{{url_for('static', filename='doc/js/bootstrap.min.js')}}"></script>
-    <!--===============================================================================================-->
-    <script src="{{url_for('static', filename='doc/js/main.js')}}"></script>
-    <!--===============================================================================================-->
-    <script src="{{url_for('static', filename='doc/js/plugins/pace.min.js')}}"></script>
-    <!--===============================================================================================-->
-    <script src="{{url_for('static', filename='doc/js/plugins/chart.js')}}"></script>
-    <!--===============================================================================================-->
-</body>
-
-</html>
