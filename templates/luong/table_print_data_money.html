@@ -1,0 +1,50 @@
+<link rel="stylesheet" href="{{ url_for('static', filename='doc/css/main.css') }}">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/boxicons@latest/css/boxicons.min.css">
+<!-- or -->
+<link rel="stylesheet" href="https://unpkg.com/boxicons@latest/css/boxicons.min.css">
+
+<!-- Font-icon css-->
+<link rel="stylesheet" type="text/css"
+  href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.js"></script>
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.css">
+
+ <!-- Data table plugin-->
+  <!-- <script type="text/javascript" src="js/plugins/jquery.dataTables.min.js"></script> -->
+  <script src="{{url_for('static', filename='doc/js/plugins/jquery.dataTables.min.js')}}"></script>
+  <!-- <script type="text/javascript" src="js/plugins/dataTables.bootstrap.min.js"></script> -->
+  <script src="{{url_for('static', filename='doc/js/plugins/dataTables.bootstrap.min.js')}}"></script>
+  <script type="text/javascript">$('#sampleTable').DataTable();</script>
+  <table class="table table-hover table-bordered" id="sampleTable">
+    <thead>
+      <tr>
+        <th>Tên nhân viên</th>
+        <th>Giới tính</th>
+        <th>Tên chức vụ</th>
+        <th>Tháng</th>
+        <th>Năm</th>
+        <th>Lương Cơ Sở</th>
+        <th>Trừ lương</th>
+        <th>Tiền thưởng</th>
+        <th>Tổng nhận</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for data in luong %}
+      <tr>
+        <td><span class="badge badge-info"><a href="/view_data_money/{{data[-1]}}">{{data[1]}}</a></span></td>
+        <td>{{data[2]}}</td>
+        <td>{{data[3]}}</td>
+        <td>{{data[4]}}</td>
+        <td>{{data[5]}}</td>
+        <td>{{data[6]}} đ</td>
+        <td>{{data[7]}} đ</td>
+        <td>{{data[8]}} đ</td>
+        <td>
+          <span class="badge bg-success">{{data[-2]}} đ</span>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>

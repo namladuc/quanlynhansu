@@ -2964,17 +2964,184 @@ def danh_sach_hop_dong():
 # ------------------ HOP DONG ------------------------
 #
 
-@login_required
-@app.route("/form_add_data_money")
-def form_add_data_money():
-    return render_template('form_add_data_money.html')
+
+#
+# ------------------ LUONG ------------------------
+#
 
 @login_required
-@app.route("/table_data_money")
+@app.route('/table_data_money')
 def table_data_money():
-    return render_template('table_data_money.html',
+    cur = mysql.connection.cursor()
+    cur.execute("""
+              SELECT l.id, nv.TenNV, nv.GioiTinh, cv.TenCV, l.Thang, l.Nam,
+              l.LuongChamCong, l.SoTienPhat, l.SoTienThuong, l.TongSoTien, nv.MaNhanVien
+                FROM qlnv_luong l
+                JOIN qlnv_nhanvien nv ON nv.MaNhanVien = l.MaNV
+                JOIN qlnv_chucvu cv ON nv.MaChucVu = cv.MaCV
+                ORDER BY l.Nam DESC, l.Thang DESC, l.MaNV ASC
+                """)
+    luong = cur.fetchall()
+    return render_template('luong/table_data_money.html',
+                           luong = luong,
                            congty = session['congty'],
                            my_user = session['username'])
+
+@login_required
+@app.route('/get_print_data_money')
+def get_print_data_money():
+    cur = mysql.connection.cursor()
+    cur.execute("""
+              SELECT l.id, nv.TenNV, nv.GioiTinh, cv.TenCV, l.Thang, l.Nam,
+              l.LuongChamCong, l.SoTienPhat, l.SoTienThuong, l.TongSoTien, nv.MaNhanVien
+                FROM qlnv_luong l
+                JOIN qlnv_nhanvien nv ON nv.MaNhanVien = l.MaNV
+                JOIN qlnv_chucvu cv ON nv.MaChucVu = cv.MaCV
+                ORDER BY l.Nam DESC, l.Thang DESC, l.MaNV ASC
+                """)
+    luong = cur.fetchall()
+    return render_template('luong/table_print_data_money.html',
+                           luong = luong)
+
+@login_required
+@app.route('/get_data_money_pdf')
+def get_data_money_pdf():
+    pathFile = app.config['SAVE_FOLDER_PDF']  + "/Bang ke Luong.pdf"
+    pdfkit.from_url("/".join(request.url.split("/")[:-1:]) + '/get_print_data_money' ,pathFile)
+    return send_file(pathFile, as_attachment=True)
+
+@login_required
+@app.route("/get_data_money_excel")
+def get_data_money_excel():
+    cur = mysql.connection.cursor()
+    cur.execute("""
+              SELECT l.id, nv.TenNV, nv.GioiTinh, cv.TenCV, l.Thang, l.Nam,
+              l.LuongChamCong, l.SoTienPhat, l.SoTienThuong, l.TongSoTien, nv.MaNhanVien
+                FROM qlnv_luong l
+                JOIN qlnv_nhanvien nv ON nv.MaNhanVien = l.MaNV
+                JOIN qlnv_chucvu cv ON nv.MaChucVu = cv.MaCV
+                ORDER BY l.Nam DESC, l.Thang DESC, l.MaNV ASC
+                """)
+    luong = cur.fetchall()
+    column_name = ['id','TenNV' ,'GioiTinh', 'TenCV', 'Thang', 'Nam', 'LuongChamCong', 'SoTienPhat', 'SoTienThuong', 'TongSoTien', 'MaNV']
+    data = pd.DataFrame.from_records(luong, columns=column_name)
+    data = data.set_index('id')
+    pathFile = app.config['SAVE_FOLDER_EXCEL'] + "/Bang ke Luong.xlsx"
+    data.to_excel(pathFile)
+    return send_file(pathFile, as_attachment=True)
+
+@login_required
+@app.route('/view_data_money/<string:maNV>')
+def view_data_money(maNV):
+    cur = mysql.connection.cursor()
+    cur.execute("""
+              SELECT l.id,  l.Thang, l.Nam, tk.SoNgayDiLam, tk.SoNgayDiVang, tk.SoNgayTangCa, l.LuongCoDinh, l.LuongChamCong,
+              l.SoTienPhat, l.SoTienThuong, l.TongSoTien
+                FROM qlnv_luong l
+                JOIN qlnv_chamcongtongketthang tk ON tk.Nam = l.Nam AND tk.Thang = l.Thang
+                WHERE l.MaNV = %s
+                ORDER BY l.Nam DESC, l.Thang DESC
+                """, (maNV, ))
+    luong = cur.fetchall()
+    
+    cur.execute("""
+                SELECT nv.TenNV, cv.TenCV, pb.TenPB, nv.GioiTinh
+                FROM qlnv_nhanvien nv
+                JOIN qlnv_chucvu cv ON cv.MaCV = nv.MaChucVu
+                JOIN qlnv_phongban pb ON pb.MaPB = nv.MaPhongBan
+                WHERE nv.MaNhanVien = %s
+                """, (maNV, ))
+    nhanvien = cur.fetchall()
+    if (len(nhanvien) == 0):
+        return "Error"
+
+    nhanvien = nhanvien[0]
+    
+    return render_template('luong/view_data_money_one.html',
+                           MaNV = maNV,
+                            nhanvien = nhanvien,
+                           luong = luong,
+                           congty = session['congty'],
+                           my_user = session['username'])
+    
+@login_required
+@app.route('/get_print_view_data_money/<string:maNV>')
+def get_print_view_data_money(maNV):
+    cur = mysql.connection.cursor()
+    cur.execute("""
+              SELECT l.id,  l.Thang, l.Nam, tk.SoNgayDiLam, tk.SoNgayDiVang, tk.SoNgayTangCa, l.LuongCoDinh, l.LuongChamCong,
+              l.SoTienPhat, l.SoTienThuong, l.TongSoTien
+                FROM qlnv_luong l
+                JOIN qlnv_chamcongtongketthang tk ON tk.Nam = l.Nam AND tk.Thang = l.Thang
+                WHERE l.MaNV = %s
+                ORDER BY l.Nam DESC, l.Thang DESC
+                """, (maNV, ))
+    luong = cur.fetchall()
+    
+    cur.execute("""
+                SELECT nv.TenNV, cv.TenCV, pb.TenPB, nv.GioiTinh
+                FROM qlnv_nhanvien nv
+                JOIN qlnv_chucvu cv ON cv.MaCV = nv.MaChucVu
+                JOIN qlnv_phongban pb ON pb.MaPB = nv.MaPhongBan
+                WHERE nv.MaNhanVien = %s
+                """, (maNV, ))
+    nhanvien = cur.fetchall()
+    if (len(nhanvien) == 0):
+        return "Error"
+
+    nhanvien = nhanvien[0]
+    
+    return render_template('luong/print_view_data_money_one.html',
+                           MaNV = maNV,
+                            nhanvien = nhanvien,
+                           luong = luong)
+
+@login_required
+@app.route('/get_data_money_one_excel/<string:maNV>')
+def get_data_money_one_excel(maNV):
+    cur = mysql.connection.cursor()
+    cur.execute("""
+              SELECT l.id,  l.Thang, l.Nam, tk.SoNgayDiLam, tk.SoNgayDiVang, tk.SoNgayTangCa, l.LuongCoDinh, l.LuongChamCong,
+              l.SoTienPhat, l.SoTienThuong, l.TongSoTien
+                FROM qlnv_luong l
+                JOIN qlnv_chamcongtongketthang tk ON tk.Nam = l.Nam AND tk.Thang = l.Thang
+                WHERE l.MaNV = %s
+                ORDER BY l.Nam DESC, l.Thang DESC
+                """, (maNV, ))
+    luong = cur.fetchall()
+    
+    cur.execute("""
+                SELECT nv.TenNV, cv.TenCV, pb.TenPB, nv.GioiTinh
+                FROM qlnv_nhanvien nv
+                JOIN qlnv_chucvu cv ON cv.MaCV = nv.MaChucVu
+                JOIN qlnv_phongban pb ON pb.MaPB = nv.MaPhongBan
+                WHERE nv.MaNhanVien = %s
+                """, (maNV, ))
+    nhanvien = cur.fetchall()
+    if (len(nhanvien) == 0):
+        return "Error"
+
+    nhanvien = nhanvien[0]
+    
+    
+    column_name = ['id','Thang' ,'Nam', 'SoNgayDiLam', 'SoNgayDiVang', 'SoNgayTangCa', 'LuongCoDinh',
+                   'LuongChamCong', 'SoTienPhat', 'SoTienThuong', 'TongSoTien']
+    data = pd.DataFrame.from_records(luong, columns=column_name)
+    data = data.set_index('id')
+    pathFile = app.config['SAVE_FOLDER_EXCEL'] + "/Bang ke Luong_" + nhanvien[0]+"_" + maNV + ".xlsx"
+    data.to_excel(pathFile)
+    return send_file(pathFile, as_attachment=True)
+
+@login_required
+@app.route('/get_data_money_one_pdf/<string:maNV>')
+def get_data_money_one_pdf(maNV):
+    pathFile = app.config['SAVE_FOLDER_PDF']  + "/Bang ke Luong_" +maNV  + ".pdf"
+    pdfkit.from_url("/".join(request.url.split("/")[:-2:]) + '/get_print_view_data_money/' + maNV ,pathFile)
+    return send_file(pathFile, as_attachment=True)
+#
+# ------------------ LUONG ------------------------
+#
+
 
 @login_required
 @app.route("/index")
@@ -2982,14 +3149,6 @@ def index():
     return render_template('index.html', 
                            congty = session['congty'],
                            my_user = session['username'])
-
-@login_required
-@app.route("/page_calendar")
-def page_calendar():
-    return render_template('page_calendar.html', 
-                           congty = session['congty'],
-                           my_user = session['username'])
-
 
 
 # Error Handler

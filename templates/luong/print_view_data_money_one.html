@@ -1,0 +1,55 @@
+<link rel="stylesheet" href="{{ url_for('static', filename='doc/css/main.css') }}">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/boxicons@latest/css/boxicons.min.css">
+<!-- or -->
+<link rel="stylesheet" href="https://unpkg.com/boxicons@latest/css/boxicons.min.css">
+
+<!-- Font-icon css-->
+<link rel="stylesheet" type="text/css"
+  href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.js"></script>
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.css">
+
+ <!-- Data table plugin-->
+  <!-- <script type="text/javascript" src="js/plugins/jquery.dataTables.min.js"></script> -->
+  <script src="{{url_for('static', filename='doc/js/plugins/jquery.dataTables.min.js')}}"></script>
+  <!-- <script type="text/javascript" src="js/plugins/dataTables.bootstrap.min.js"></script> -->
+  <script src="{{url_for('static', filename='doc/js/plugins/dataTables.bootstrap.min.js')}}"></script>
+  <script type="text/javascript">$('#sampleTable').DataTable();</script>
+  <div class="col-sm-12">
+    <label class="control-label"> {{nhanvien[1]}} : {{nhanvien[0]}} - {{MaNV}} - {{nhanvien[3]}} - {{nhanvien[2]}} </label>
+  </div>
+  
+  <table class="table table-hover table-bordered" id="sampleTable">
+    <thead>
+        <tr>
+            <th>Tháng</th>
+            <th>Năm</th>
+            <th>Số ngày đi làm</th>
+            <th>Só ngày vắng</th>
+            <th>Số ngày tăng ca</th>
+            <th>Lương cơ sở</th>
+            <th>Lương chấm công</th>
+            <th>Trừ lương</th>
+            <th>Tiền thưởng</th>
+            <th>Tổng nhận</th>
+          </tr>
+    </thead>
+    <tbody>
+      {% for data in luong %}
+      <tr>
+        <td class="center"> {{data[1]}}</td>
+                  <td class="center">{{data[2]}}</td>
+                  <td class="center">{{data[3]}}</td>
+                  <td class="center">{{data[4]}}</td>
+                  <td class="center">{{data[5]}}</td>
+                  <td class="center">{{data[6]}} đ</td>
+                  <td class="center">{{data[7]}} đ</td>
+                  <td class="center">{{data[8]}} đ</td>
+                  <td class="center">{{data[9]}} đ</td>
+                  <td>
+                    <span class="badge bg-success">{{data[-1]}} đ</span>
+                  </td>
+      {% endfor %}
+    </tbody>
+  </table>
