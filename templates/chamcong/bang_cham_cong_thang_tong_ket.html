@@ -72,19 +72,21 @@
             class="app-menu__label">Bảng kê lương</span></a></li>
       <li><a class="app-menu__item" href="/page_calendar"><i class='app-menu__icon bx bx-calendar-check'></i><span
             class="app-menu__label">Lịch công tác </span></a></li>
-      <li><a class="app-menu__item active" href="/danh_sach_cham_cong"><i class='app-menu__icon bx bx-edit-alt'></i><span
-            class="app-menu__label">Danh sách chấm công</span></a></li>
+      <li><a class="app-menu__item active" href="/danh_sach_cham_cong"><i
+            class='app-menu__icon bx bx-edit-alt'></i><span class="app-menu__label">Danh sách chấm công</span></a></li>
       <li><a class="app-menu__item" href="/thoi_gian_cong_tac"><i class='app-menu__icon bx bx-edit-alt'></i><span
             class="app-menu__label">Thời gian công tác</span></a></li>
       <li><a class="app-menu__item" href="/phong_ban"><i class='app-menu__icon bx bxs-business'></i><span
             class="app-menu__label">Phòng ban</span></a></li>
+      <li><a class="app-menu__item" href="/cai_dat"><i class='app-menu__icon bx bx-cog'></i><span
+            class="app-menu__label">Cài đặt</span></a></li>
     </ul>
   </aside>
   <main class="app-content">
     <div class="app-title">
       <ul class="app-breadcrumb breadcrumb side">
         <li class="breadcrumb-item active"><a href="/danh_sach_cham_cong"><b>Danh sách chấm công </b></a></li>
-        <li class="breadcrumb-item active"><a href="#"><b>Chấm công tháng tổng kết - {{TenNV}} - {{Nam}}  </b></a></li>
+        <li class="breadcrumb-item active"><a href="#"><b>Chấm công tháng tổng kết - {{TenNV}} - {{Nam}} </b></a></li>
 
       </ul>
       <div id="clock"></div>
@@ -107,8 +109,7 @@
               </div>
 
               <div class="col-sm-2">
-                <a class="btn btn-excel btn-sm" href="" title="In"><i class="fas fa-file-excel"></i
-                  > Xuất Excel</a>
+                <a class="btn btn-excel btn-sm" href="" title="In"><i class="fas fa-file-excel"></i> Xuất Excel</a>
               </div>
               <div class="col-sm-2">
                 <a class="btn btn-delete btn-sm pdf-file" type="button" title="In" onclick="myFunction(this)"><i
@@ -138,12 +139,13 @@
                   <td class="center">{{data[7]}}</td>
                   <td class="center">
                     <button class="btn btn-primary btn-sm edit" type="button" title="Xem chi tiết tháng" id="show-emp">
-                      <a href="/table_cham_cong_ngay_trong_thang/{{MaNV}}_{{Nam}}_{{data[3]}}"><i class="fa fa-eye" aria-hidden="true"></i></a>
+                      <a href="/table_cham_cong_ngay_trong_thang/{{MaNV}}_{{Nam}}_{{data[3]}}"><i class="fa fa-eye"
+                          aria-hidden="true"></i></a>
                     </button>
                   </td>
                 </tr>
                 {% endfor %}
-       
+
               </tbody>
               </thead>
             </table>
@@ -213,5 +215,3 @@
 </body>
 
 </html>
-
-

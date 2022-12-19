@@ -1986,3 +1986,51 @@ def phong_ban_phat():
     return render_template('phongban/phong_ban_phat.html', 
                            congty = session['congty'],
                            my_user = session['username'])
+    
+    
+#
+# ------------------ CAI DAT ------------------------
+#
+
+@login_required
+@app.route("/cai_dat")
+def cai_dat():
+    return render_template('caidat/cai_dat.html', 
+                           congty = session['congty'],
+                           my_user = session['username'])
+    
+@login_required
+@app.route("/tao_tk")
+def tao_tk():
+    return render_template('caidat/tao_tk.html', 
+                           congty = session['congty'],
+                           my_user = session['username'])
+    
+@login_required
+@app.route("/form_view_tk")
+def form_view_tk():
+    return render_template('caidat/form_view_tk.html', 
+                           congty = session['congty'],
+                           my_user = session['username'])
+@login_required
+@app.route("/form_chinh_sua_mk")
+def form_chinh_sua_mk():
+    return render_template('caidat/form_chinh_sua_mk.html', 
+                           congty = session['congty'],
+                           my_user = session['username'])
+
+@login_required
+@app.route("/form_view_cong_ty")
+def form_view_cong_ty():
+    return render_template('caidat/form_view_cong_ty.html', 
+                           congty = session['congty'],
+                           my_user = session['username'])
+
+@login_required
+@app.route("/form_sua_tt_cong_ty")
+def form_sua_tt_cong_ty():
+    return render_template('caidat/form_sua_tt_cong_ty.html', 
+                           congty = session['congty'],
+                           my_user = session['username'])
+ 
+ 

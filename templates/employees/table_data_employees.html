@@ -9,7 +9,7 @@
   <!-- Main CSS-->
   <link rel="stylesheet" href="{{ url_for('static', filename='doc/css/main.css') }}">
   <script src="{{url_for('static', filename='js/displaytime/displaytime.js')}}"></script>
-  <link rel="shortcut icon" type="image/x-icon" href="{{ url_for('static', filename=congty[2])}}"/>
+  <link rel="shortcut icon" type="image/x-icon" href="{{ url_for('static', filename=congty[2])}}" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/boxicons@latest/css/boxicons.min.css">
   <!-- or -->
   <link rel="stylesheet" href="https://unpkg.com/boxicons@latest/css/boxicons.min.css">
@@ -41,14 +41,14 @@
   </header>
   <!-- Sidebar menu-->
   <div class="app-sidebar__overlay" data-toggle="sidebar"></div>
-    <aside class="app-sidebar">
-        <div class="app-sidebar__user"><img class="app-sidebar__user-avatar" src="{{ url_for('static', filename=my_user[7]) }}" style="border-radius: 50%;" width="50px"
-                alt="User Image">
-            <div>
-                <p class="app-sidebar__user-name"><b>{{my_user[3]}}</b></p>
-                <p class="app-sidebar__user-designation">Chào mừng bạn trở lại</p>
-            </div>
-        </div>
+  <aside class="app-sidebar">
+    <div class="app-sidebar__user"><img class="app-sidebar__user-avatar"
+        src="{{ url_for('static', filename=my_user[7]) }}" style="border-radius: 50%;" width="50px" alt="User Image">
+      <div>
+        <p class="app-sidebar__user-name"><b>{{my_user[3]}}</b></p>
+        <p class="app-sidebar__user-designation">Chào mừng bạn trở lại</p>
+      </div>
+    </div>
     <hr>
     <ul class="app-menu">
       <li><a class="app-menu__item haha"><i class='app-menu__icon bx bx-user'></i>
@@ -58,7 +58,7 @@
       <li><a class="app-menu__item active" href="/table_data_employees"><i class='app-menu__icon bx bx-id-card'></i>
           <span class="app-menu__label">Quản lý nhân viên</span></a></li>
       <li><a class="app-menu__item" href="/table_chuc_vu"><i class='app-menu__icon bx bxs-book-content'></i>
-        <span class="app-menu__label">Quản lý chức vụ</span></a></li>
+          <span class="app-menu__label">Quản lý chức vụ</span></a></li>
       <li><a class="app-menu__item" href="/danh_sach_hop_dong"><i class='app-menu__icon bx bx-user-voice'></i><span
             class="app-menu__label">Danh sách hợp đồng</span></a></li>
       <li><a class="app-menu__item" href="/table-data-banned.html"><i class='app-menu__icon bx bx-run'></i><span
@@ -74,7 +74,9 @@
             class="app-menu__label">Thời gian công tác</span></a></li>
       <li><a class="app-menu__item" href="/phong_ban"><i class='app-menu__icon bx bxs-business'></i><span
             class="app-menu__label">Phòng ban</span></a></li>
-        
+      <li><a class="app-menu__item" href="/cai_dat"><i class='app-menu__icon bx bx-cog'></i><span
+            class="app-menu__label">Cài đặt</span></a></li>
+
     </ul>
   </aside>
   <main class="app-content">
@@ -98,13 +100,14 @@
               </div>
 
               <div class="col-sm-2">
-                <a class="btn btn-info btn-sm" href="/table_trinh_do_hoc_van" title="Các trình độ học vấn hiện có"><i class="fa fa-book"></i>
+                <a class="btn btn-info btn-sm" href="/table_trinh_do_hoc_van" title="Các trình độ học vấn hiện có"><i
+                    class="fa fa-book"></i>
                   Xem các trình độ học vấn</a>
               </div>
 
               <div class="col-sm-2">
-                <a class="btn btn-delete btn-sm nhap-tu-file" href="/form_add_data_employees_upload_file" type="button" title="Nhập"><i
-                    class="fas fa-file-upload"></i> Tải từ file</a>
+                <a class="btn btn-delete btn-sm nhap-tu-file" href="/form_add_data_employees_upload_file" type="button"
+                  title="Nhập"><i class="fas fa-file-upload"></i> Tải từ file</a>
               </div>
 
               <div class="col-sm-2">
@@ -118,8 +121,8 @@
               </div>
 
               <div class="col-sm-2">
-                <a class="btn btn-excel btn-sm" href="/get_data_employees_excel" title="In"><i 
-                  class="fas fa-file-excel"></i> Xuất Excel</a>
+                <a class="btn btn-excel btn-sm" href="/get_data_employees_excel" title="In"><i
+                    class="fas fa-file-excel"></i> Xuất Excel</a>
               </div>
 
               <div class="col-sm-2">
@@ -128,9 +131,8 @@
               </div>
 
               <div class="col-sm-2">
-                <a class="btn btn-delete btn-sm" type="button" title="Xóa tát cả các phần tử đã chọn" 
-                      onclick="deleteMoreRow(this)"><i
-                    class="fas fa-trash-alt"></i> Xóa phần tử đã chọn </a>
+                <a class="btn btn-delete btn-sm" type="button" title="Xóa tát cả các phần tử đã chọn"
+                  onclick="deleteMoreRow(this)"><i class="fas fa-trash-alt"></i> Xóa phần tử đã chọn </a>
               </div>
 
             </div>
@@ -156,7 +158,8 @@
                   <td width="10"><input type="checkbox" id="myChecker" name="check1" value="1"></td>
                   <td>{{data[0]}}</td>
                   <td>{{data[1]}}</td>
-                  <td><img class="img-card-person" style="border-radius: 50%;" src="{{url_for('static', filename=data[2])}}" alt=""></td>
+                  <td><img class="img-card-person" style="border-radius: 50%;"
+                      src="{{url_for('static', filename=data[2])}}" alt=""></td>
                   <td>{{data[3]}}</td>
                   <td>{{data[4]}}</td>
                   <td>{{data[5]}}</td>
@@ -166,7 +169,8 @@
                       onclick="deleteRow(this)"><i class="fas fa-trash-alt"></i>
                     </button>
                     <button class="btn btn-primary btn-sm edit" type="button" title="Sửa" id="show-emp">
-                        <a href="/form_view_update_employees/{{data[0]}}_N"><i class="fa fa-eye" aria-hidden="true"></i></a>
+                      <a href="/form_view_update_employees/{{data[0]}}_N"><i class="fa fa-eye"
+                          aria-hidden="true"></i></a>
                     </button>
                   </td>
                 </tr>
@@ -207,14 +211,14 @@
         buttons: ["Hủy bỏ", "Đồng ý"],
       })
         .then((willDelete) => {
-         
+
           if (willDelete) {
             $.ajax({
-              url:"/delete_nhan_vien/" + maNV,
+              url: "/delete_nhan_vien/" + maNV,
               context: document.body
             })
             swal("Đã xóa thành công.!", {
-              
+
             });
             location.reload();
           }
@@ -225,10 +229,10 @@
       var numRow = document.getElementById("sampleTable").rows.length;
       var id_nv = [];
       $('#sampleTable tbody :checkbox').each(function () {
-          let i = this.parentNode.parentNode.rowIndex;
-          if (this.checked) {
-            id_nv.push(this.parentNode.parentNode.childNodes[3].textContent);
-          }
+        let i = this.parentNode.parentNode.rowIndex;
+        if (this.checked) {
+          id_nv.push(this.parentNode.parentNode.childNodes[3].textContent);
+        }
       });
 
       swal({
@@ -240,7 +244,7 @@
           if (willDelete) {
             for (let i = 0; i < id_nv.length; i++) {
               $.ajax({
-                url:"/delete_nhan_vien/" + id_nv[i],
+                url: "/delete_nhan_vien/" + id_nv[i],
                 context: document.body
               })
             }
@@ -255,7 +259,7 @@
       $('#sampleTable tbody :checkbox').prop('checked', $(this).is(':checked'));
       e.stopImmediatePropagation();
     });
-    
+
     //In dữ liệu
     var myApp = new function () {
       this.printTable = function () {
@@ -271,18 +275,18 @@
       var copyTextarea = document.querySelector('.js-copytextarea');
       copyTextarea.focus();
 
-      var mytext = copyTextarea.textContent.substring(661,copyTextarea.textContent.length).split("\n")
+      var mytext = copyTextarea.textContent.substring(661, copyTextarea.textContent.length).split("\n")
 
       var index = 0;
       var data = [];
       mytext.forEach(function (text) {
         if (text.trim().length != 0) {
-            data.push(text.trim());
-            index += 1;
-            if (index == 7) {
-              data.push("\n")
-              index = 0;
-            }
+          data.push(text.trim());
+          index += 1;
+          if (index == 7) {
+            data.push("\n")
+            index = 0;
+          }
         }
       });
 

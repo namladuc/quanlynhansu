@@ -9,7 +9,7 @@
   <!-- Main CSS-->
   <link rel="stylesheet" href="{{ url_for('static', filename='doc/css/main.css') }}">
   <script src="{{url_for('static', filename='js/displaytime/displaytime.js')}}"></script>
-  <link rel="shortcut icon" type="image/x-icon" href="{{ url_for('static', filename=congty[2])}}"/>
+  <link rel="shortcut icon" type="image/x-icon" href="{{ url_for('static', filename=congty[2])}}" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/boxicons@latest/css/boxicons.min.css">
   <!-- or -->
   <link rel="stylesheet" href="https://unpkg.com/boxicons@latest/css/boxicons.min.css">
@@ -41,14 +41,14 @@
   </header>
   <!-- Sidebar menu-->
   <div class="app-sidebar__overlay" data-toggle="sidebar"></div>
-    <aside class="app-sidebar">
-        <div class="app-sidebar__user"><img class="app-sidebar__user-avatar" src="{{ url_for('static', filename=my_user[7])}}" style="border-radius: 50%;" width="50px"
-                alt="User Image">
-            <div>
-                <p class="app-sidebar__user-name"><b>{{my_user[3]}}</b></p>
-                <p class="app-sidebar__user-designation">Chào mừng bạn trở lại</p>
-            </div>
-        </div>
+  <aside class="app-sidebar">
+    <div class="app-sidebar__user"><img class="app-sidebar__user-avatar"
+        src="{{ url_for('static', filename=my_user[7])}}" style="border-radius: 50%;" width="50px" alt="User Image">
+      <div>
+        <p class="app-sidebar__user-name"><b>{{my_user[3]}}</b></p>
+        <p class="app-sidebar__user-designation">Chào mừng bạn trở lại</p>
+      </div>
+    </div>
     <hr>
     <ul class="app-menu">
       <li><a class="app-menu__item haha"><i class='app-menu__icon bx bx-user'></i>
@@ -58,7 +58,7 @@
       <li><a class="app-menu__item active" href="/table_data_employees"><i class='app-menu__icon bx bx-id-card'></i>
           <span class="app-menu__label">Quản lý nhân viên</span></a></li>
       <li><a class="app-menu__item" href="/table_chuc_vu"><i class='app-menu__icon bx bxs-book-content'></i>
-        <span class="app-menu__label">Quản lý chức vụ</span></a></li>
+          <span class="app-menu__label">Quản lý chức vụ</span></a></li>
       <li><a class="app-menu__item" href="/danh_sach_hop_dong"><i class='app-menu__icon bx bx-user-voice'></i><span
             class="app-menu__label">Danh sách hợp đồng</span></a></li>
       <li><a class="app-menu__item" href="/table-data-banned.html"><i class='app-menu__icon bx bx-run'></i><span
@@ -74,6 +74,8 @@
             class="app-menu__label">Thời gian công tác</span></a></li>
       <li><a class="app-menu__item" href="/phong_ban"><i class='app-menu__icon bx bxs-business'></i><span
             class="app-menu__label">Phòng ban</span></a></li>
+      <li><a class="app-menu__item" href="/cai_dat"><i class='app-menu__icon bx bx-cog'></i><span
+            class="app-menu__label">Cài đặt</span></a></li>
     </ul>
   </aside>
   <main class="app-content">
@@ -90,27 +92,27 @@
           <div class="tile-body">
             <div class="row element-button">
               <div class="col-sm-2">
-                <a class="btn btn-add btn-sm" href="/form_add_chuc_vu"><b><i
-                      class="fas fa-folder-plus"></i> Tạo chức vụ mới</b></a>
+                <a class="btn btn-add btn-sm" href="/form_add_chuc_vu"><b><i class="fas fa-folder-plus"></i> Tạo chức vụ
+                    mới</b></a>
               </div>
               <div class="col-sm-2">
-                <a class="btn btn-add btn-sm" href="/form_add_trinhdohocvan"><b><i
-                  class="fas fa-folder-plus"></i> Tạo trình độ học vấn mới</b></a>
+                <a class="btn btn-add btn-sm" href="/form_add_trinhdohocvan"><b><i class="fas fa-folder-plus"></i> Tạo
+                    trình độ học vấn mới</b></a>
               </div>
             </div>
-            <form class="row" method="post" action="/form_add_data_employees_upload_file" enctype ="multipart/form-data">
-            <div class="form-group col-md-4">
-              <label class="control-label">Upload file</label>
-              <input type="file" style="height:45px;" name="FileDataUpload" class="form-control" id="customFile" />
-            </div>
-            <div class="form-group col-md-4">
-              <label class="control-label"></label>
-            </div>
-            <div class="form-group col-md-4">
-              <label class="control-label"></label>
-            </div>
+            <form class="row" method="post" action="/form_add_data_employees_upload_file" enctype="multipart/form-data">
               <div class="form-group col-md-4">
-                <input class="btn btn-save" type="submit" value="Lưu lại"/>
+                <label class="control-label">Upload file</label>
+                <input type="file" style="height:45px;" name="FileDataUpload" class="form-control" id="customFile" />
+              </div>
+              <div class="form-group col-md-4">
+                <label class="control-label"></label>
+              </div>
+              <div class="form-group col-md-4">
+                <label class="control-label"></label>
+              </div>
+              <div class="form-group col-md-4">
+                <input class="btn btn-save" type="submit" value="Lưu lại" />
                 <a class="btn btn-cancel" href="table_data_employees">Hủy bỏ</a>
               </div>
             </form>

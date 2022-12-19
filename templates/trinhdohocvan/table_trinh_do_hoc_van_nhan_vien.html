@@ -9,7 +9,7 @@
   <!-- Main CSS-->
   <link rel="stylesheet" href="{{ url_for('static', filename='doc/css/main.css') }}">
   <script src="{{url_for('static', filename='js/displaytime/displaytime.js')}}"></script>
-  <link rel="shortcut icon" type="image/x-icon" href="{{ url_for('static', filename=congty[2])}}"/>
+  <link rel="shortcut icon" type="image/x-icon" href="{{ url_for('static', filename=congty[2])}}" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/boxicons@latest/css/boxicons.min.css">
   <!-- or -->
   <link rel="stylesheet" href="https://unpkg.com/boxicons@latest/css/boxicons.min.css">
@@ -40,14 +40,14 @@
   </header>
   <!-- Sidebar menu-->
   <div class="app-sidebar__overlay" data-toggle="sidebar"></div>
-    <aside class="app-sidebar">
-      <div class="app-sidebar__user"><img class="app-sidebar__user-avatar" src="{{ url_for('static', filename=my_user[7]) }}" style="border-radius: 50%;" width="50px"
-        alt="User Image">
-            <div>
-                <p class="app-sidebar__user-name"><b>{{my_user[3]}}</b></p>
-                <p class="app-sidebar__user-designation">Chào mừng bạn trở lại</p>
-            </div>
-        </div>
+  <aside class="app-sidebar">
+    <div class="app-sidebar__user"><img class="app-sidebar__user-avatar"
+        src="{{ url_for('static', filename=my_user[7]) }}" style="border-radius: 50%;" width="50px" alt="User Image">
+      <div>
+        <p class="app-sidebar__user-name"><b>{{my_user[3]}}</b></p>
+        <p class="app-sidebar__user-designation">Chào mừng bạn trở lại</p>
+      </div>
+    </div>
     <hr>
     <ul class="app-menu">
       <li><a class="app-menu__item haha"><i class='app-menu__icon bx bx-user'></i>
@@ -56,8 +56,8 @@
             class="app-menu__label">Bảng điều khiển</span></a></li>
       <li><a class="app-menu__item active" href="/table_data_employees"><i class='app-menu__icon bx bx-id-card'></i>
           <span class="app-menu__label">Quản lý nhân viên</span></a></li>
-          <li><a class="app-menu__item" href="/table_chuc_vu"><i class='app-menu__icon bx bxs-book-content'></i>
-            <span class="app-menu__label">Quản lý chức vụ</span></a></li>
+      <li><a class="app-menu__item" href="/table_chuc_vu"><i class='app-menu__icon bx bxs-book-content'></i>
+          <span class="app-menu__label">Quản lý chức vụ</span></a></li>
       <li><a class="app-menu__item" href="/danh_sach_hop_dong"><i class='app-menu__icon bx bx-user-voice'></i><span
             class="app-menu__label">Danh sách hợp đồng</span></a></li>
       <li><a class="app-menu__item" href="/table-data-banned"><i class='app-menu__icon bx bx-run'></i><span
@@ -73,13 +73,16 @@
             class="app-menu__label">Thời gian công tác</span></a></li>
       <li><a class="app-menu__item" href="/phong_ban"><i class='app-menu__icon bx bxs-business'></i><span
             class="app-menu__label">Phòng ban</span></a></li>
+      <li><a class="app-menu__item" href="/cai_dat"><i class='app-menu__icon bx bx-cog'></i><span
+            class="app-menu__label">Cài đặt</span></a></li>
     </ul>
   </aside>
   <main class="app-content">
     <div class="app-title">
       <ul class="app-breadcrumb breadcrumb">
         <li class="breadcrumb-item"><a href="/table_trinh_do_hoc_van">Danh sách trình độ học vấn</a></li>
-        <li class="breadcrumb-item"><a href="/table_trinh_do_hoc_van/{{tenTDHV[0]}}">Xem trình độ học vấn - {{tenTDHV[1]}} - {{tenTDHV[2]}}</a></li>
+        <li class="breadcrumb-item"><a href="/table_trinh_do_hoc_van/{{tenTDHV[0]}}">Xem trình độ học vấn -
+            {{tenTDHV[1]}} - {{tenTDHV[2]}}</a></li>
       </ul>
     </div>
     <div class="row">
@@ -92,8 +95,8 @@
             <div class="row element-button">
 
               <div class="col-sm-2">
-                <a class="btn btn-delete btn-sm print-file" type="button" title="In" onclick="myApp.printTableTDHVNV()"><i
-                    class="fas fa-print"></i> In dữ liệu</a>
+                <a class="btn btn-delete btn-sm print-file" type="button" title="In"
+                  onclick="myApp.printTableTDHVNV()"><i class="fas fa-print"></i> In dữ liệu</a>
               </div>
               <div class="col-sm-2">
                 <a class="btn btn-delete btn-sm print-file js-textareacopybtn" type="button" title="Sao chép"><i
@@ -101,12 +104,13 @@
               </div>
 
               <div class="col-sm-2">
-                <a class="btn btn-excel btn-sm" href="/get_table_trinh_do_hoc_van_nhan_vien_excel/{{tenTDHV[0]}}" title="Xuất Excel"><i
-                     class="fas fa-file-excel"></i> Xuất Excel</a>
+                <a class="btn btn-excel btn-sm" href="/get_table_trinh_do_hoc_van_nhan_vien_excel/{{tenTDHV[0]}}"
+                  title="Xuất Excel"><i class="fas fa-file-excel"></i> Xuất Excel</a>
               </div>
               <div class="col-sm-2">
-                <a class="btn btn-delete btn-sm pdf-file" type="button" title="In" href="/get_table_trinh_do_hoc_van_nhan_vien_pdf/{{tenTDHV[0]}}"><i
-                    class="fas fa-file-pdf"></i> Xuất PDF</a>
+                <a class="btn btn-delete btn-sm pdf-file" type="button" title="In"
+                  href="/get_table_trinh_do_hoc_van_nhan_vien_pdf/{{tenTDHV[0]}}"><i class="fas fa-file-pdf"></i> Xuất
+                  PDF</a>
               </div>
             </div>
 
@@ -131,7 +135,7 @@
                   <td>{{data[3]}}</td>
                   <td>{{data[4]}}</td>
                   <td>{{data[5]}}</td>
-                {% endfor %}
+                  {% endfor %}
               </tbody>
             </table>
 
@@ -159,7 +163,7 @@
         win.print();
       }
     }
-    
+
     //Sao chép dữ liệu
     var copyTDHVNVareaBtn = document.querySelector('.js-textareacopybtn');
 
@@ -167,18 +171,18 @@
       var copyTextarea = document.querySelector('.js-copytextarea');
       copyTextarea.focus();
 
-      var mytext = copyTextarea.textContent.substring(167,copyTextarea.textContent.length).split("\n")
+      var mytext = copyTextarea.textContent.substring(167, copyTextarea.textContent.length).split("\n")
 
       var index = 0;
       var data = [];
       mytext.forEach(function (text) {
         if (text.trim().length != 0) {
-            data.push(text.trim());
-            index += 1;
-            if (index == 6) {
-              data.push("\n")
-              index = 0;
-            }
+          data.push(text.trim());
+          index += 1;
+          if (index == 6) {
+            data.push("\n")
+            index = 0;
+          }
         }
       });
 

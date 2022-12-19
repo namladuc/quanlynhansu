@@ -78,6 +78,8 @@
             class="app-menu__label">Thời gian công tác</span></a></li>
       <li><a class="app-menu__item" href="/phong_ban"><i class='app-menu__icon bx bxs-business'></i><span
             class="app-menu__label">Phòng ban</span></a></li>
+      <li><a class="app-menu__item" href="/cai_dat"><i class='app-menu__icon bx bx-cog'></i><span
+            class="app-menu__label">Cài đặt</span></a></li>
     </ul>
   </aside>
   <main class="app-content">
@@ -105,8 +107,9 @@
               </div>
 
               <div class="col-sm-2">
-                <a class="btn btn-info btn-sm" type="button" title="In" href="/table_cham_cong_ngay_trong_thang/MNV01_2021_1"><i
-                    class="fa fa-calendar-check-o"></i> Xem chấm công ngày</a>
+                <a class="btn btn-info btn-sm" type="button" title="In"
+                  href="/table_cham_cong_ngay_trong_thang/MNV01_2021_1"><i class="fa fa-calendar-check-o"></i> Xem chấm
+                  công ngày</a>
               </div>
 
               <div class="col-sm-2">
@@ -131,11 +134,12 @@
             <form class="row" method="post" action="/danh_sach_cham_cong">
               <div class="col-sm-4">
                 <label class="control-label">Năm</label>
-                <input style="border-radius: 8px; padding-left: 10px" name="Year" type="number" value="{{Nam}}" required>
-                <input class="btn btn-save" style="height: 31px;" type="submit" value="Xem"/>
+                <input style="border-radius: 8px; padding-left: 10px" name="Year" type="number" value="{{Nam}}"
+                  required>
+                <input class="btn btn-save" style="height: 31px;" type="submit" value="Xem" />
               </div>
             </form>
-            
+
 
             <table class="table table-hover table-bordered" id="sampleTable">
               <thead>
@@ -162,125 +166,203 @@
                 <tr>
                   <td class="center">{{data[1]}}</td>
 
-                  {% if data[3] <= -1 %}
-                    <td class="text"><span class="text--error" disabled>- - -</span></td>
-                  {% elif data[3] < mucPhanLoaiChamCong[0] %}
-                    <td class="text"><a href="/table_cham_cong_ngay_trong_thang/{{data[1]}}_{{Nam}}_1" class="text--error">{{data[3]}}</a></td>
-                  {% elif data[3] >= mucPhanLoaiChamCong[0] and data[3] <= mucPhanLoaiChamCong[1] %}
-                    <td class="text"><a href="/table_cham_cong_ngay_trong_thang/{{data[1]}}_{{Nam}}_1" class="text--warning">{{data[3]}}</a></td>
-                  {% else %}
-                    <td class="text"><a href="/table_cham_cong_ngay_trong_thang/{{data[1]}}_{{Nam}}_1" class="text--sucess">{{data[3]}}</a></td>
-                  {% endif %}
+                  {% if data[3] <= -1 %} <td class="text"><span class="text--error" disabled>- - -</span></td>
+                    {% elif data[3] < mucPhanLoaiChamCong[0] %} <td class="text"><a
+                        href="/table_cham_cong_ngay_trong_thang/{{data[1]}}_{{Nam}}_1"
+                        class="text--error">{{data[3]}}</a></td>
+                      {% elif data[3] >= mucPhanLoaiChamCong[0] and data[3] <= mucPhanLoaiChamCong[1] %} <td
+                        class="text"><a href="/table_cham_cong_ngay_trong_thang/{{data[1]}}_{{Nam}}_1"
+                          class="text--warning">{{data[3]}}</a></td>
+                        {% else %}
+                        <td class="text"><a href="/table_cham_cong_ngay_trong_thang/{{data[1]}}_{{Nam}}_1"
+                            class="text--sucess">{{data[3]}}</a></td>
+                        {% endif %}
 
-                  {% if data[4] <= -1 %}
-                    <td class="text"><span class="text--error" disabled>- - -</span></td>
-                  {% elif data[4] < mucPhanLoaiChamCong[0] %}
-                    <td class="text"><a href="/table_cham_cong_ngay_trong_thang/{{data[1]}}_{{Nam}}_2" class="text--error">{{data[4]}}</a></td>
-                  {% elif data[4] >= mucPhanLoaiChamCong[0] and data[4] <= mucPhanLoaiChamCong[1] %}
-                    <td class="text"><a href="/table_cham_cong_ngay_trong_thang/{{data[1]}}_{{Nam}}_2" class="text--warning">{{data[4]}}</a></td>
-                  {% else %}
-                    <td class="text"><a href="/table_cham_cong_ngay_trong_thang/{{data[1]}}_{{Nam}}_2" class="text--sucess">{{data[4]}}</a></td>
-                  {% endif %}
+                        {% if data[4] <= -1 %} <td class="text"><span class="text--error" disabled>- - -</span></td>
+                          {% elif data[4] < mucPhanLoaiChamCong[0] %} <td class="text"><a
+                              href="/table_cham_cong_ngay_trong_thang/{{data[1]}}_{{Nam}}_2"
+                              class="text--error">{{data[4]}}</a></td>
+                            {% elif data[4] >= mucPhanLoaiChamCong[0] and data[4] <= mucPhanLoaiChamCong[1] %} <td
+                              class="text"><a href="/table_cham_cong_ngay_trong_thang/{{data[1]}}_{{Nam}}_2"
+                                class="text--warning">{{data[4]}}</a></td>
+                              {% else %}
+                              <td class="text"><a href="/table_cham_cong_ngay_trong_thang/{{data[1]}}_{{Nam}}_2"
+                                  class="text--sucess">{{data[4]}}</a></td>
+                              {% endif %}
 
-                  {% if data[5] <= -1 %}
-                    <td class="text"><span class="text--error" disabled>- - -</span></td>
-                  {% elif data[5] < mucPhanLoaiChamCong[0] %}
-                    <td class="text"><a href="/table_cham_cong_ngay_trong_thang/{{data[1]}}_{{Nam}}_3" class="text--error">{{data[5]}}</a></td>
-                  {% elif data[5] >= mucPhanLoaiChamCong[0] and data[5] <= mucPhanLoaiChamCong[1] %}
-                    <td class="text"><a href="/table_cham_cong_ngay_trong_thang/{{data[1]}}_{{Nam}}_3" class="text--warning">{{data[5]}}</a></td>
-                  {% else %}
-                    <td class="text"><a href="/table_cham_cong_ngay_trong_thang/{{data[1]}}_{{Nam}}_3" class="text--sucess">{{data[5]}}</a></td>
-                  {% endif %}
+                              {% if data[5] <= -1 %} <td class="text"><span class="text--error" disabled>- - -</span>
+                                </td>
+                                {% elif data[5] < mucPhanLoaiChamCong[0] %} <td class="text"><a
+                                    href="/table_cham_cong_ngay_trong_thang/{{data[1]}}_{{Nam}}_3"
+                                    class="text--error">{{data[5]}}</a></td>
+                                  {% elif data[5] >= mucPhanLoaiChamCong[0] and data[5] <= mucPhanLoaiChamCong[1] %} <td
+                                    class="text"><a href="/table_cham_cong_ngay_trong_thang/{{data[1]}}_{{Nam}}_3"
+                                      class="text--warning">{{data[5]}}</a></td>
+                                    {% else %}
+                                    <td class="text"><a href="/table_cham_cong_ngay_trong_thang/{{data[1]}}_{{Nam}}_3"
+                                        class="text--sucess">{{data[5]}}</a></td>
+                                    {% endif %}
 
-                  {% if data[6] <= -1 %}
-                    <td class="text"><span class="text--error" disabled>- - -</span></td>
-                  {% elif data[6] < mucPhanLoaiChamCong[0] %}
-                    <td class="text"><a href="/table_cham_cong_ngay_trong_thang/{{data[1]}}_{{Nam}}_4" class="text--error">{{data[6]}}</a></td>
-                  {% elif data[6] >= mucPhanLoaiChamCong[0] and data[6] <= mucPhanLoaiChamCong[1] %}
-                    <td class="text"><a href="/table_cham_cong_ngay_trong_thang/{{data[1]}}_{{Nam}}_4" class="text--warning">{{data[6]}}</a></td>
-                  {% else %}
-                    <td class="text"><a href="/table_cham_cong_ngay_trong_thang/{{data[1]}}_{{Nam}}_4" class="text--sucess">{{data[6]}}</a></td>
-                  {% endif %}
+                                    {% if data[6] <= -1 %} <td class="text"><span class="text--error" disabled>- -
+                                        -</span></td>
+                                      {% elif data[6] < mucPhanLoaiChamCong[0] %} <td class="text"><a
+                                          href="/table_cham_cong_ngay_trong_thang/{{data[1]}}_{{Nam}}_4"
+                                          class="text--error">{{data[6]}}</a></td>
+                                        {% elif data[6] >= mucPhanLoaiChamCong[0] and data[6] <= mucPhanLoaiChamCong[1]
+                                          %} <td class="text"><a
+                                            href="/table_cham_cong_ngay_trong_thang/{{data[1]}}_{{Nam}}_4"
+                                            class="text--warning">{{data[6]}}</a></td>
+                                          {% else %}
+                                          <td class="text"><a
+                                              href="/table_cham_cong_ngay_trong_thang/{{data[1]}}_{{Nam}}_4"
+                                              class="text--sucess">{{data[6]}}</a></td>
+                                          {% endif %}
 
-                  {% if data[7] <= -1 %}
-                    <td class="text"><span class="text--error" disabled>- - -</span></td>
-                  {% elif data[7] < mucPhanLoaiChamCong[0] %}
-                    <td class="text"><a href="/table_cham_cong_ngay_trong_thang/{{data[1]}}_{{Nam}}_5" class="text--error">{{data[7]}}</a></td>
-                  {% elif data[7] >= mucPhanLoaiChamCong[0] and data[7] <= mucPhanLoaiChamCong[1] %}
-                    <td class="text"><a href="/table_cham_cong_ngay_trong_thang/{{data[1]}}_{{Nam}}_5" class="text--warning">{{data[7]}}</a></td>
-                  {% else %}
-                    <td class="text"><a href="/table_cham_cong_ngay_trong_thang/{{data[1]}}_{{Nam}}_5" class="text--sucess">{{data[7]}}</a></td>
-                  {% endif %}
+                                          {% if data[7] <= -1 %} <td class="text"><span class="text--error" disabled>- -
+                                              -</span></td>
+                                            {% elif data[7] < mucPhanLoaiChamCong[0] %} <td class="text"><a
+                                                href="/table_cham_cong_ngay_trong_thang/{{data[1]}}_{{Nam}}_5"
+                                                class="text--error">{{data[7]}}</a></td>
+                                              {% elif data[7] >= mucPhanLoaiChamCong[0] and data[7] <=
+                                                mucPhanLoaiChamCong[1] %} <td class="text"><a
+                                                  href="/table_cham_cong_ngay_trong_thang/{{data[1]}}_{{Nam}}_5"
+                                                  class="text--warning">{{data[7]}}</a></td>
+                                                {% else %}
+                                                <td class="text"><a
+                                                    href="/table_cham_cong_ngay_trong_thang/{{data[1]}}_{{Nam}}_5"
+                                                    class="text--sucess">{{data[7]}}</a></td>
+                                                {% endif %}
 
-                  {% if data[8] <= -1 %}
-                    <td class="text"><span class="text--error" disabled>- - -</span></td>
-                  {% elif data[8] < mucPhanLoaiChamCong[0] %}
-                    <td class="text"><a href="/table_cham_cong_ngay_trong_thang/{{data[1]}}_{{Nam}}_6" class="text--error">{{data[8]}}</a></td>
-                  {% elif data[8] >= mucPhanLoaiChamCong[0] and data[8] <= mucPhanLoaiChamCong[1] %}
-                    <td class="text"><a href="/table_cham_cong_ngay_trong_thang/{{data[1]}}_{{Nam}}_6" class="text--warning">{{data[8]}}</a></td>
-                  {% else %}
-                    <td class="text"><a href="/table_cham_cong_ngay_trong_thang/{{data[1]}}_{{Nam}}_6" class="text--sucess">{{data[8]}}</a></td>
-                  {% endif %}
+                                                {% if data[8] <= -1 %} <td class="text"><span class="text--error"
+                                                    disabled>- - -</span></td>
+                                                  {% elif data[8] < mucPhanLoaiChamCong[0] %} <td class="text"><a
+                                                      href="/table_cham_cong_ngay_trong_thang/{{data[1]}}_{{Nam}}_6"
+                                                      class="text--error">{{data[8]}}</a></td>
+                                                    {% elif data[8] >= mucPhanLoaiChamCong[0] and data[8] <=
+                                                      mucPhanLoaiChamCong[1] %} <td class="text"><a
+                                                        href="/table_cham_cong_ngay_trong_thang/{{data[1]}}_{{Nam}}_6"
+                                                        class="text--warning">{{data[8]}}</a></td>
+                                                      {% else %}
+                                                      <td class="text"><a
+                                                          href="/table_cham_cong_ngay_trong_thang/{{data[1]}}_{{Nam}}_6"
+                                                          class="text--sucess">{{data[8]}}</a></td>
+                                                      {% endif %}
 
-                  {% if data[9] <= -1 %}
-                    <td class="text"><span class="text--error" disabled>- - -</span></td>
-                  {% elif data[9] < mucPhanLoaiChamCong[0] %}
-                    <td class="text"><a href="/table_cham_cong_ngay_trong_thang/{{data[1]}}_{{Nam}}_7" class="text--error">{{data[9]}}</a></td>
-                  {% elif data[9] >= mucPhanLoaiChamCong[0] and data[9] <= mucPhanLoaiChamCong[1] %}
-                    <td class="text"><a href="/table_cham_cong_ngay_trong_thang/{{data[1]}}_{{Nam}}_7" class="text--warning">{{data[9]}}</a></td>
-                  {% else %}
-                    <td class="text"><a href="/table_cham_cong_ngay_trong_thang/{{data[1]}}_{{Nam}}_7" class="text--sucess">{{data[9]}}</a></td>
-                  {% endif %}
+                                                      {% if data[9] <= -1 %} <td class="text"><span class="text--error"
+                                                          disabled>- - -</span></td>
+                                                        {% elif data[9] < mucPhanLoaiChamCong[0] %} <td class="text"><a
+                                                            href="/table_cham_cong_ngay_trong_thang/{{data[1]}}_{{Nam}}_7"
+                                                            class="text--error">{{data[9]}}</a></td>
+                                                          {% elif data[9] >= mucPhanLoaiChamCong[0] and data[9] <=
+                                                            mucPhanLoaiChamCong[1] %} <td class="text"><a
+                                                              href="/table_cham_cong_ngay_trong_thang/{{data[1]}}_{{Nam}}_7"
+                                                              class="text--warning">{{data[9]}}</a></td>
+                                                            {% else %}
+                                                            <td class="text"><a
+                                                                href="/table_cham_cong_ngay_trong_thang/{{data[1]}}_{{Nam}}_7"
+                                                                class="text--sucess">{{data[9]}}</a></td>
+                                                            {% endif %}
 
-                  {% if data[10] <= -1 %}
-                    <td class="text"><span class="text--error" disabled>- - -</span></td>
-                  {% elif data[10] < mucPhanLoaiChamCong[0] %}
-                    <td class="text"><a href="/table_cham_cong_ngay_trong_thang/{{data[1]}}_{{Nam}}_8" class="text--error">{{data[10]}}</a></td>
-                  {% elif data[10] >= mucPhanLoaiChamCong[0] and data[10] <= mucPhanLoaiChamCong[1] %}
-                    <td class="text"><a href="/table_cham_cong_ngay_trong_thang/{{data[1]}}_{{Nam}}_8" class="text--warning">{{data[10]}}</a></td>
-                  {% else %}
-                    <td class="text"><a href="/table_cham_cong_ngay_trong_thang/{{data[1]}}_{{Nam}}_8" class="text--sucess">{{data[10]}}</a></td>
-                  {% endif %}
+                                                            {% if data[10] <= -1 %} <td class="text"><span
+                                                                class="text--error" disabled>- - -</span></td>
+                                                              {% elif data[10] < mucPhanLoaiChamCong[0] %} <td
+                                                                class="text"><a
+                                                                  href="/table_cham_cong_ngay_trong_thang/{{data[1]}}_{{Nam}}_8"
+                                                                  class="text--error">{{data[10]}}</a></td>
+                                                                {% elif data[10] >= mucPhanLoaiChamCong[0] and data[10]
+                                                                <= mucPhanLoaiChamCong[1] %} <td class="text"><a
+                                                                    href="/table_cham_cong_ngay_trong_thang/{{data[1]}}_{{Nam}}_8"
+                                                                    class="text--warning">{{data[10]}}</a></td>
+                                                                  {% else %}
+                                                                  <td class="text"><a
+                                                                      href="/table_cham_cong_ngay_trong_thang/{{data[1]}}_{{Nam}}_8"
+                                                                      class="text--sucess">{{data[10]}}</a></td>
+                                                                  {% endif %}
 
-                  {% if data[11] <= -1 %}
-                    <td class="text"><span class="text--error" disabled>- - -</span></td>
-                  {% elif data[11] < mucPhanLoaiChamCong[0] %}
-                    <td class="text"><a href="/table_cham_cong_ngay_trong_thang/{{data[1]}}_{{Nam}}_9" class="text--error">{{data[11]}}</a></td>
-                  {% elif data[11] >= mucPhanLoaiChamCong[0] and data[11] <= mucPhanLoaiChamCong[1] %}
-                    <td class="text"><a href="/table_cham_cong_ngay_trong_thang/{{data[1]}}_{{Nam}}_9" class="text--warning">{{data[11]}}</a></td>
-                  {% else %}
-                    <td class="text"><a href="/table_cham_cong_ngay_trong_thang/{{data[1]}}_{{Nam}}_9" class="text--sucess">{{data[11]}}</a></td>
-                  {% endif %}
+                                                                  {% if data[11] <= -1 %} <td class="text"><span
+                                                                      class="text--error" disabled>- - -</span></td>
+                                                                    {% elif data[11] < mucPhanLoaiChamCong[0] %} <td
+                                                                      class="text"><a
+                                                                        href="/table_cham_cong_ngay_trong_thang/{{data[1]}}_{{Nam}}_9"
+                                                                        class="text--error">{{data[11]}}</a></td>
+                                                                      {% elif data[11] >= mucPhanLoaiChamCong[0] and
+                                                                      data[11] <= mucPhanLoaiChamCong[1] %} <td
+                                                                        class="text"><a
+                                                                          href="/table_cham_cong_ngay_trong_thang/{{data[1]}}_{{Nam}}_9"
+                                                                          class="text--warning">{{data[11]}}</a></td>
+                                                                        {% else %}
+                                                                        <td class="text"><a
+                                                                            href="/table_cham_cong_ngay_trong_thang/{{data[1]}}_{{Nam}}_9"
+                                                                            class="text--sucess">{{data[11]}}</a></td>
+                                                                        {% endif %}
 
-                  {% if data[12] <= -1 %}
-                    <td class="text"><span class="text--error" disabled>- - -</span></td>
-                  {% elif data[12] < mucPhanLoaiChamCong[0] %}
-                    <td class="text"><a href="/table_cham_cong_ngay_trong_thang/{{data[1]}}_{{Nam}}_10" class="text--error">{{data[12]}}</a></td>
-                  {% elif data[12] >= mucPhanLoaiChamCong[0] and data[12] <= mucPhanLoaiChamCong[1] %}
-                    <td class="text"><a href="/table_cham_cong_ngay_trong_thang/{{data[1]}}_{{Nam}}_10" class="text--warning">{{data[12]}}</a></td>
-                  {% else %}
-                    <td class="text"><a href="/table_cham_cong_ngay_trong_thang/{{data[1]}}_{{Nam}}_10" class="text--sucess">{{data[12]}}</a></td>
-                  {% endif %}
+                                                                        {% if data[12] <= -1 %} <td class="text"><span
+                                                                            class="text--error" disabled>- - -</span>
+                                                                          </td>
+                                                                          {% elif data[12] < mucPhanLoaiChamCong[0] %}
+                                                                            <td class="text"><a
+                                                                              href="/table_cham_cong_ngay_trong_thang/{{data[1]}}_{{Nam}}_10"
+                                                                              class="text--error">{{data[12]}}</a></td>
+                                                                            {% elif data[12] >= mucPhanLoaiChamCong[0]
+                                                                            and data[12] <= mucPhanLoaiChamCong[1] %}
+                                                                              <td class="text"><a
+                                                                                href="/table_cham_cong_ngay_trong_thang/{{data[1]}}_{{Nam}}_10"
+                                                                                class="text--warning">{{data[12]}}</a>
+                                                                              </td>
+                                                                              {% else %}
+                                                                              <td class="text"><a
+                                                                                  href="/table_cham_cong_ngay_trong_thang/{{data[1]}}_{{Nam}}_10"
+                                                                                  class="text--sucess">{{data[12]}}</a>
+                                                                              </td>
+                                                                              {% endif %}
 
-                  {% if data[13] <= -1 %}
-                    <td class="text"><span class="text--error" disabled>- - -</span></td>
-                  {% elif data[13] < mucPhanLoaiChamCong[0] %}
-                    <td class="text"><a href="/table_cham_cong_ngay_trong_thang/{{data[1]}}_{{Nam}}_11" class="text--error">{{data[13]}}</a></td>
-                  {% elif data[13] >= mucPhanLoaiChamCong[0] and data[13] <= mucPhanLoaiChamCong[1] %}
-                    <td class="text"><a href="/table_cham_cong_ngay_trong_thang/{{data[1]}}_{{Nam}}_11" class="text--warning">{{data[13]}}</a></td>
-                  {% else %}
-                    <td class="text"><a href="/table_cham_cong_ngay_trong_thang/{{data[1]}}_{{Nam}}_11" class="text--sucess">{{data[13]}}</a></td>
-                  {% endif %}
+                                                                              {% if data[13] <= -1 %} <td class="text">
+                                                                                <span class="text--error" disabled>- -
+                                                                                  -</span></td>
+                                                                                {% elif data[13] <
+                                                                                  mucPhanLoaiChamCong[0] %} <td
+                                                                                  class="text"><a
+                                                                                    href="/table_cham_cong_ngay_trong_thang/{{data[1]}}_{{Nam}}_11"
+                                                                                    class="text--error">{{data[13]}}</a>
+                                                                                  </td>
+                                                                                  {% elif data[13] >=
+                                                                                  mucPhanLoaiChamCong[0] and data[13] <=
+                                                                                    mucPhanLoaiChamCong[1] %} <td
+                                                                                    class="text"><a
+                                                                                      href="/table_cham_cong_ngay_trong_thang/{{data[1]}}_{{Nam}}_11"
+                                                                                      class="text--warning">{{data[13]}}</a>
+                                                                                    </td>
+                                                                                    {% else %}
+                                                                                    <td class="text"><a
+                                                                                        href="/table_cham_cong_ngay_trong_thang/{{data[1]}}_{{Nam}}_11"
+                                                                                        class="text--sucess">{{data[13]}}</a>
+                                                                                    </td>
+                                                                                    {% endif %}
 
-                  {% if data[14] <= -1 %}
-                    <td class="text"><span class="text--error" disabled>- - -</span></td>
-                  {% elif data[14] < mucPhanLoaiChamCong[0] %}
-                    <td class="text"><a href="/table_cham_cong_ngay_trong_thang/{{data[1]}}_{{Nam}}_12" class="text--error">{{data[14]}}</a></td>
-                  {% elif data[14] >= mucPhanLoaiChamCong[0] and data[14] <= mucPhanLoaiChamCong[1] %}
-                    <td class="text"><a href="/table_cham_cong_ngay_trong_thang/{{data[1]}}_{{Nam}}_12" class="text--warning">{{data[14]}}</a></td>
-                  {% else %}
-                    <td class="text"><a href="/table_cham_cong_ngay_trong_thang/{{data[1]}}_{{Nam}}_12" class="text--sucess">{{data[14]}}</a></td>
-                  {% endif %}
+                                                                                    {% if data[14] <= -1 %} <td
+                                                                                      class="text"><span
+                                                                                        class="text--error" disabled>- -
+                                                                                        -</span></td>
+                                                                                      {% elif data[14] <
+                                                                                        mucPhanLoaiChamCong[0] %} <td
+                                                                                        class="text"><a
+                                                                                          href="/table_cham_cong_ngay_trong_thang/{{data[1]}}_{{Nam}}_12"
+                                                                                          class="text--error">{{data[14]}}</a>
+                                                                                        </td>
+                                                                                        {% elif data[14] >=
+                                                                                        mucPhanLoaiChamCong[0] and
+                                                                                        data[14] <=
+                                                                                          mucPhanLoaiChamCong[1] %} <td
+                                                                                          class="text"><a
+                                                                                            href="/table_cham_cong_ngay_trong_thang/{{data[1]}}_{{Nam}}_12"
+                                                                                            class="text--warning">{{data[14]}}</a>
+                                                                                          </td>
+                                                                                          {% else %}
+                                                                                          <td class="text"><a
+                                                                                              href="/table_cham_cong_ngay_trong_thang/{{data[1]}}_{{Nam}}_12"
+                                                                                              class="text--sucess">{{data[14]}}</a>
+                                                                                          </td>
+                                                                                          {% endif %}
                 </tr>
                 {% endfor %}
               </tbody>

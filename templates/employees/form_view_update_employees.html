@@ -9,7 +9,7 @@
   <!-- Main CSS-->
   <link rel="stylesheet" href="{{ url_for('static', filename='doc/css/main.css') }}">
   <script src="{{url_for('static', filename='js/displaytime/displaytime.js')}}"></script>
-  <link rel="shortcut icon" type="image/x-icon" href="{{ url_for('static', filename=congty[2])}}"/>
+  <link rel="shortcut icon" type="image/x-icon" href="{{ url_for('static', filename=congty[2])}}" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/boxicons@latest/css/boxicons.min.css">
   <!-- or -->
   <link rel="stylesheet" href="https://unpkg.com/boxicons@latest/css/boxicons.min.css">
@@ -25,7 +25,7 @@
   <script>
     var img_default = "{{ url_for('static', filename=data_default[14])}}";
     function readURL(input, thumbimage) {
-       
+
       if (input.files && input.files[0]) { //Sử dụng  cho Firefox - chrome
         var reader = new FileReader();
         reader.onload = function (e) {
@@ -46,7 +46,7 @@
 
     }
     $(document).ready(function () {
-        
+
       $(".Choicefile").bind('click', function () {
         $("#imginp").click();
 
@@ -153,9 +153,9 @@
   <!-- Sidebar menu-->
   <div class="app-sidebar__overlay" data-toggle="sidebar"></div>
   <aside class="app-sidebar">
-    <div class="app-sidebar__user"><img class="app-sidebar__user-avatar" src="{{ url_for('static', filename=my_user[7])}}" style="border-radius: 50%;" width="50px"
-        alt="User Image">
-    <div>
+    <div class="app-sidebar__user"><img class="app-sidebar__user-avatar"
+        src="{{ url_for('static', filename=my_user[7])}}" style="border-radius: 50%;" width="50px" alt="User Image">
+      <div>
         <p class="app-sidebar__user-name"><b>{{my_user[3]}}</b></p>
         <p class="app-sidebar__user-designation">Chào mừng bạn trở lại</p>
       </div>
@@ -169,7 +169,7 @@
       <li><a class="app-menu__item active" href="/table_data_employees"><i class='app-menu__icon bx bx-id-card'></i>
           <span class="app-menu__label">Quản lý nhân viên</span></a></li>
       <li><a class="app-menu__item" href="/table_chuc_vu"><i class='app-menu__icon bx bxs-book-content'></i>
-        <span class="app-menu__label">Quản lý chức vụ</span></a></li>
+          <span class="app-menu__label">Quản lý chức vụ</span></a></li>
       <li><a class="app-menu__item" href="/danh_sach_hop_dong"><i class='app-menu__icon bx bx-user-voice'></i><span
             class="app-menu__label">Danh sách hợp đồng</span></a></li>
       <li><a class="app-menu__item" href="/table-data-banned"><i class='app-menu__icon bx bx-run'></i><span
@@ -185,6 +185,8 @@
             class="app-menu__label">Thời gian công tác</span></a></li>
       <li><a class="app-menu__item" href="/phong_ban"><i class='app-menu__icon bx bxs-business'></i><span
             class="app-menu__label">Phòng ban</span></a></li>
+      <li><a class="app-menu__item" href="/cai_dat"><i class='app-menu__icon bx bx-cog'></i><span
+            class="app-menu__label">Cài đặt</span></a></li>
     </ul>
   </aside>
   <main class="app-content">
@@ -202,236 +204,248 @@
           <h3 class="tile-title">Xem - sửa nhân viên</h3>
           <div class="tile-body">
             <div class="row element-button">
-                <div class="col-sm-2">
-                    <a class="btn btn-add btn-sm" href="/form_add_chuc_vu"><b><i
-                          class="fas fa-folder-plus"></i> Tạo chức vụ mới</b></a>
-                  </div>
-                  <div class="col-sm-2">
-                    <a class="btn btn-add btn-sm" href="/form_add_trinhdohocvan"><b><i
-                      class="fas fa-folder-plus"></i> Tạo trình độ học vấn mới</b></a>
-                  </div>
-                  <div class="col-sm-2">
-                    <a class="btn btn-delete btn-sm print-file" type="button" title="In" onclick="myApp.printTable()"><i
-                        class="fas fa-print"></i> In thông tin</a>
-                  </div>
-                  <div class="col-sm-2">
-                    <a class="btn btn-delete btn-sm pdf-file" type="button" title="In" href="/get_pdf_data_employees"><i
-                        class="fas fa-file-pdf"></i> Xuất PDF</a>
-                  </div>
+              <div class="col-sm-2">
+                <a class="btn btn-add btn-sm" href="/form_add_chuc_vu"><b><i class="fas fa-folder-plus"></i> Tạo chức vụ
+                    mới</b></a>
+              </div>
+              <div class="col-sm-2">
+                <a class="btn btn-add btn-sm" href="/form_add_trinhdohocvan"><b><i class="fas fa-folder-plus"></i> Tạo
+                    trình độ học vấn mới</b></a>
+              </div>
+              <div class="col-sm-2">
+                <a class="btn btn-delete btn-sm print-file" type="button" title="In" onclick="myApp.printTable()"><i
+                    class="fas fa-print"></i> In thông tin</a>
+              </div>
+              <div class="col-sm-2">
+                <a class="btn btn-delete btn-sm pdf-file" type="button" title="In" href="/get_pdf_data_employees"><i
+                    class="fas fa-file-pdf"></i> Xuất PDF</a>
+              </div>
 
             </div>
-            <form class="row" action="/form_view_update_employees/{{data_default[0]}}_Y" method="post" enctype="multipart/form-data">
-                 <!-- btn -->
-                 <div class="col-md-12">
-                    {% if mode != "" %}
-                    <a class="btn btn-info" href="/form_view_update_employees/{{data_default[0]}}_Y"
-                      style="width: 100px; border-radius: 10px;">Sửa</a>
-                    {% endif %}
+            <form class="row" action="/form_view_update_employees/{{data_default[0]}}_Y" method="post"
+              enctype="multipart/form-data">
+              <!-- btn -->
+              <div class="col-md-12">
+                {% if mode != "" %}
+                <a class="btn btn-info" href="/form_view_update_employees/{{data_default[0]}}_Y"
+                  style="width: 100px; border-radius: 10px;">Sửa</a>
+                {% endif %}
 
-                    {% if mode == "" %}
-                    <input type="submit" name="submit" id="reset" value="Lưu" class="btn btn-save"
-                      style="width: 100px; border-radius: 10px;">
+                {% if mode == "" %}
+                <input type="submit" name="submit" id="reset" value="Lưu" class="btn btn-save"
+                  style="width: 100px; border-radius: 10px;">
 
-                    <a class="btn btn-danger" href="/table_data_employees"
-                    style="width: 100px; border-radius: 10px;">Hủy</a>
-                    {% endif %}
+                <a class="btn btn-danger" href="/table_data_employees"
+                  style="width: 100px; border-radius: 10px;">Hủy</a>
+                {% endif %}
 
-                    <a href="/table_data_employees" class="btn btn-secondary"
-                      style="width: 100px; border-radius: 10px;">Quay lại</a>
-                  </div>
+                <a href="/table_data_employees" class="btn btn-secondary"
+                  style="width: 100px; border-radius: 10px;">Quay lại</a>
+              </div>
 
-                <div class="col-md-8">
-                  <div class="row">
-                    <div class="col-md-6">
-                      <div class="form-group">
-                        <label class="control-label">Mã nhân viên</label>
-                        <input type="text" class="form-control" value="{{data_default[0]}}" id="empno" name="MNV" required {{mode}}>
-                        <span id="available"></span>
-                      </div>
-                    </div>
-                    <div class="col-md-6">
-                      <div class="form-group">
-                        <label class="control-label">Tên nhân viên</label>
-                        <input type="text" class="form-control" value="{{data_default[1]}}" id="empname" name="TENNV" required {{mode}}>
-                        <span id="available"></span>
-                      </div>
-                    </div>
-                    <div class="col-md-6">
-                        <label class="control-label">Giới tính</label>
-                        <select class="form-control" id="exampleSelect2" name="GIOITINH" required {{mode}}>
-                          <option>{{data_default[2]}}</option>
-                          <option>Nam</option>
-                          <option>Nữ</option>
-                        </select>
-                      </fieldset>
-                    </div>
-                    <div class="col-md-6">
-                      <div class="form-group">
-                        <label class="control-label">Ngày sinh (Định dạng: Tháng - Ngày - Năm)</label>
-                        <input type="date" class="form-control"  value="{{data_default[3]}}" name="NGAYSINH" id="Date_Birth" {{mode}}>
-                        <span id="available"></span>
-                      </div>
-                    </div>
-                    <div class="col-md-6">
-                      <div class="form-group">
-                        <label class="control-label">Dân tộc</label>
-                        <input type="text" class="form-control" value="{{data_default[4]}}" name="DANTOC" id="national" {{mode}}>
-                        <span id="available"></span>
-                      </div>
-                    </div>
-                    <div class="col-md-6">
-                      <div class="form-group">
-                        <label class="control-label">CMND/CCCD</label>
-                        <input type="text" class="form-control" value="{{data_default[5]}}" name="CMND" id="cmt" required {{mode}}>
-                        <span id="available"></span>
-                      </div>
-                    </div>
-                    <div class="col-md-6">
-                      <div class="form-group">
-                        <label class="control-label">Ngày cấp (Định dạng: Tháng - Ngày - Năm)</label>
-                        <input type="date" class="form-control" value="{{data_default[6]}}" name="NGAYCMND" id="cmtday" required {{mode}}>
-                        <span id="available"></span>
-                      </div>
-                    </div>
-                    <div class="col-md-6">
-                      <div class="form-group">
-                        <label class="control-label">Nơi cấp</label>
-                        <input type="text" class="form-control" value="{{data_default[7]}}" name="NOICMND" id="cmtaddress" required {{mode}}>
-                        <span id="available"></span>
-                      </div>
-                    </div>
-                    <div class="col-md-6">
-                      <div class="form-group">
-                        <label class="control-label">Số điện thoại</label>
-                        <input type="text" value="{{data_default[8]}}" class="form-control" name="SDT" {{mode}}>
-                        <span id="available"></span>
-                      </div>
-                    </div>
-                    <div class="col-md-6">
-                      <div class="form-group">
-                        <label class="control-label">Email</label>
-                        <input type="text" value="{{data_default[9]}}" class="form-control" name="MAIL" {{mode}}>
-                        <span id="available"></span>
-                      </div>
-                    </div>
-                    <div class="col-md-6">
-                      <div class="form-group">
-                        <label class="control-label">Địa chỉ thường trú</label>
-                        <textarea class="form-control" id="address" name="DIACHI" rows="2" {{mode}}>{{data_default[10]}}</textarea>
-                      </div>
-                    </div>
-                    <div class="col-md-6">
-                      <div class="form-group">
-                        <label class="control-label">Nơi sinh</label>
-                        <textarea class="form-control" id="address" name="NOISINH" rows="2" {{mode}}>{{data_default[11]}}</textarea>
-                      </div>
-                    </div>
-
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <label class="control-label">Mã thẻ bảo hiểm y tế</label>
-                            <input class="form-control" value="{{data_default[12]}}" type="text" name="BHYT" {{mode}}>
-                        </div>
-                      </div>
-
-                    <div class="col-md-6">
+              <div class="col-md-8">
+                <div class="row">
+                  <div class="col-md-6">
                     <div class="form-group">
-                        <label class="control-label">Mã bảo hiểm xã hội</label>
-                        <input class="form-control" value="{{data_default[13]}}" type="text" name="BHXH" {{mode}}>
+                      <label class="control-label">Mã nhân viên</label>
+                      <input type="text" class="form-control" value="{{data_default[0]}}" id="empno" name="MNV" required
+                        {{mode}}>
+                      <span id="available"></span>
                     </div>
-                    </div>
-
                   </div>
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label class="control-label">Tên nhân viên</label>
+                      <input type="text" class="form-control" value="{{data_default[1]}}" id="empname" name="TENNV"
+                        required {{mode}}>
+                      <span id="available"></span>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <label class="control-label">Giới tính</label>
+                    <select class="form-control" id="exampleSelect2" name="GIOITINH" required {{mode}}>
+                      <option>{{data_default[2]}}</option>
+                      <option>Nam</option>
+                      <option>Nữ</option>
+                    </select>
+                    </fieldset>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label class="control-label">Ngày sinh (Định dạng: Tháng - Ngày - Năm)</label>
+                      <input type="date" class="form-control" value="{{data_default[3]}}" name="NGAYSINH"
+                        id="Date_Birth" {{mode}}>
+                      <span id="available"></span>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label class="control-label">Dân tộc</label>
+                      <input type="text" class="form-control" value="{{data_default[4]}}" name="DANTOC" id="national"
+                        {{mode}}>
+                      <span id="available"></span>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label class="control-label">CMND/CCCD</label>
+                      <input type="text" class="form-control" value="{{data_default[5]}}" name="CMND" id="cmt" required
+                        {{mode}}>
+                      <span id="available"></span>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label class="control-label">Ngày cấp (Định dạng: Tháng - Ngày - Năm)</label>
+                      <input type="date" class="form-control" value="{{data_default[6]}}" name="NGAYCMND" id="cmtday"
+                        required {{mode}}>
+                      <span id="available"></span>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label class="control-label">Nơi cấp</label>
+                      <input type="text" class="form-control" value="{{data_default[7]}}" name="NOICMND" id="cmtaddress"
+                        required {{mode}}>
+                      <span id="available"></span>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label class="control-label">Số điện thoại</label>
+                      <input type="text" value="{{data_default[8]}}" class="form-control" name="SDT" {{mode}}>
+                      <span id="available"></span>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label class="control-label">Email</label>
+                      <input type="text" value="{{data_default[9]}}" class="form-control" name="MAIL" {{mode}}>
+                      <span id="available"></span>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label class="control-label">Địa chỉ thường trú</label>
+                      <textarea class="form-control" id="address" name="DIACHI" rows="2"
+                        {{mode}}>{{data_default[10]}}</textarea>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label class="control-label">Nơi sinh</label>
+                      <textarea class="form-control" id="address" name="NOISINH" rows="2"
+                        {{mode}}>{{data_default[11]}}</textarea>
+                    </div>
+                  </div>
+
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label class="control-label">Mã thẻ bảo hiểm y tế</label>
+                      <input class="form-control" value="{{data_default[12]}}" type="text" name="BHYT" {{mode}}>
+                    </div>
+                  </div>
+
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label class="control-label">Mã bảo hiểm xã hội</label>
+                      <input class="form-control" value="{{data_default[13]}}" type="text" name="BHXH" {{mode}}>
+                    </div>
+                  </div>
+
                 </div>
-                <!-- image -->
-                <div class="col-md-4">
-                  <div class="row">
-                    <div class="col-md-12">
-                      <div style="text-align: center;">
-                        <img id="img-upload">
-                        <div id="tem_img">
-                          <img id="id_img_profile"
-                            src="{{ url_for('static', filename=data_default[14])}}"
-                            alt="Ảnh" width="170px" height="170px">
-                            <a class="removeimg" href="javascript:"></a>
-                        </div><br>
-                        <div class="col-md-8"></div>
-                        <div class="col-md-4">
-                            <div class="input-group">
-                            <span class="input-group-btn" style="margin-left: 130px;">
-                                <span id="Choicefile" class="btn btn-info btn-file">
-                                Ảnh(4x6) <input type="file" id="imginp" name="ImageProfileUpload" onchange="readURL(this)" {{mode}}>
-                                </span>
+              </div>
+              <!-- image -->
+              <div class="col-md-4">
+                <div class="row">
+                  <div class="col-md-12">
+                    <div style="text-align: center;">
+                      <img id="img-upload">
+                      <div id="tem_img">
+                        <img id="id_img_profile" src="{{ url_for('static', filename=data_default[14])}}" alt="Ảnh"
+                          width="170px" height="170px">
+                        <a class="removeimg" href="javascript:"></a>
+                      </div><br>
+                      <div class="col-md-8"></div>
+                      <div class="col-md-4">
+                        <div class="input-group">
+                          <span class="input-group-btn" style="margin-left: 130px;">
+                            <span id="Choicefile" class="btn btn-info btn-file">
+                              Ảnh(4x6) <input type="file" id="imginp" name="ImageProfileUpload" onchange="readURL(this)"
+                                {{mode}}>
                             </span>
-                            </div>
+                          </span>
                         </div>
                       </div>
                     </div>
-                    <!-- Phòng ban -->
-                    <div class="col-md-12">
-                      <div class="form-group">
-                        <label class="control-label">Phòng ban</label>
-                        <select class="form-control" id="department" name="MAPB" {{mode}}>
-                          <option>{{data_default[15]}}</option>
-                          {% for data in phongban %}
+                  </div>
+                  <!-- Phòng ban -->
+                  <div class="col-md-12">
+                    <div class="form-group">
+                      <label class="control-label">Phòng ban</label>
+                      <select class="form-control" id="department" name="MAPB" {{mode}}>
+                        <option>{{data_default[15]}}</option>
+                        {% for data in phongban %}
 
-                          <option>{{data[1]}} </option>
-        
-                          {% endfor %}
-                        </select>
-                      </div>
+                        <option>{{data[1]}} </option>
 
-                      <div class="form-group">
-                        <label class="control-label">Chức vụ</label>
-                        <select class="form-control" id="office" name="CV" {{mode}}>
-                          <option>{{data_default[16]}}</option>
-                          
-                            {% for data in chucvu %}
+                        {% endfor %}
+                      </select>
+                    </div>
 
-                            <option>{{data[1]}}</option>
+                    <div class="form-group">
+                      <label class="control-label">Chức vụ</label>
+                      <select class="form-control" id="office" name="CV" {{mode}}>
+                        <option>{{data_default[16]}}</option>
 
-                            {% endfor %}
-                        </select>
-                      </div>
-                      <div class="form-group">
-                        <label class="control-label">Hợp đồng</label>
-                        <input type="text" class="form-control" value="{{data_default[17]}}" name="MAHD" required {{mode}}>
-                      </div>
+                        {% for data in chucvu %}
 
-                      <div class="form-group">
-                        <label class="control-label">Lương tháng</label>
-                        <input type="text" inputmode="numeric" pattern="\d*\.?\d*" class="form-control" value="{{data_default[18]}}" name="LUONG" required {{mode}}>
-                      </div>
+                        <option>{{data[1]}}</option>
+
+                        {% endfor %}
+                      </select>
+                    </div>
+                    <div class="form-group">
+                      <label class="control-label">Hợp đồng</label>
+                      <input type="text" class="form-control" value="{{data_default[17]}}" name="MAHD" required
+                        {{mode}}>
+                    </div>
+
+                    <div class="form-group">
+                      <label class="control-label">Lương tháng</label>
+                      <input type="text" inputmode="numeric" pattern="\d*\.?\d*" class="form-control"
+                        value="{{data_default[18]}}" name="LUONG" required {{mode}}>
                     </div>
                   </div>
                 </div>
-            
-                <div class="form-group col-md-4">
+              </div>
+
+              <div class="form-group col-md-4">
                 <label class="control-label">Tình trạng hôn nhân</label>
                 <select class="form-control" id="exampleSelect2" name="HONHAN" {{mode}}>
-                    <option>{{data_default[19]}}</option>
-                    <option>Độc thân</option>
-                    <option>Đã kết hôn</option>
-                    <option>Góa</option>
-                    <option>Khác</option>
+                  <option>{{data_default[19]}}</option>
+                  <option>Độc thân</option>
+                  <option>Đã kết hôn</option>
+                  <option>Góa</option>
+                  <option>Khác</option>
                 </select>
-                </div>
+              </div>
 
-                <div class="form-group col-md-4">
+              <div class="form-group col-md-4">
                 <label class="control-label">Chọn trình độ học vấn</label>
                 <select class="form-control" id="exampleSelect3" name="MATDHV" {{mode}}>
-                    <option>{{data_default[20]}}</option>
+                  <option>{{data_default[20]}}</option>
 
-                    {% for data in trinhdohocvan %}
+                  {% for data in trinhdohocvan %}
 
-                    <option>{{" - ".join(data)}} </option>
+                  <option>{{" - ".join(data)}} </option>
 
-                    {% endfor %}
+                  {% endfor %}
                 </select>
-                </div>
+              </div>
 
-               
-        
+
+
             </form>
           </div>
         </div>

@@ -2,7 +2,7 @@
 <html lang="en">
 
 <head>
-    <title>Danh sách nhân viên | Quản trị Admin</title>
+    <title>Phòng ban | Quản trị Admin</title>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -19,6 +19,9 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.js"></script>
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.css">
+
+    <!-- Cài đặt -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='doc/css/phongban.css') }}">
 </head>
 
 <body onload="time()" class="app sidebar-mini rtl">
@@ -52,7 +55,7 @@
         <ul class="app-menu">
             <li><a class="app-menu__item haha"><i class='app-menu__icon bx bx-user'></i>
                     <span class="app-menu__label">Quản lý</span></a></li>
-            <li><a class="app-menu__item active" href="/index"><i class='app-menu__icon bx bx-tachometer'></i><span
+            <li><a class="app-menu__item" href="/index"><i class='app-menu__icon bx bx-tachometer'></i><span
                         class="app-menu__label">Bảng điều khiển</span></a></li>
             <li><a class="app-menu__item" href="/table_data_employees"><i class='app-menu__icon bx bx-id-card'></i>
                     <span class="app-menu__label">Quản lý nhân viên</span></a></li>
@@ -74,50 +77,64 @@
                         class="app-menu__label">Thời gian công tác</span></a></li>
             <li><a class="app-menu__item" href="/phong_ban"><i class='app-menu__icon bx bxs-business'></i><span
                         class="app-menu__label">Phòng ban</span></a></li>
-            <li><a class="app-menu__item" href="/cai_dat"><i class='app-menu__icon bx bx-cog'></i><span
+            <li><a class="app-menu__item active" href="/cai_dat"><i class='app-menu__icon bx bx-cog'></i><span
                         class="app-menu__label">Cài đặt</span></a></li>
         </ul>
     </aside>
     <main class="app-content">
-        <div class="row">
-            <div class="col-md-12">
-                <div class="app-title">
-                    <ul class="app-breadcrumb breadcrumb">
-                        <li class="breadcrumb-item"><a href="#"><b>Bảng điều khiển</b></a></li>
-                    </ul>
-                    <div id="clock"></div>
-                </div>
-            </div>
+        <div class="app-title">
+            <ul class="app-breadcrumb breadcrumb">
+                <li class="breadcrumb-item">Cài đặt</li>
+            </ul>
         </div>
         <div class="row">
-            <!--Left-->
-            <div class="col-md-12 col-lg-6">
-                <div class="row">
-                    <!-- col-6 -->
-                    <div class="col-md-6">
-                        <div class="widget-small primary coloured-icon"><i class='icon bx bxs-user-account fa-3x'></i>
-                            <div class="info">
-                                <h4><a style="color: red;" href="table_data_employees">Tổng nhân viên</a></h4>
-                                <p><b>7 nhân viên</b></p>
-                                <p class="info-tong">Tổng số nhân viên được quản lý.</p>
-                            </div>
+            <div class="col-md-12">
+
+                <div class="tile">
+
+                    <h3 class="tile-title">Cài đặt</h3>
+                    <div class="tile-body">
+                        <div class="dash-cards">
+                            <a href="tao_tk">
+                                <div class="card-single">
+                                    <div class="card-body">
+                                        <span class="bx bxs-user-plus"></span>
+                                        <div>
+                                            <h5>Tạo tài khoản</h5>
+                                            <h4>&nbsp;</h4>
+                                        </div>
+                                    </div>
+                                </div>
+                            </a>
+                            <a href="form_view_tk">
+                                <div class="card-single" style="background-color: #228B22;">
+                                    <div class="card-body">
+                                        <!-- <span> <a class="bx bxs-user-account" href="form_view_tk"></a></span> -->
+                                        <span class="bx bxs-user-account"></span>
+                                        <div>
+                                            <h5>Tổng số tài khoản</h5>
+                                            <h4>10</h4>
+                                        </div>
+                                    </div>
+                                </div>
+                            </a>
+                            <a href="form_view_cong_ty">
+                                <div class="card-single" style="background-color: #DAA520;">
+                                    <div class="card-body">
+                                        <span class='bx bxs-buildings'></span>
+                                        <div>
+                                            <h5>Thông tin công ty</h5>
+                                            <h4>&nbsp;</h4>
+                                        </div>
+                                    </div>
+                                </div>
+                            </a>
                         </div>
                     </div>
                 </div>
+            </div>
+        </div>
     </main>
-    <script src="{{url_for('static', filename='doc/js/jquery-3.2.1.min.js')}}"></script>
-    <!--===============================================================================================-->
-    <script src="{{url_for('static', filename='doc/js/popper.min.js')}}"></script>
-    <script src="https://unpkg.com/boxicons@latest/dist/boxicons.js"></script>
-    <!--===============================================================================================-->
-    <script src="{{url_for('static', filename='doc/js/bootstrap.min.js')}}"></script>
-    <!--===============================================================================================-->
-    <script src="{{url_for('static', filename='doc/js/main.js')}}"></script>
-    <!--===============================================================================================-->
-    <script src="{{url_for('static', filename='doc/js/plugins/pace.min.js')}}"></script>
-    <!--===============================================================================================-->
-    <script src="{{url_for('static', filename='doc/js/plugins/chart.js')}}"></script>
-    <!--===============================================================================================-->
 </body>
 
 </html>

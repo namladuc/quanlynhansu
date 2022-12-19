@@ -9,7 +9,7 @@
   <!-- Main CSS-->
   <link rel="stylesheet" href="{{ url_for('static', filename='doc/css/main.css') }}">
   <script src="{{url_for('static', filename='js/displaytime/displaytime.js')}}"></script>
-  <link rel="shortcut icon" type="image/x-icon" href="{{ url_for('static', filename=congty[2])}}"/>
+  <link rel="shortcut icon" type="image/x-icon" href="{{ url_for('static', filename=congty[2])}}" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/boxicons@latest/css/boxicons.min.css">
   <!-- or -->
   <link rel="stylesheet" href="https://unpkg.com/boxicons@latest/css/boxicons.min.css">
@@ -38,14 +38,14 @@
   </header>
   <!-- Sidebar menu-->
   <div class="app-sidebar__overlay" data-toggle="sidebar"></div>
-    <aside class="app-sidebar">
-      <div class="app-sidebar__user"><img class="app-sidebar__user-avatar" src="{{ url_for('static', filename=my_user[7]) }}" style="border-radius: 50%;" width="50px"
-        alt="User Image">
-        <div>
-            <p class="app-sidebar__user-name"><b>{{my_user[3]}}</b></p>
-                <p class="app-sidebar__user-designation">Chào mừng bạn trở lại</p>
-            </div>
-        </div>
+  <aside class="app-sidebar">
+    <div class="app-sidebar__user"><img class="app-sidebar__user-avatar"
+        src="{{ url_for('static', filename=my_user[7]) }}" style="border-radius: 50%;" width="50px" alt="User Image">
+      <div>
+        <p class="app-sidebar__user-name"><b>{{my_user[3]}}</b></p>
+        <p class="app-sidebar__user-designation">Chào mừng bạn trở lại</p>
+      </div>
+    </div>
     <hr>
     <ul class="app-menu">
       <li><a class="app-menu__item haha"><i class='app-menu__icon bx bx-user'></i>
@@ -55,7 +55,7 @@
       <li><a class="app-menu__item" href="/table_data_employees"><i class='app-menu__icon bx bx-id-card'></i>
           <span class="app-menu__label">Quản lý nhân viên</span></a></li>
       <li><a class="app-menu__item active" href="/table_chuc_vu"><i class='app-menu__icon bx bxs-book-content'></i>
-        <span class="app-menu__label">Quản lý chức vụ</span></a></li>
+          <span class="app-menu__label">Quản lý chức vụ</span></a></li>
       <li><a class="app-menu__item" href="/danh_sach_hop_dong"><i class='app-menu__icon bx bx-user-voice'></i><span
             class="app-menu__label">Danh sách hợp đồng</span></a></li>
       <li><a class="app-menu__item" href="/table-data-banned.html"><i class='app-menu__icon bx bx-run'></i><span
@@ -71,6 +71,8 @@
             class="app-menu__label">Thời gian công tác</span></a></li>
       <li><a class="app-menu__item" href="/phong_ban"><i class='app-menu__icon bx bxs-business'></i><span
             class="app-menu__label">Phòng ban</span></a></li>
+      <li><a class="app-menu__item" href="/cai_dat"><i class='app-menu__icon bx bx-cog'></i><span
+            class="app-menu__label">Cài đặt</span></a></li>
     </ul>
   </aside>
   <main class="app-content">
@@ -83,12 +85,12 @@
 
     <div class="row">
 
-        <div class="col-md-12" id="take_no_people" style="display: none">
-            <div class="alert alert-danger" style="text-align: left; font-size: 12px; background-color: red;">
-            <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
-            <strong id="errordelete" style="display: none"></strong> 
-            </div>
+      <div class="col-md-12" id="take_no_people" style="display: none">
+        <div class="alert alert-danger" style="text-align: left; font-size: 12px; background-color: red;">
+          <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
+          <strong id="errordelete" style="display: none"></strong>
         </div>
+      </div>
 
       <div class="col-md-12">
         <div class="tile">
@@ -100,18 +102,19 @@
               </div>
 
               <div class="col-sm-2">
-                <a class="btn btn-add btn-sm" href="/form_view_update_chuc_vu/V_N" title="Thêm"><i class="fa fa-pencil-square-o"></i>
+                <a class="btn btn-add btn-sm" href="/form_view_update_chuc_vu/V_N" title="Thêm"><i
+                    class="fa fa-pencil-square-o"></i>
                   Sửa chức vụ</a>
               </div>
 
               <div class="col-sm-2">
-                <a class="btn btn-delete btn-sm nhap-tu-file" type="button" title="Nhập" href="/form_add_data_chuc_vu_upload_file"><i
-                    class="fas fa-file-upload"></i> Tải từ file</a>
+                <a class="btn btn-delete btn-sm nhap-tu-file" type="button" title="Nhập"
+                  href="/form_add_data_chuc_vu_upload_file"><i class="fas fa-file-upload"></i> Tải từ file</a>
               </div>
 
               <div class="col-sm-2">
-                <a class="btn btn-delete btn-sm print-file" type="button" title="In" onclick="myApp.printTableChucVu()"><i
-                    class="fas fa-print"></i> In dữ liệu</a>
+                <a class="btn btn-delete btn-sm print-file" type="button" title="In"
+                  onclick="myApp.printTableChucVu()"><i class="fas fa-print"></i> In dữ liệu</a>
               </div>
               <div class="col-sm-2">
                 <a class="btn btn-delete btn-sm print-file js-textareacopybtn" type="button" title="Sao chép"><i
@@ -119,7 +122,8 @@
               </div>
 
               <div class="col-sm-2">
-                <a class="btn btn-excel btn-sm" href="/get_chuc_vu_table_excel" title="In"><i class="fas fa-file-excel"></i> Xuất Excel</a>
+                <a class="btn btn-excel btn-sm" href="/get_chuc_vu_table_excel" title="In"><i
+                    class="fas fa-file-excel"></i> Xuất Excel</a>
               </div>
               <div class="col-sm-2">
                 <a class="btn btn-delete btn-sm pdf-file" type="button" title="In" href="/get_chuc_vu_table_pdf"><i
@@ -147,11 +151,12 @@
                   <td>{{data[0]}}</td>
                   <td>{{data[1]}}</td>
                   <td class="table-td-center">
-                    <button class="btn btn-outline-primary" type="button" title="Ấn vào để xem các nhân viên có chức vụ là {{data[1]}}"
-                    onclick="location.href='/table_chuc_vu/{{data[0]}}';">{{data[2]}}
+                    <button class="btn btn-outline-primary" type="button"
+                      title="Ấn vào để xem các nhân viên có chức vụ là {{data[1]}}"
+                      onclick="location.href='/table_chuc_vu/{{data[0]}}';">{{data[2]}}
                     </button>
                   </td>
-                {% endfor %}
+                  {% endfor %}
               </tbody>
             </table>
           </div>
@@ -184,12 +189,12 @@
       var name_cv = [];
       var num_people = [];
       $('#sampleTable tbody :checkbox').each(function () {
-          let i = this.parentNode.parentNode.rowIndex;
-          if (this.checked) {
-            id_cv.push(this.parentNode.parentNode.childNodes[3].textContent);
-            name_cv.push(this.parentNode.parentNode.childNodes[5].textContent);
-            num_people.push(this.parentNode.parentNode.childNodes[7].textContent.replace("\n","").trim());
-          }
+        let i = this.parentNode.parentNode.rowIndex;
+        if (this.checked) {
+          id_cv.push(this.parentNode.parentNode.childNodes[3].textContent);
+          name_cv.push(this.parentNode.parentNode.childNodes[5].textContent);
+          num_people.push(this.parentNode.parentNode.childNodes[7].textContent.replace("\n", "").trim());
+        }
       });
 
       swal({
@@ -203,7 +208,7 @@
             for (let i = 0; i < id_cv.length; i++) {
               if (num_people[i] == 0) {
                 $.ajax({
-                  url:"/delete_chuc_vu/" + id_cv[i],
+                  url: "/delete_chuc_vu/" + id_cv[i],
                   context: document.body
                 })
               } else {
@@ -218,7 +223,7 @@
               location.reload();
             }
           }
-          
+
         });
     }
 
@@ -236,7 +241,7 @@
         win.print();
       }
     }
-    
+
     //Sao chép dữ liệu
     var copyChucVuareaBtn = document.querySelector('.js-textareacopybtn');
 
@@ -244,18 +249,18 @@
       var copyTextarea = document.querySelector('.js-copytextarea');
       copyTextarea.focus();
 
-      var mytext = copyTextarea.textContent.substring(167,copyTextarea.textContent.length).split("\n")
+      var mytext = copyTextarea.textContent.substring(167, copyTextarea.textContent.length).split("\n")
 
       var index = 0;
       var data = [];
       mytext.forEach(function (text) {
         if (text.trim().length != 0) {
-            data.push(text.trim());
-            index += 1;
-            if (index == 3) {
-              data.push("\n")
-              index = 0;
-            }
+          data.push(text.trim());
+          index += 1;
+          if (index == 3) {
+            data.push("\n")
+            index = 0;
+          }
         }
       });
 
