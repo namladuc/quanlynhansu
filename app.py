@@ -2000,9 +2000,9 @@ def cai_dat():
                            my_user = session['username'])
     
 @login_required
-@app.route("/tao_tk")
-def tao_tk():
-    return render_template('caidat/tao_tk.html', 
+@app.route("/form_tao_tk")
+def form_tao_tk():
+    return render_template('caidat/form_tao_tk.html', 
                            congty = session['congty'],
                            my_user = session['username'])
     
