@@ -9,7 +9,7 @@
     <!-- Main CSS-->
     <link rel="stylesheet" href="{{ url_for('static', filename='doc/css/main.css') }}">
     <script src="{{url_for('static', filename='js/displaytime/displaytime.js')}}"></script>
-    <link rel="shortcut icon" type="image/x-icon" href="{{ url_for('static', filename=congty[2])}}"/>
+    <link rel="shortcut icon" type="image/x-icon" href="{{ url_for('static', filename=congty[3])}}"/>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/boxicons@latest/css/boxicons.min.css">
     <!-- or -->
     <link rel="stylesheet" href="https://unpkg.com/boxicons@latest/css/boxicons.min.css">
@@ -70,6 +70,8 @@
                         class="app-menu__label">Danh sách chấm công</span></a></li>
             <li><a class="app-menu__item" href="/view_all_thoi_gian_cong_tac"><i class='app-menu__icon bx bx-history'></i><span
                 class="app-menu__label">Thời gian công tác</span></a></li>
+                <li><a class="app-menu__item" href="/cai_dat"><i class='app-menu__icon bx bx-cog'></i><span
+                    class="app-menu__label">Cài đặt</span></a></li>
         </ul>
     </aside>
     <main class="app-content">

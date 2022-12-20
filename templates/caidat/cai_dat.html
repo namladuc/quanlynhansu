@@ -19,6 +19,9 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.js"></script>
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.css">
+
+    <!-- Cài đặt -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='doc/css/phongban.css') }}">
 </head>
 
 <body onload="time()" class="app sidebar-mini rtl">
@@ -72,15 +75,16 @@
                         class="app-menu__label">Danh sách chấm công</span></a></li>
             <li><a class="app-menu__item" href="/thoi_gian_cong_tac"><i class='app-menu__icon bx bx-edit-alt'></i><span
                         class="app-menu__label">Thời gian công tác</span></a></li>
-            <li><a class="app-menu__item active" href="/phong_ban"><i class='app-menu__icon bx bxs-business'></i><span
+            <li><a class="app-menu__item" href="/phong_ban"><i class='app-menu__icon bx bxs-business'></i><span
                         class="app-menu__label">Phòng ban</span></a></li>
+            <li><a class="app-menu__item active" href="/cai_dat"><i class='app-menu__icon bx bx-cog'></i><span
+                        class="app-menu__label">Cài đặt</span></a></li>
         </ul>
     </aside>
     <main class="app-content">
         <div class="app-title">
             <ul class="app-breadcrumb breadcrumb">
-                <li class="breadcrumb-item"><a href="/view_all_phong_ban">Phòng ban</a></li>
-                <li class="breadcrumb-item"><a href="">Thêm khen thưởng - phạt</a></li>
+                <li class="breadcrumb-item active"><b>Cài đặt</b></li>
             </ul>
         </div>
         <div class="row">
@@ -88,72 +92,38 @@
 
                 <div class="tile">
 
-                    <h3 class="tile-title">Thêm khen thưởng-phạt</h3>
+                    <h3 class="tile-title">Cài đặt</h3>
                     <div class="tile-body">
-                        <form class="row" method="post" action="/form_add_thuong_phat_phong_ban/{{maPB}}" enctype="multipart/form-data">
-                            {% if err %}
-                            <div class="form-group col-md-12">
-                                <div class="alert alert-danger" style="text-align: left; font-size: 12px; background-color: red;">
-                                <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
-                                <strong>{{err}}</strong> 
+                        <div class="dash-cards">
+                            <a href="/form_view_tk">
+                                <div class="card-single" style="background-color: #228B22;">
+                                    <div class="card-body">
+                                        <!-- <span> <a class="bx bxs-user-account" href="form_view_tk"></a></span> -->
+                                        <span class="bx bxs-user-account"></span>
+                                        <div>
+                                            <h5>Tổng số tài khoản</h5>
+                                            <h4>{{so_user}}</h4>
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
-                          {% endif %}
-
-                            <div class="form-group col-md-3">
-                                <label class="control-label">Mã nhân viên</label>
-                                <input class="form-control" type="text" name="MaNV" required>
-                            </div>
-                            <div class="form-group col-md-9">
-                            </div>
-      
-                            <div class="form-group col-md-9">
-                                <label class="control-label">Lý do</label>
-                                <input class="form-control" type="text" name="LyDo" required>
-                            </div>
-
-                            
-                            <div class="form-group col-md-3">
-                            </div>
-
-                            <div class="form-group col-md-3">
-                                <label class="control-label">Loại</label>
-                                <select class="form-control" id="exampleSelect3" name="Loai" required>
-                                  {% for data in type %}
-                                  <option>{{data}} </option>
-                                  {% endfor %}
-                                </select>
-                              </div>
-
-                            <div class="form-group col-md-3">
-                                <label class="control-label">Số tiền</label>
-                                <input class="form-control" type="text" name="Tien" required>
-                            </div>
-
-                            
-                            <div class="form-group col-md-6">
-                            </div>
-
-                            <div class="form-group col-md-9">
-                                <label class="control-label">Ngày</label>
-                                <input class="form-control" type="date" name="Ngay" required>
-                            </div>
-                            <div class="form-group col-md-12">
-                                <label class="control-label">Ghi chú</label>
-                                <input class="form-control" type="text" name="GhiChu" >
-                            </div>
-                            <div id="toast">
-                            </div>
-                            <div class="form-group col-md-4">
-                                <input class="btn btn-save" type="submit" onclick="showSuccessToast();"
-                                    value="Thêm" />
-                                <a class="btn btn-cancel" href="table_data_employees">Hủy bỏ</a>
-                            </div>
-                        </form>
+                            </a>
+                            <a href="/form_view_cong_ty/N">
+                                <div class="card-single">
+                                    <div class="card-body">
+                                        <span class='bx bxs-buildings'></span>
+                                        <div>
+                                            <h5>Thông tin công ty</h5>
+                                            <h6 style="color: white;">Ấn để xem chi tiết</h6>
+                                        </div>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </main>
 </body>
+
 </html>

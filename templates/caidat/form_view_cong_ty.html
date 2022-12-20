@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>Thông tin | {{congty[1]}} </title>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Main CSS-->
+  <link rel="stylesheet" href="{{ url_for('static', filename='doc/css/main.css') }}">
+  <script src="{{url_for('static', filename='js/displaytime/displaytime.js')}}"></script>
+  <link rel="shortcut icon" type="image/x-icon" href="{{ url_for('static', filename=congty[3])}}" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/boxicons@latest/css/boxicons.min.css">
+  <!-- or -->
+  <link rel="stylesheet" href="https://unpkg.com/boxicons@latest/css/boxicons.min.css">
+
+  <!-- Font-icon css-->
+  <link rel="stylesheet" type="text/css"
+    href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.js"></script>
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.css">
+  <!-- Add Update -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='doc/css/addupdate.css') }}">
+  <script>
+    var img_default = "{{ url_for('static', filename=lst_congty[3])}}";
+    function readCTURL(input, thumbimage) {
+       
+      if (input.files && input.files[0]) { //Sử dụng  cho Firefox - chrome
+        var reader = new FileReader();
+        reader.onload = function (e) {
+          $("#id_img_profile").attr('src', e.target.result);
+        }
+        reader.readAsDataURL(input.files[0]);
+      }
+      else { // Sử dụng cho IE
+        $("#id_img_profile").attr('src', input.value);
+
+      }
+      $("#id_img_profile").show();
+      $('.filename').text($("#imginp").val());
+      $('.Choicefile').css('background', '#14142B');
+      $('.Choicefile').css('cursor', 'default');
+      $(".removeimg").show();
+      $(".Choicefile").unbind('click');
+
+    }
+    $(document).ready(function () {
+        
+      $(".Choicefile").bind('click', function () {
+        $("#imginp").click();
+
+      });
+      $(".removeimg").click(function () {
+        $("#id_img_profile").attr('src', img_default);
+        $(".removeimg").hide();
+        $(".Choicefile").bind('click', function () {
+          $("#imginp").click();
+        });
+        $('.Choicefile').css('background', '#14142B');
+        $('.Choicefile').css('cursor', 'pointer');
+        $(".filename").text("");
+      });
+    })
+  </script>
+</head>
+
+<body onload="time()" class="app sidebar-mini rtl">
+  <!-- Navbar-->
+  <header class="app-header">
+    <!-- Sidebar toggle button--><a class="app-sidebar__toggle" href="#" data-toggle="sidebar"
+      aria-label="Hide Sidebar"></a>
+    <!-- Navbar Right Menu-->
+    <ul class="app-nav">
+
+
+      <!-- User Menu-->
+      <li><a class="app-nav__item" style="margin: 0 25px 0 0;" href=""><i class='bx bx-bell'></i> </a></li>
+      <li><a class="app-nav__item" href="/logout"><i class='bx bx-log-out bx-rotate-180'></i> </a>
+
+      </li>
+    </ul>
+  </header>
+  <!-- Sidebar menu-->
+  <div class="app-sidebar__overlay" data-toggle="sidebar"></div>
+  <aside class="app-sidebar">
+    <div class="app-sidebar__user"><img class="app-sidebar__user-avatar"
+        src="{{ url_for('static', filename=my_user[7]) }}" style="border-radius: 50%;" width="50px" alt="User Image">
+      <div>
+        <p class="app-sidebar__user-name"><b>{{my_user[3]}}</b></p>
+        <p class="app-sidebar__user-designation">Chào mừng bạn trở lại</p>
+      </div>
+    </div>
+    <hr>
+    <ul class="app-menu">
+      <li><a class="app-menu__item haha"><i class='app-menu__icon bx bx-user'></i>
+          <span class="app-menu__label">Quản lý</span></a></li>
+      <li><a class="app-menu__item " href="/index"><i class='app-menu__icon bx bx-tachometer'></i><span
+            class="app-menu__label">Bảng điều khiển</span></a></li>
+      <li><a class="app-menu__item active" href="/table_data_employees"><i class='app-menu__icon bx bx-id-card'></i>
+          <span class="app-menu__label">Quản lý nhân viên</span></a></li>
+      <li><a class="app-menu__item" href="/table_chuc_vu"><i class='app-menu__icon bx bxs-book-content'></i>
+          <span class="app-menu__label">Quản lý chức vụ</span></a></li>
+      <li><a class="app-menu__item" href="/danh_sach_hop_dong"><i class='app-menu__icon bx bx-user-voice'></i><span
+            class="app-menu__label">Danh sách hợp đồng</span></a></li>
+      <li><a class="app-menu__item" href="/table-data-banned.html"><i class='app-menu__icon bx bx-run'></i><span
+            class="app-menu__label">Quản lý nội bộ
+          </span></a></li>
+      <li><a class="app-menu__item" href="/table_data_money"><i class='app-menu__icon bx bx-dollar'></i><span
+            class="app-menu__label">Bảng kê lương</span></a></li>
+      <li><a class="app-menu__item" href="/page_calendar"><i class='app-menu__icon bx bx-calendar-check'></i><span
+            class="app-menu__label">Lịch công tác </span></a></li>
+      <li><a class="app-menu__item" href="/danh_sach_cham_cong"><i class='app-menu__icon bx bx-edit-alt'></i><span
+            class="app-menu__label">Danh sách chấm công</span></a></li>
+      <li><a class="app-menu__item" href="/thoi_gian_cong_tac"><i class='app-menu__icon bx bx-history'></i><span
+            class="app-menu__label">Thời gian công tác</span></a></li>
+      <li><a class="app-menu__item" href="/phong_ban"><i class='app-menu__icon bx bxs-business'></i><span
+            class="app-menu__label">Phòng ban</span></a></li>
+      <li><a class="app-menu__item active" href="/cai_dat"><i class='app-menu__icon bx bx-cog'></i><span
+            class="app-menu__label">Cài đặt</span></a></li>
+
+    </ul>
+  </aside>
+  <main class="app-content">
+    <div class="app-title">
+      <ul class="app-breadcrumb breadcrumb side">
+        <li class="breadcrumb-item"><a href="/cai_dat"><b>Cài đặt</b></a></li>
+        <li class="breadcrumb-item active"><a href="">Thông tin công ty</li> </a>
+      </ul>
+      <div id="clock"></div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-12">
+        <div class="tile">
+          <div class="tile-body">
+            <form class="row" action="" method="post" enctype="multipart/form-data">
+              <!-- btn -->
+              <div class="col-md-12">
+                {% if mode != "" %}
+                <a class="btn btn-info" href="/form_view_cong_ty/E" style="width: 100px; border-radius: 10px;">Sửa</a>
+                {% endif %}
+
+                {% if mode == "" %}
+                <input type="submit" name="submit" id="reset" value="Lưu" class="btn btn-save"
+                  style="width: 100px; border-radius: 10px;">
+
+                <a class="btn btn-danger" href="/cai_dat" style="width: 100px; border-radius: 10px;">Hủy</a>
+                {% endif %}
+
+                <a href="/cai_dat" class="btn btn-secondary"
+                  style="width: 100px; border-radius: 10px;">Quay lại</a>
+              </div>
+
+              <div class="col-md-8">
+                <div class="row">
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label class="control-label">Tên công ty</label>
+                      <input type="text" class="form-control" value="{{lst_congty[1]}}" name="TenCT" required {{mode}}>
+                      <span id="available"></span>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label class="control-label">Mã số doanh nghiệp</label>
+                      <input type="text" class="form-control" value="{{lst_congty[5]}}" name="MaSO" required {{mode}}>
+                      <span id="available"></span>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label class="control-label">Ngày thành lập</label>
+                      <input type="date" class="form-control" value="{{lst_congty[6]}}" name="NgayThanhLap" required {{mode}}>
+                      <span id="available"></span>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label class="control-label">Số điện thoại</label>
+                      <input type="text" class="form-control" value="{{lst_congty[4]}}" name="SDT" required {{mode}}>
+                      <span id="available"></span>
+                    </div>
+                  </div>
+                  <div class="col-md-12">
+                    <div class="form-group">
+                      <label class="control-label">Địa chỉ</label>
+                      <textarea class="form-control" id="address" name="DIACHI" rows="2" {{mode}}>{{lst_congty[2]}}</textarea>
+                      <span id="available"></span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- image -->
+              <div class="col-md-4">
+                <div class="row">
+                  <div class="col-md-12">
+                    <div style="text-align: center;">
+                      <img id="img-upload">
+                      <div id="tem_img">
+                        <img id="id_img_profile" src="{{ url_for('static', filename=lst_congty[3])}}" alt="Ảnh" width="170px" height="170px">
+                        <a class="removeimg" href="javascript:"></a>
+                      </div><br>
+                      <div class="col-md-8"></div>
+                      <div class="col-md-4">
+                        <div class="input-group">
+                          <span class="input-group-btn" style="margin-left: 130px;">
+                            <span id="Choicefile" class="btn btn-info btn-file">
+                              Ảnh(4x6) <input type="file" id="imginp" name="ImageProfileUpload" onchange="readCTURL(this)"
+                                {{mode}}>
+                            </span>
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Essential javascripts for application to work-->
+  <script src="{{url_for('static', filename='doc/js/jquery-3.2.1.min.js')}}"></script>
+  <script src="{{url_for('static', filename='doc/js/popper.min.js')}}"></script>
+  <script src="{{url_for('static', filename='doc/js/bootstrap.min.js')}}"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+  <script src="{{url_for('static', filename='doc/js/main.js')}}"></script>
+  <!-- The javascript plugin to display page loading on top-->
+  <script src="{{url_for('static', filename='doc/js/plugins/pace.min.js')}}"></script>
+  <!-- Page specific javascripts-->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.js"></script>
+  <!-- Data table plugin-->
+  <!-- <script type="text/javascript" src="js/plugins/jquery.dataTables.min.js"></script> -->
+  <script src="{{url_for('static', filename='doc/js/plugins/jquery.dataTables.min.js')}}"></script>
+  <!-- <script type="text/javascript" src="js/plugins/dataTables.bootstrap.min.js"></script> -->
+  <script src="{{url_for('static', filename='doc/js/plugins/dataTables.bootstrap.min.js')}}"></script>
+  <script type="text/javascript">$('#sampleTable').DataTable();</script>
+</body>
+
+</html>

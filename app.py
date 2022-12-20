@@ -87,9 +87,16 @@ def login():
                                    congty = session['congty'],
                                    user_exits='True', 
                                    pass_check='False')
-        
+            
         my_user = user_data[0]
+        cur.execute("""
+                    UPDATE `qlnv_user` 
+                    SET `LastLogin` = CURRENT_TIMESTAMP()
+                    WHERE `qlnv_user`.`Id_user` = %s
+                    """, (my_user[0],))
+        
         session['username'] = my_user
+        mysql.connection.commit()
         cur.close()
         return redirect(url_for("home"))
     return render_template('/general/login.html',
@@ -2960,6 +2967,90 @@ def danh_sach_hop_dong():
                            hopdong = hopdong,
                            congty = session['congty'],
                            my_user = session['username'])
+
+@login_required
+@app.route('/get_print_danh_sach_hop_dong')
+def get_print_danh_sach_hop_dong():
+    cur = mysql.connection.cursor()
+    cur.execute("""
+                SELECT * 
+                FROM qlnv_hopdong
+                """)
+    hopdong = cur.fetchall()
+    
+    return render_template('hopdong/form_print_danh_sach_hop.html', 
+                           hopdong = hopdong)
+
+@login_required
+@app.route('/form_add_hop_dong', methods=['GET','POST'])
+def form_add_hop_dong():
+    
+    if request.method == 'POST':
+        cur = mysql.connection.cursor()
+        details = request.form
+        MaHD = details['MaHD']
+        LoaiHopDong = details['LoaiHopDong']
+        NgayBatDau = details['NgayBatDau']
+        NgayKetThuc = details['NgayKetThuc']
+        GhiChu = details['GhiChu']
+        
+        cur.execute("""
+                    SELECT *
+                    FROM qlnv_hopdong
+                    WHERE MaHopDong = %s
+                    """, (MaHD, ))
+        if (len(cur.fetchall()) != 0):
+            return render_template('hopdong/form_add_hop_dong.html', 
+                                   ma_err = "Mã hợp đồng đã tồn tại",
+                           congty = session['congty'],
+                           my_user = session['username'])
+        cur.execute("""
+                    INSERT INTO `qlnv_hopdong` 
+                    (`id`, `MaHopDong`, `LoaiHopDong`, `NgayBatDau`, `NgayKetThuc`, `GhiChu`) 
+                    VALUES (NULL, %s, %s, %s, %s, %s);
+                    """, (MaHD, LoaiHopDong, NgayBatDau, NgayKetThuc, GhiChu))
+        mysql.connection.commit()
+        return redirect(url_for('danh_sach_hop_dong'))
+    
+    return render_template('hopdong/form_add_hop_dong.html', 
+                           congty = session['congty'],
+                           my_user = session['username'])
+    
+@login_required
+@app.route('/get_danh_sach_hop_dong_excel')
+def get_danh_sach_hop_dong_excel():
+    cur = mysql.connection.cursor()
+    cur.execute("""
+                SELECT * 
+                FROM qlnv_hopdong
+                """)
+    hopdong = cur.fetchall()
+    
+    column_name = ['id','MaHopDong' ,'LoaiHopDong', 'NgayBatDau', 'NgayKetThuc', 'GhiChu']
+    data = pd.DataFrame.from_records(hopdong, columns=column_name)
+    data = data.set_index('id')
+    pathFile = app.config['SAVE_FOLDER_EXCEL'] + "/Danh_sach_hop_dong.xlsx"
+    data.to_excel(pathFile)
+    return send_file(pathFile, as_attachment=True)
+
+@login_required
+@app.route('/get_danh_sach_hop_dong_pdf')
+def get_danh_sach_hop_dong_pdf():
+    pathFile = app.config['SAVE_FOLDER_PDF']  + "/Danh_sach_hop_dong.pdf"
+    pdfkit.from_url("/".join(request.url.split("/")[:-1:]) + '/get_print_danh_sach_hop_dong' ,pathFile)
+    return send_file(pathFile, as_attachment=True)
+
+@login_required
+@app.route('/delete_hop_dong/<string:id>')
+def delete_hop_dong(id):
+    cur = mysql.connection.cursor()
+    cur.execute("""
+                DELETE FROM qlnv_hopdong
+                WHERE id = %s
+                """, (id, ))
+    
+    mysql.connection.commit()
+    return redirect(url_for('danh_sach_hop_dong'))
 #
 # ------------------ HOP DONG ------------------------
 #
@@ -3142,6 +3233,285 @@ def get_data_money_one_pdf(maNV):
 # ------------------ LUONG ------------------------
 #
 
+#
+# ------------------ CaiDat ------------------------
+#
+
+@login_required
+@app.route("/cai_dat")
+def cai_dat():
+    cur = mysql.connection.cursor()
+    cur.execute("""
+                SELECT COUNT(*)
+                FROM qlnv_user
+                """)
+    so_user = cur.fetchall()[0][0]
+    
+    return render_template('caidat/cai_dat.html', 
+                           so_user = so_user,
+                           congty = session['congty'],
+                           my_user = session['username'])
+
+@login_required
+@app.route("/form_tao_tk", methods=['GET','POST'])
+def form_tao_tk():
+    cur = mysql.connection.cursor()
+    cur.execute("""
+                SELECT MaNhanVien
+                FROM qlnv_nhanvien
+                WHERE MaNhanVien NOT IN (
+                    SELECT DISTINCT us.MaNhanVien
+                    FROM qlnv_user us
+                )
+                """)
+    nhanvien = cur.fetchall()
+    
+    type_account = {
+        'Admin':1,
+        'Trưởng Phòng':2,
+        'Nhân Viên':3
+    }
+    
+    if request.method == 'POST':
+        details = request.form
+        username = details['taikhoan']
+        MNV = details['MNV']
+        type = type_account[details['TYPE']]
+        password = hashlib.md5(details['password'].encode()).hexdigest()
+        password_repeat = hashlib.md5(details['password_repeat'].encode()).hexdigest()
+    
+        cur.execute("""
+                    SELECT * 
+                    FROM qlnv_user
+                    WHERE username = %s
+                    """, (username, ))
+        if (len(cur.fetchall()) != 0):
+            return render_template('caidat/form_tao_tk.html',
+                                my_err = "Tài khoản đã tồn tại",
+                           congty = session['congty'],
+                           my_user = session['username'])
+    
+        cur.execute("""
+                    SELECT TenNV
+                    FROM qlnv_nhanvien
+                    WHERE MaNhanVien = %s
+                    """, (MNV, ))
+        this_nv = cur.fetchall()
+        if (len(this_nv) != 1):
+            return render_template('caidat/form_tao_tk.html',
+                                type_account = list(type_account.keys()),
+                           nhanvien = nhanvien,
+                            my_err = "Mã nhân viên không tồn tại",
+                           congty = session['congty'],
+                           my_user = session['username'])
+        this_nv = this_nv[0]
+    
+        if password != password_repeat:
+            return render_template('caidat/form_tao_tk.html', 
+                                type_account = list(type_account.keys()),
+                           nhanvien = nhanvien,
+                            my_err = "Nhập lại mật khẩu mới không đúng",
+                           congty = session['congty'],
+                           my_user = session['username'])
+            
+        if type == 2:
+            cur.execute("""
+                        SELECT *
+                        FROM qlnv_phongban
+                        WHERE MaTruongPhong = %s
+                        """, (MNV,))
+            if (len(cur.fetchall()) == 0):
+                return render_template('caidat/form_tao_tk.html', 
+                                type_account = list(type_account.keys()),
+                           nhanvien = nhanvien,
+                            my_err = "Nhân viên không là trưởng phòng",
+                           congty = session['congty'],
+                           my_user = session['username'])
+        
+        cur.execute("""
+                    INSERT INTO qlnv_user(Id_user, username, password, tennguoidung, MaNhanVien, LastLogin, register)
+                    VALUES (NULL, %s, %s, %s, %s, NULL, current_timestamp())
+                    """, (username, password, this_nv[0], MNV))
+        mysql.connection.commit()
+        
+        cur.execute("""
+                    SELECT Id_user
+                    FROM qlnv_user
+                    WHERE username = %s
+                    """, (username, ))
+        acc_id = cur.fetchall()[0][0]
+        
+        cur.execute("""
+                    INSERT INTO qlnv_phanquyenuser(id_user, role_id)
+                    VALUES (%s, %s)
+                    """, (acc_id, type))
+        mysql.connection.commit()
+        return redirect(url_for('form_view_tk'))
+    return render_template('caidat/form_tao_tk.html', 
+                           type_account = list(type_account.keys()),
+                           nhanvien = nhanvien,
+                           congty = session['congty'],
+                           my_user = session['username'])
+
+@login_required
+@app.route("/delete_account/<string:id>")
+def delete_account(id):
+    cur = mysql.connection.cursor()
+    cur.execute("""
+                DELETE FROM qlnv_phanquyenuser
+                WHERE id_user = %s
+                """, (id, ))
+    
+    cur.execute("""
+                DELETE FROM qlnv_user
+                WHERE id_user = %s
+                """, (id, ))
+    mysql.connection.commit()
+    return redirect(url_for('form_view_tk'))
+
+@login_required
+@app.route("/form_view_tk")
+def form_view_tk():
+    cur = mysql.connection.cursor()
+    cur.execute("""
+                SELECT us.Id_user, us.username, us.password, us.tennguoidung, r.role_name,
+                us.MaNhanVien, us.LastLogin, us.register
+                FROM qlnv_user us
+                JOIN qlnv_phanquyenuser pq ON pq.id_user = us.Id_user
+                JOIN qlnv_role r ON pq.role_id = r.role_id
+                """)
+    users = cur.fetchall()
+    
+    data_user_format = []
+    for elm in users:
+        index = 0
+        tmp_data = []
+        for info in elm:
+            if (index != 2):
+                tmp_data.append(info)
+            index += 1
+        data_user_format.append(tmp_data)
+    return render_template('caidat/form_view_tk.html', 
+                           users = data_user_format,
+                           congty = session['congty'],
+                           my_user = session['username'])
+
+@login_required
+@app.route("/form_chinh_sua_mk/<string:id>", methods = ['GET','POST'])
+def form_chinh_sua_mk(id):
+    cur = mysql.connection.cursor()
+    cur.execute("""
+                SELECT username
+                FROM qlnv_user
+                WHERE Id_user = %s
+                """, (id, ))
+    this_user = cur.fetchall()
+    
+    if (len(this_user) == 0):
+        return "Error"
+    
+    this_user = this_user[0][0]
+    
+    if request.method == 'POST':
+        details = request.form
+        # old_password = hashlib.md5(details['password_old'].encode()).hexdigest()
+        new_password = hashlib.md5(details['password'].encode()).hexdigest()
+        new_password_repeat = hashlib.md5(details['password_repeat'].encode()).hexdigest()
+        
+        # cur.execute("""
+        #             SELECT password
+        #             FROM qlnv_user
+        #             WHERE Id_user = %s
+        #             """, (id, ))
+        # old_pass = cur.fetchall()[0][0]
+        
+        # if old_password != old_pass:
+        #     return render_template('caidat/form_chinh_sua_mk.html', 
+        #                     id = id,
+        #                     my_err = "Mật khẩu cũ không đúng",
+        #                    this_user = this_user,
+        #                    congty = session['congty'],
+        #                    my_user = session['username'])
+        
+        if new_password != new_password_repeat:
+            return render_template('caidat/form_chinh_sua_mk.html', 
+                            id = id,
+                            my_err = "Nhập lại mật khẩu mới không đúng",
+                           this_user = this_user,
+                           congty = session['congty'],
+                           my_user = session['username'])
+        
+        cur.execute("""
+                    UPDATE qlnv_user
+                    SET password = %s
+                    WHERE Id_user = %s
+                    """, (new_password, id))
+        mysql.connection.commit()
+        return redirect(url_for('form_view_tk'))
+    return render_template('caidat/form_chinh_sua_mk.html', 
+                           id = id,
+                           this_user = this_user,
+                           congty = session['congty'],
+                           my_user = session['username'])
+
+@login_required
+@app.route("/form_view_cong_ty/<string:canEdit>", methods = ['GET','POST'])
+def form_view_cong_ty(canEdit):
+    cur = mysql.connection.cursor()
+    cur.execute("""
+                SELECT * 
+                FROM qlnv_congty
+                """)
+    lst_congty = cur.fetchall()[0]
+    
+    if request.method == 'POST':
+        details = request.form
+        TenCT = details['TenCT']
+        MaSO = details['MaSO']
+        NgayThanhLap = details['NgayThanhLap']
+        SDT = details['SDT']
+        DIACHI = details['DIACHI']
+        
+        image_profile = request.files['ImageProfileUpload']
+        pathToImage = lst_congty[3]
+        if image_profile.filename != "":
+            ID_image = "logo_web"
+            filename = 'favicon' + "." + secure_filename(image_profile.filename).split(".")[1]
+            pathToImage = app.config['UPLOAD_FOLDER_IMG'] + "/" + filename
+            image_profile.save(pathToImage)
+            take_image_to_save(ID_image, pathToImage)
+            
+        cur.execute("""
+                    UPDATE qlnv_congty
+                    SET TenCongTy = %s, DiaChi = %s, LogoPath = %s, SoDienThoai = %s,
+                    MaSoDoanhNghiep = %s, NgayThanhLap = %s
+                    WHERE ID = %s
+                    """, (TenCT, DIACHI, pathToImage, SDT, MaSO, NgayThanhLap ,lst_congty[0]))
+        mysql.connection.commit()
+        
+        cur.execute("""
+                    SELECT * 
+                    FROM qlnv_congty
+                    """)
+        session['congty'] = cur.fetchall()[0]
+        return redirect(url_for('cai_dat'))
+    
+    if canEdit == 'E':
+        return render_template('caidat/form_view_cong_ty.html', 
+                           mode = '',
+                           lst_congty = lst_congty,
+                           congty = session['congty'],
+                           my_user = session['username'])
+    
+    return render_template('caidat/form_view_cong_ty.html', 
+                           mode = 'disabled',
+                           lst_congty = lst_congty,
+                           congty = session['congty'],
+                           my_user = session['username'])
+
+#
+# ------------------ CaiDat ------------------------
+#
 
 @login_required
 @app.route("/index")

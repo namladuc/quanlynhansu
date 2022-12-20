@@ -2,7 +2,7 @@
 <html lang="en">
 
 <head>
-  <title>Xem trình độ học vấn | Quản trị Admin</title>
+  <title>Thêm hợp đồng | Quản trị Admin</title>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -20,11 +20,9 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.js"></script>
   <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.css">
-
 </head>
 
 <body class="app sidebar-mini rtl">
-  
   <!-- Navbar-->
   <header class="app-header">
     <!-- Sidebar toggle button--><a class="app-sidebar__toggle" href="#" data-toggle="sidebar"
@@ -43,8 +41,8 @@
   <!-- Sidebar menu-->
   <div class="app-sidebar__overlay" data-toggle="sidebar"></div>
     <aside class="app-sidebar">
-      <div class="app-sidebar__user"><img class="app-sidebar__user-avatar" src="{{ url_for('static', filename=my_user[7]) }}" style="border-radius: 50%;" width="50px"
-        alt="User Image">
+        <div class="app-sidebar__user"><img class="app-sidebar__user-avatar" src="{{ url_for('static', filename=my_user[7]) }}" style="border-radius: 50%;" width="50px"
+            alt="User Image">
             <div>
                 <p class="app-sidebar__user-name"><b>{{my_user[3]}}</b></p>
                 <p class="app-sidebar__user-designation">Chào mừng bạn trở lại</p>
@@ -56,15 +54,16 @@
           <span class="app-menu__label">Quản lý</span></a></li>
       <li><a class="app-menu__item " href="/index"><i class='app-menu__icon bx bx-tachometer'></i><span
             class="app-menu__label">Bảng điều khiển</span></a></li>
-      <li><a class="app-menu__item active" href="/table_data_employees"><i class='app-menu__icon bx bx-id-card'></i>
+      <li><a class="app-menu__item" href="/table_data_employees"><i class='app-menu__icon bx bx-id-card'></i>
           <span class="app-menu__label">Quản lý nhân viên</span></a></li>
-          <li><a class="app-menu__item" href="/table_chuc_vu"><i class='app-menu__icon bx bxs-book-content'></i>
-            <span class="app-menu__label">Quản lý chức vụ</span></a></li>
+      <li><a class="app-menu__item" href="/view_all_phong_ban"><i class='app-menu__icon bx bxs-business'></i><span
+        class="app-menu__label">Phòng ban</span></a></li>
+      <li><a class="app-menu__item" href="/table_chuc_vu"><i class='app-menu__icon bx bxs-book-content'></i>
+        <span class="app-menu__label">Quản lý chức vụ</span></a></li>
       <li><a class="app-menu__item" href="/danh_sach_hop_dong"><i class='app-menu__icon bx bx-user-voice'></i><span
             class="app-menu__label">Danh sách hợp đồng</span></a></li>
-      <li><a class="app-menu__item" href="/table-data-banned"><i class='app-menu__icon bx bx-run'></i><span
-            class="app-menu__label">Quản lý nội bộ
-          </span></a></li>
+      <li><a class="app-menu__item" href="/table-data-banned.html"><i class='app-menu__icon bx bx-run'></i><span
+            class="app-menu__label">Quản lý nội bộ</span></a></li>
       <li><a class="app-menu__item" href="/table_data_money"><i class='app-menu__icon bx bx-dollar'></i><span
             class="app-menu__label">Bảng kê lương</span></a></li>
       <li><a class="app-menu__item" href="/page_calendar"><i class='app-menu__icon bx bx-calendar-check'></i><span
@@ -78,69 +77,69 @@
   <main class="app-content">
     <div class="app-title">
       <ul class="app-breadcrumb breadcrumb">
-        <li class="breadcrumb-item"><a href="/form_add_data_employees">Danh sách nhân viên</a></li>
-        <li class="breadcrumb-item"><a href="/form_add_trinhdohocvan">Thêm trình độ học vấn</a></li>
+        <li class="breadcrumb-item">Danh sách hợp đồng</li>
+        <li class="breadcrumb-item"><a href="/form_add_chuc_vu">Thêm hợp đồng</a></li>
       </ul>
     </div>
     <div class="row">
       <div class="col-md-12">
+
         <div class="tile">
-          <h3 class="tile-title">Xem sửa trình độ học vấn</h3>
+
+          <h3 class="tile-title">Tạo mới chức vụ</h3>
           <div class="tile-body">
-
-            {% if edit_view %}
-                <form class="row" method="post" action="/form_view_update_trinh_do_hoc_van/E_{{maTDHV}}" >
-
-                <div class="form-group col-md-4">
-                    <label class="control-label">Mã trình độ học vấn</label>
-                    <input class="form-control" value="{{trinhdohocvan[0]}}" name="MATDHV" type="text" required>
-                </div>
-
-                <div class="form-group col-md-4">
-                    <label class="control-label">Tên trình độ học vấn</label>
-                    <input class="form-control" value="{{trinhdohocvan[1]}}" name="TenTDHV" type="text" required>
-                </div>
-
+            <form class="row" method="post" action="/form_add_chuc_vu" >
+              {% if ma_err %}
                 <div class="form-group col-md-12">
+                    <div class="alert alert-danger" style="text-align: left; font-size: 12px; background-color: red;">
+                    <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
+                    <strong>{{ma_err}}</strong>
+                    </div>
                 </div>
+              {% endif %}
 
-                <div class="form-group col-md-4">
-                    <label class="control-label">Tên chuyên ngành</label>
-                    <input class="form-control" value="{{trinhdohocvan[2]}}" name="ChuyenNganh" type="text" required>
-                </div>
+              <div class="form-group col-md-4">
+                <label class="control-label">Mã hợp đồng</label>
+                <input class="form-control" name="MaHD" type="text" required>
+              </div>
 
-                <div class="form-group col-md-12">
-                </div>
-                <div class="form-group col-md-4">
-                    <input class="btn btn-save" type="submit" value="Lưu lại"/>
-                    <a class="btn btn-cancel" href="table_chuc_vu">Hủy bỏ</a>
-                </div>
-                </form>
-            {% else %}
-                <table class="table table-hover table-bordered js-copytextarea" cellpadding="0" cellspacing="0" border="0"
-                id="sampleTable">
-                <thead>
-                    <tr>
-                    <th width="100">Mã TĐHV</th>
-                    <th width="300">Loại Trình độ học vấn</th>
-                    <th width="300">Chuyên ngành</th>
-                    <th width="100">Thao tác</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for data in trinhdohocvan %}
-                    <tr>
-                    <td>{{data[0]}}</td>
-                    <td>{{data[1]}}</td>
-                    <td>{{data[2]}}</td>
-                    <td class="table-td-center">
-                        <button class="btn btn-outline-warning" type="button" title="Ấn vào để xem sửa chức vụ {{data[1]}}"
-                        onclick="location.href='/form_view_update_trinh_do_hoc_van/E_{{data[0]}}';">Sửa</button>
-                    </td>
-                    {% endfor %}
-                </tbody>
-                </table>
-            {% endif %}
+              <div class="form-group col-md-12">
+            </div>
+
+              <div class="form-group col-md-4">
+                <label class="control-label">Loại hợp đồng</label>
+                <input class="form-control" name="TenHD" type="text" required>
+              </div>
+
+              <div class="form-group col-md-12">
+            </div>
+
+            <div class="form-group col-md-4">
+                <label class="control-label">Ngày bắt đầu</label>
+                <input class="form-control" name="NgayBatDau" type="text" required>
+              </div>
+
+              <div class="form-group col-md-4">
+                <label class="control-label">Ngày kết thúc</label>
+                <input class="form-control" name="NgayKetThuc" type="text" required>
+              </div>
+
+              <div class="form-group col-md-12">
+              </div>
+
+              <div class="form-group col-md-4">
+                <label class="control-label">Ghi chú</label>
+                <textarea class="form-control" id="address" name="GhiChu" rows="2" ></textarea>
+              </div>
+
+              <div class="form-group col-md-12">
+              </div>
+
+              <div class="form-group col-md-4">
+                <input class="btn btn-save" type="submit" value="Thêm"/>
+                <a class="btn btn-cancel" href="/danh_sach_hop_dong">Hủy bỏ</a>
+              </div>
+            </form>
 
   </main>
   <!-- Essential javascripts for application to work-->
@@ -150,14 +149,7 @@
   <script src="{{url_for('static', filename='doc/js/main.js')}}"></script>
   <!-- The javascript plugin to display page loading on top-->
   <script src="{{url_for('static', filename='doc/js/plugins/pace.min.js')}}"></script>
-    <!-- Page specific javascripts-->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.js"></script>
-    <!-- Data table plugin-->
-    <!-- <script type="text/javascript" src="js/plugins/jquery.dataTables.min.js"></script> -->
-    <script src="{{url_for('static', filename='doc/js/plugins/jquery.dataTables.min.js')}}"></script>
-    <!-- <script type="text/javascript" src="js/plugins/dataTables.bootstrap.min.js"></script> -->
-    <script src="{{url_for('static', filename='doc/js/plugins/dataTables.bootstrap.min.js')}}"></script>
-    <script type="text/javascript">$('#sampleTable').DataTable();</script>
+
 </body>
 
 </html>
