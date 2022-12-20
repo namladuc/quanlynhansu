@@ -9,7 +9,7 @@
   <!-- Main CSS-->
   <link rel="stylesheet" href="{{ url_for('static', filename='doc/css/main.css') }}">
   <script src="{{url_for('static', filename='js/displaytime/displaytime.js')}}"></script>
-  <link rel="shortcut icon" type="image/x-icon" href="{{ url_for('static', filename=congty[2])}}"/>
+  <link rel="shortcut icon" type="image/x-icon" href="{{ url_for('static', filename=congty[2])}}" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/boxicons@latest/css/boxicons.min.css">
   <!-- or -->
   <link rel="stylesheet" href="https://unpkg.com/boxicons@latest/css/boxicons.min.css">
@@ -20,6 +20,8 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.js"></script>
   <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.css">
+  <!-- Add Update -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='doc/css/addupdate.css') }}">
 
 </head>
 
@@ -41,14 +43,14 @@
   </header>
   <!-- Sidebar menu-->
   <div class="app-sidebar__overlay" data-toggle="sidebar"></div>
-    <aside class="app-sidebar">
-        <div class="app-sidebar__user"><img class="app-sidebar__user-avatar" src="{{ url_for('static', filename=my_user[7]) }}" style="border-radius: 50%;" width="50px"
-                alt="User Image">
-            <div>
-                <p class="app-sidebar__user-name"><b>{{my_user[3]}}</b></p>
-                <p class="app-sidebar__user-designation">Chào mừng bạn trở lại</p>
-            </div>
-        </div>
+  <aside class="app-sidebar">
+    <div class="app-sidebar__user"><img class="app-sidebar__user-avatar"
+        src="{{ url_for('static', filename=my_user[7]) }}" style="border-radius: 50%;" width="50px" alt="User Image">
+      <div>
+        <p class="app-sidebar__user-name"><b>{{my_user[3]}}</b></p>
+        <p class="app-sidebar__user-designation">Chào mừng bạn trở lại</p>
+      </div>
+    </div>
     <hr>
     <ul class="app-menu">
       <li><a class="app-menu__item haha"><i class='app-menu__icon bx bx-user'></i>
@@ -58,7 +60,7 @@
       <li><a class="app-menu__item active" href="/table_data_employees"><i class='app-menu__icon bx bx-id-card'></i>
           <span class="app-menu__label">Quản lý nhân viên</span></a></li>
       <li><a class="app-menu__item" href="/table_chuc_vu"><i class='app-menu__icon bx bxs-book-content'></i>
-        <span class="app-menu__label">Quản lý chức vụ</span></a></li>
+          <span class="app-menu__label">Quản lý chức vụ</span></a></li>
       <li><a class="app-menu__item" href="/danh_sach_hop_dong"><i class='app-menu__icon bx bx-user-voice'></i><span
             class="app-menu__label">Danh sách hợp đồng</span></a></li>
       <li><a class="app-menu__item" href="/table-data-banned.html"><i class='app-menu__icon bx bx-run'></i><span
@@ -74,9 +76,9 @@
             class="app-menu__label">Thời gian công tác</span></a></li>
       <li><a class="app-menu__item" href="/phong_ban"><i class='app-menu__icon bx bxs-business'></i><span
             class="app-menu__label">Phòng ban</span></a></li>
-        <li><a class="app-menu__item active" href="/cai_dat"><i class='app-menu__icon bx bx-cog'></i><span
+      <li><a class="app-menu__item active" href="/cai_dat"><i class='app-menu__icon bx bx-cog'></i><span
             class="app-menu__label">Cài đặt</span></a></li>
-        
+
     </ul>
   </aside>
   <main class="app-content">
@@ -92,38 +94,89 @@
       <div class="col-md-12">
         <div class="tile">
           <div class="tile-body">
-            <table class="table table-hover table-bordered js-copytextarea" cellpadding="0" cellspacing="0" border="0"
-              id="sampleTable">
-              <thead>
-                <tr>
-                  <th width="10"><input type="checkbox" id="all"></th>
-                  <th width="150">Tên công ty</th>
-                  <th width="150">Ảnh</th>
-                  <th width="230">Địa chỉ</th>
-                  <th width="130">Số điện thoại</th>
-                  <th width="250">Mã số doanh nghiệp</th>
-                  <th width="180">Ngày thành lập</th>
-                  <th>Chức năng</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td width="10"><input type="checkbox" id="myChecker" name="check1" value="1"></td>
-                  <td>A</td>
-                  <td>Image</td>  
-                  <td>HN</td>
-                  <td>992194327</td>
-                  <td>MS123</td>
-                  <td>1-1-2002</td>
-                  <td class="table-td-center">
-                    <button class="btn btn-primary btn-sm edit" type="button" title="Sửa" id="show-emp">
-                        <a href="/form_sua_tt_cong_ty"><i class="fas fa-pencil-square-o" aria-hidden="true"></i></a>
-                    </button>
-                  </td>
-                </tr>
+            <form class="row" action="" method="post" enctype="multipart/form-data">
+              <!-- btn -->
+              <div class="col-md-12">
+                {% if mode != "" %}
+                <a class="btn btn-info" href="" style="width: 100px; border-radius: 10px;">Sửa</a>
+                {% endif %}
 
-              </tbody>
-            </table>
+                {% if mode == "" %}
+                <input type="submit" name="submit" id="reset" value="Lưu" class="btn btn-save"
+                  style="width: 100px; border-radius: 10px;">
+
+                <a class="btn btn-danger" href="/cai_dat" style="width: 100px; border-radius: 10px;">Hủy</a>
+                {% endif %}
+
+                <a href="/table_data_employees" class="btn btn-secondary"
+                  style="width: 100px; border-radius: 10px;">Quay lại</a>
+              </div>
+
+              <div class="col-md-8">
+                <div class="row">
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label class="control-label">Tên công ty</label>
+                      <input type="text" class="form-control" value="" id="" name="" required {{mode}}>
+                      <span id="available"></span>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label class="control-label">Mã số doanh nghiệp</label>
+                      <input type="text" class="form-control" value="" id="" name="" required {{mode}}>
+                      <span id="available"></span>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label class="control-label">Ngày thành lập</label>
+                      <input type="text" class="form-control" value="" id="" name="" required {{mode}}>
+                      <span id="available"></span>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label class="control-label">Số điện thoại</label>
+                      <input type="text" class="form-control" value="" id="" name="" required {{mode}}>
+                      <span id="available"></span>
+                    </div>
+                  </div>
+                  <div class="col-md-12">
+                    <div class="form-group">
+                      <label class="control-label">Địa chỉ</label>
+                      <input type="text" class="form-control" value="" id="" name="" required {{mode}}>
+                      <span id="available"></span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- image -->
+              <div class="col-md-4">
+                <div class="row">
+                  <div class="col-md-12">
+                    <div style="text-align: center;">
+                      <img id="img-upload">
+                      <div id="tem_img">
+                        <img id="id_img_profile" src="" alt="Ảnh" width="170px" height="170px">
+                        <a class="removeimg" href="javascript:"></a>
+                      </div><br>
+                      <div class="col-md-8"></div>
+                      <div class="col-md-4">
+                        <div class="input-group">
+                          <span class="input-group-btn" style="margin-left: 130px;">
+                            <span id="Choicefile" class="btn btn-info btn-file">
+                              Ảnh(4x6) <input type="file" id="imginp" name="ImageProfileUpload" onchange="readURL(this)"
+                                {{mode}}>
+                            </span>
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </form>
           </div>
         </div>
       </div>
@@ -157,14 +210,14 @@
         buttons: ["Hủy bỏ", "Đồng ý"],
       })
         .then((willDelete) => {
-         
+
           if (willDelete) {
             $.ajax({
-              url:"/delete_nhan_vien/" + maNV,
+              url: "/delete_nhan_vien/" + maNV,
               context: document.body
             })
             swal("Đã xóa thành công.!", {
-              
+
             });
             location.reload();
           }
@@ -175,10 +228,10 @@
       var numRow = document.getElementById("sampleTable").rows.length;
       var id_nv = [];
       $('#sampleTable tbody :checkbox').each(function () {
-          let i = this.parentNode.parentNode.rowIndex;
-          if (this.checked) {
-            id_nv.push(this.parentNode.parentNode.childNodes[3].textContent);
-          }
+        let i = this.parentNode.parentNode.rowIndex;
+        if (this.checked) {
+          id_nv.push(this.parentNode.parentNode.childNodes[3].textContent);
+        }
       });
 
       swal({
@@ -190,7 +243,7 @@
           if (willDelete) {
             for (let i = 0; i < id_nv.length; i++) {
               $.ajax({
-                url:"/delete_nhan_vien/" + id_nv[i],
+                url: "/delete_nhan_vien/" + id_nv[i],
                 context: document.body
               })
             }
@@ -205,7 +258,7 @@
       $('#sampleTable tbody :checkbox').prop('checked', $(this).is(':checked'));
       e.stopImmediatePropagation();
     });
-    
+
     //In dữ liệu
     var myApp = new function () {
       this.printTable = function () {
@@ -221,18 +274,18 @@
       var copyTextarea = document.querySelector('.js-copytextarea');
       copyTextarea.focus();
 
-      var mytext = copyTextarea.textContent.substring(661,copyTextarea.textContent.length).split("\n")
+      var mytext = copyTextarea.textContent.substring(661, copyTextarea.textContent.length).split("\n")
 
       var index = 0;
       var data = [];
       mytext.forEach(function (text) {
         if (text.trim().length != 0) {
-            data.push(text.trim());
-            index += 1;
-            if (index == 7) {
-              data.push("\n")
-              index = 0;
-            }
+          data.push(text.trim());
+          index += 1;
+          if (index == 7) {
+            data.push("\n")
+            index = 0;
+          }
         }
       });
 

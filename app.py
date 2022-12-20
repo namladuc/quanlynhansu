@@ -2032,5 +2032,10 @@ def form_sua_tt_cong_ty():
     return render_template('caidat/form_sua_tt_cong_ty.html', 
                            congty = session['congty'],
                            my_user = session['username'])
+    
+@login_required
+@app.route("/error")
+def error():
+    return render_template('error.html')
  
  
