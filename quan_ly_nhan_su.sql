@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Dec 19, 2022 at 11:16 AM
+-- Generation Time: Dec 20, 2022 at 05:27 PM
 -- Server version: 10.4.21-MariaDB
 -- PHP Version: 8.0.10
 
@@ -43,7 +43,8 @@ CREATE TABLE `qlnv_chamcong` (
 --
 
 INSERT INTO `qlnv_chamcong` (`id`, `MaNV`, `Ngay`, `GioVao`, `GioRa`, `OT`, `ThoiGianLamViec`, `ThoiGian_thap_phan`) VALUES
-(54, 'MNV03', '2022-12-17', '07:30:00', '11:50:00', 0, '04:20:00', 4.3);
+(54, 'MNV03', '2022-12-17', '07:30:00', '11:50:00', 0, '04:20:00', 4.3),
+(55, 'MNV03', '2022-12-11', '07:30:00', '11:30:00', 0, '04:00:00', 4);
 
 --
 -- Triggers `qlnv_chamcong`
@@ -127,7 +128,7 @@ CREATE TABLE `qlnv_chamcongngay` (
 --
 
 INSERT INTO `qlnv_chamcongngay` (`MaChamCong`, `MaNV`, `Nam`, `Thang`, `SoNgayThang`, `Ngay1`, `Ngay2`, `Ngay3`, `Ngay4`, `Ngay5`, `Ngay6`, `Ngay7`, `Ngay8`, `Ngay9`, `Ngay10`, `Ngay11`, `Ngay12`, `Ngay13`, `Ngay14`, `Ngay15`, `Ngay16`, `Ngay17`, `Ngay18`, `Ngay19`, `Ngay20`, `Ngay21`, `Ngay22`, `Ngay23`, `Ngay24`, `Ngay25`, `Ngay26`, `Ngay27`, `Ngay28`, `Ngay29`, `Ngay30`, `Ngay31`) VALUES
-(41, 'MNV03', 2022, 12, 31, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 4.3, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1);
+(41, 'MNV03', 2022, 12, 31, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 4, -1, -1, -1, -1, -1, 4.3, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1);
 
 -- --------------------------------------------------------
 
@@ -158,7 +159,7 @@ CREATE TABLE `qlnv_chamcongthang` (
 --
 
 INSERT INTO `qlnv_chamcongthang` (`id`, `MaNV`, `Nam`, `T1`, `T2`, `T3`, `T4`, `T5`, `T6`, `T7`, `T8`, `T9`, `T10`, `T11`, `T12`) VALUES
-(21, 'MNV03', 2022, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 4.3);
+(21, 'MNV03', 2022, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 8.3);
 
 -- --------------------------------------------------------
 
@@ -182,7 +183,7 @@ CREATE TABLE `qlnv_chamcongtongketthang` (
 --
 
 INSERT INTO `qlnv_chamcongtongketthang` (`Id`, `MaNhanVien`, `Nam`, `Thang`, `SoNgayDiLam`, `SoNgayDiVang`, `SoNgayTangCa`, `TongSoNgay`) VALUES
-(19, 'MNV03', 2022, 12, 1, 26, 0, 1);
+(19, 'MNV03', 2022, 12, 2, 25, 0, 2);
 
 --
 -- Triggers `qlnv_chamcongtongketthang`
@@ -373,6 +374,7 @@ INSERT INTO `qlnv_chucvu` (`MaCV`, `TenCV`) VALUES
 --
 
 CREATE TABLE `qlnv_congty` (
+  `ID` int(11) NOT NULL,
   `TenCongTy` varchar(100) NOT NULL,
   `DiaChi` varchar(100) NOT NULL,
   `LogoPath` varchar(100) NOT NULL,
@@ -385,8 +387,8 @@ CREATE TABLE `qlnv_congty` (
 -- Dumping data for table `qlnv_congty`
 --
 
-INSERT INTO `qlnv_congty` (`TenCongTy`, `DiaChi`, `LogoPath`, `SoDienThoai`, `MaSoDoanhNghiep`, `NgayThanhLap`) VALUES
-('Công ty Mòe', '334 Đ. Nguyễn Trãi, Thanh Xuân Trung, Thanh Xuân, Hà Nội', 'web/img/favicon.png', '0', '', '2022-12-18');
+INSERT INTO `qlnv_congty` (`ID`, `TenCongTy`, `DiaChi`, `LogoPath`, `SoDienThoai`, `MaSoDoanhNghiep`, `NgayThanhLap`) VALUES
+(1, 'Công ty Mòe', '334 Đ. Nguyễn Trãi, Thanh Xuân Trung, Thanh Xuân, Hà Nội', 'web/img/favicon.png', '0986259999', '0869886889', '2022-12-18');
 
 -- --------------------------------------------------------
 
@@ -463,7 +465,7 @@ CREATE TABLE `qlnv_luong` (
 --
 
 INSERT INTO `qlnv_luong` (`id`, `MaNV`, `Nam`, `Thang`, `LuongCoDinh`, `LuongChamCong`, `SoTienThuong`, `SoTienPhat`, `TongSoTien`) VALUES
-(6, 'MNV03', 2022, 12, 1000000, 22000, 0, 0, 22000);
+(6, 'MNV03', 2022, 12, 1000000, 44000, 20000, 10000, 54000);
 
 -- --------------------------------------------------------
 
@@ -539,6 +541,15 @@ CREATE TABLE `qlnv_phanquyenuser` (
   `role_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+--
+-- Dumping data for table `qlnv_phanquyenuser`
+--
+
+INSERT INTO `qlnv_phanquyenuser` (`id_user`, `role_id`) VALUES
+(1, 1),
+(2, 3),
+(7, 3);
+
 -- --------------------------------------------------------
 
 --
@@ -563,6 +574,27 @@ INSERT INTO `qlnv_phongban` (`MaPB`, `TenPB`, `diachi`, `sodt`, `MaTruongPhong`)
 ('MPB03', 'Kế toán', 'Hà Nội', '096358461', 'MNV36'),
 ('MPB04', 'Kiểm toán', 'Hà Nội', '096358467', 'MNN01'),
 ('MPB05', 'Hành chính', 'Hà Nội', '096358468', 'MNV12');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `qlnv_role`
+--
+
+CREATE TABLE `qlnv_role` (
+  `role_id` int(11) NOT NULL,
+  `role_name` varchar(20) NOT NULL,
+  `role_folder` varchar(20) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `qlnv_role`
+--
+
+INSERT INTO `qlnv_role` (`role_id`, `role_name`, `role_folder`) VALUES
+(1, 'Admin', ''),
+(2, 'Trưởng Phòng', 'tp/'),
+(3, 'Nhân Viên', 'user/');
 
 -- --------------------------------------------------------
 
@@ -621,7 +653,9 @@ CREATE TABLE `qlnv_thuongphat` (
 --
 
 INSERT INTO `qlnv_thuongphat` (`id`, `MaNV`, `Loai`, `LyDo`, `Tien`, `Ngay`, `GhiChu`) VALUES
-(3, 'MNV02', 0, 'Chăm chỉ làm việc tốt', 1000000, '2022-12-18', 'Tốt');
+(3, 'MNV02', 0, 'Chăm chỉ làm việc tốt', 1000000, '2022-12-18', 'Tốt'),
+(5, 'MNV03', 1, 'Yeu MY Linh', 10000, '2022-12-01', ':))'),
+(6, 'MNV03', 0, ':))', 20000, '2022-12-02', ':))');
 
 --
 -- Triggers `qlnv_thuongphat`
@@ -667,7 +701,7 @@ END
 $$
 DELIMITER ;
 DELIMITER $$
-CREATE TRIGGER `insert_thuongphat_luong` BEFORE INSERT ON `qlnv_thuongphat` FOR EACH ROW BEGIN
+CREATE TRIGGER `insert_thuongphat_luong` AFTER INSERT ON `qlnv_thuongphat` FOR EACH ROW BEGIN
     DECLARE sotienphat double;
     DECLARE luongchamcong double;
     DECLARE luongDuocNhan double;
@@ -814,7 +848,7 @@ CREATE TABLE `qlnv_user` (
   `tennguoidung` varchar(50) NOT NULL,
   `MaNhanVien` varchar(8) NOT NULL,
   `LastLogin` datetime DEFAULT NULL,
-  `register` datetime DEFAULT NULL
+  `register` datetime DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
@@ -822,8 +856,9 @@ CREATE TABLE `qlnv_user` (
 --
 
 INSERT INTO `qlnv_user` (`Id_user`, `username`, `password`, `tennguoidung`, `MaNhanVien`, `LastLogin`, `register`) VALUES
-(1, 'admin', '21232f297a57a5a743894a0e4a801fc3', 'Administrator', 'MNV02', '2022-12-01 14:57:12', '2022-12-01 14:57:45'),
-(2, 'namsiunhon', '827ccb0eea8a706c4c34a16891f84e7b', 'Lã Đức Nam', 'MNV02', '2022-12-01 00:00:00', '2022-12-01 14:57:59');
+(1, 'admin', '21232f297a57a5a743894a0e4a801fc3', 'Administrator', 'MNV02', '2022-12-20 22:53:19', '2022-12-01 14:57:45'),
+(2, 'namsiunhon', '827ccb0eea8a706c4c34a16891f84e7b', 'Lã Đức Nam', 'MNV02', '2022-12-01 00:00:00', '2022-12-01 14:57:59'),
+(7, 'nghiaphamhong', '827ccb0eea8a706c4c34a16891f84e7b', 'Pham Hong Nghia', 'MNV03', '2022-12-20 20:20:56', '2022-12-20 20:20:24');
 
 --
 -- Indexes for dumped tables
@@ -858,6 +893,12 @@ ALTER TABLE `qlnv_chamcongtongketthang`
 --
 ALTER TABLE `qlnv_chucvu`
   ADD PRIMARY KEY (`MaCV`);
+
+--
+-- Indexes for table `qlnv_congty`
+--
+ALTER TABLE `qlnv_congty`
+  ADD PRIMARY KEY (`ID`);
 
 --
 -- Indexes for table `qlnv_hopdong`
@@ -927,7 +968,7 @@ ALTER TABLE `qlnv_user`
 -- AUTO_INCREMENT for table `qlnv_chamcong`
 --
 ALTER TABLE `qlnv_chamcong`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=55;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=56;
 
 --
 -- AUTO_INCREMENT for table `qlnv_chamcongngay`
@@ -948,10 +989,16 @@ ALTER TABLE `qlnv_chamcongtongketthang`
   MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
 
 --
+-- AUTO_INCREMENT for table `qlnv_congty`
+--
+ALTER TABLE `qlnv_congty`
+  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
 -- AUTO_INCREMENT for table `qlnv_hopdong`
 --
 ALTER TABLE `qlnv_hopdong`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- AUTO_INCREMENT for table `qlnv_luong`
@@ -969,13 +1016,13 @@ ALTER TABLE `qlnv_thoigiancongtac`
 -- AUTO_INCREMENT for table `qlnv_thuongphat`
 --
 ALTER TABLE `qlnv_thuongphat`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `qlnv_user`
 --
 ALTER TABLE `qlnv_user`
-  MODIFY `Id_user` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `Id_user` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
