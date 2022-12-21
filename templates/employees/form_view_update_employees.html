@@ -145,7 +145,7 @@
 
 
       <!-- User Menu-->
-      <li><a class="app-nav__item" href="login"><i class='bx bx-log-out bx-rotate-180'></i> </a>
+      <li><a class="app-nav__item" href="/logout"><i class='bx bx-log-out bx-rotate-180'></i> </a>
 
       </li>
     </ul>
@@ -209,11 +209,11 @@
                       class="fas fa-folder-plus"></i> Tạo trình độ học vấn mới</b></a>
                   </div>
                   <div class="col-sm-2">
-                    <a class="btn btn-delete btn-sm print-file" type="button" title="In" onclick="myApp.printTable()"><i
+                    <a class="btn btn-delete btn-sm print-file" type="button" title="In" onclick="myApp.printNV()"><i
                         class="fas fa-print"></i> In thông tin</a>
                   </div>
                   <div class="col-sm-2">
-                    <a class="btn btn-delete btn-sm pdf-file" type="button" title="In" href="/get_pdf_data_employees"><i
+                    <a class="btn btn-delete btn-sm pdf-file" type="button" title="In" href="/get_pdf_one_employee/{{data_default[0]}}"><i
                         class="fas fa-file-pdf"></i> Xuất PDF</a>
                   </div>
 
@@ -445,7 +445,16 @@
   <script src="{{url_for('static', filename='doc/js/main.js')}}"></script>
   <!-- The javascript plugin to display page loading on top-->
   <script src="{{url_for('static', filename='doc/js/plugins/pace.min.js')}}"></script>
-
+  <script>
+    // get_information_one_employee
+    var myApp = new function () {
+      this.printNV = function () {
+        var win = window.open('/get_information_one_employee/{{data_default[0]}}', '', 'height=700,width=1400');
+        win.document.close();
+        win.print();
+      }
+    }
+  </script>
 </body>
 
 </html>

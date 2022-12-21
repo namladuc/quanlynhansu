@@ -29,15 +29,15 @@
       if (input.files && input.files[0]) { //Sử dụng  cho Firefox - chrome
         var reader = new FileReader();
         reader.onload = function (e) {
-          $("#id_img_profile").attr('src', e.target.result);
+          $("#id_img_profile_1").attr('src', e.target.result);
         }
         reader.readAsDataURL(input.files[0]);
       }
       else { // Sử dụng cho IE
-        $("#id_img_profile").attr('src', input.value);
+        $("#id_img_profile_1").attr('src', input.value);
 
       }
-      $("#id_img_profile").show();
+      $("#id_img_profile_1").show();
       $('.filename').text($("#imginp").val());
       $('.Choicefile').css('background', '#14142B');
       $('.Choicefile').css('cursor', 'default');
@@ -52,7 +52,7 @@
 
       });
       $(".removeimg").click(function () {
-        $("#id_img_profile").attr('src', img_default);
+        $("#id_img_profile_1").attr('src', img_default);
         $(".removeimg").hide();
         $(".Choicefile").bind('click', function () {
           $("#imginp").click();
@@ -97,7 +97,7 @@
           <span class="app-menu__label">Quản lý</span></a></li>
       <li><a class="app-menu__item " href="/index"><i class='app-menu__icon bx bx-tachometer'></i><span
             class="app-menu__label">Bảng điều khiển</span></a></li>
-      <li><a class="app-menu__item active" href="/table_data_employees"><i class='app-menu__icon bx bx-id-card'></i>
+      <li><a class="app-menu__item" href="/table_data_employees"><i class='app-menu__icon bx bx-id-card'></i>
           <span class="app-menu__label">Quản lý nhân viên</span></a></li>
       <li><a class="app-menu__item" href="/table_chuc_vu"><i class='app-menu__icon bx bxs-book-content'></i>
           <span class="app-menu__label">Quản lý chức vụ</span></a></li>
@@ -198,7 +198,9 @@
                     <div style="text-align: center;">
                       <img id="img-upload">
                       <div id="tem_img">
-                        <img id="id_img_profile" src="{{ url_for('static', filename=lst_congty[3])}}" alt="Ảnh" width="170px" height="170px">
+                        <img id="id_img_profile_1" 
+                        src="{{ url_for('static', filename=lst_congty[3])}}" 
+                        alt="Ảnh" width="170px" height="170px">
                         <a class="removeimg" href="javascript:"></a>
                       </div><br>
                       <div class="col-md-8"></div>
@@ -206,7 +208,7 @@
                         <div class="input-group">
                           <span class="input-group-btn" style="margin-left: 130px;">
                             <span id="Choicefile" class="btn btn-info btn-file">
-                              Ảnh(4x6) <input type="file" id="imginp" name="ImageProfileUpload" onchange="readCTURL(this)"
+                              Logo công ty <input type="file" id="imginp" name="ImageProfileUpload" onchange="readCTURL(this)"
                                 {{mode}}>
                             </span>
                           </span>

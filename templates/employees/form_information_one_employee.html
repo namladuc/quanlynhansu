@@ -7,6 +7,9 @@
 	<link rel="stylesheet" href="{{ url_for('static', filename='doc/css/info.css') }}">
 	<link rel="stylesheet" type="text/css"
     href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/boxicons@latest/css/boxicons.min.css">
+  <!-- or -->
+  <link rel="stylesheet" href="https://unpkg.com/boxicons@latest/css/boxicons.min.css">
 	<link rel="stylesheet" href="{{ url_for('static', filename='vendor/bootstrap/css/bootstrap.min.css') }}">
 
 </head>
@@ -18,7 +21,7 @@
                 <div class="col-md-4">
                     <div class="data-box">
                         <div class="pro-s-cover">
-                            <img src="{{ url_for('static', filename=nhanvien[14])}} " style="border-radius: 50%;" width="130px" height="130px" alt="Ảnh">
+                            <img src="{{ url_for('static', filename=nhanvien[14])}}" style="border-radius: 50%;" width="130px" height="130px" alt="Ảnh">
                             <h6>{{nhanvien[1]}}</h6>
                             <span>{{nhanvien[15]}}</span>
                             <p>{{nhanvien[16]}}</p>
@@ -27,8 +30,10 @@
 
                     <div class="data-box">
                         <h6>Thông tin về công ty</h6>
-                        <span>...</span>
-                        <p>...</p>
+                        <span class="font-italic" style="font-weight: bold;">{{congty[1]}}</span>
+                        <p>{{congty[2]}}</p>
+                        <p>{{congty[4]}}</p>
+
                     </div>
                 </div>
                 <div class="col-md-8">
@@ -90,14 +95,22 @@
                             </tr>
                             <tr>
                                 <td class="font-italic">Loại hợp đồng</td>
-                                <td>: Nhân sự</td>
+                                <td>: {{nhanvien[-1]}}</td>
                             </tr>
                             </tr>
                         </table>
                     </div>
                     <div class="data-box">
                         <h2>Quá trình công tác</h2>
-                        <p>Ngày a tháng b.....</p>
+                        {% for elm in thoigiancongtac %}
+
+                            {% if elm[-1] == 1 %}
+                                <p><i class='bx bx-stopwatch'></i>{{elm[2]}} - Từ ngày: {{elm[3]}} </p>                                
+                            {% else %}
+                                <p><i class='bx bx-stopwatch'></i>{{elm[2]}} - Từ ngày: {{elm[3]}} đến {{elm[4]}}</p>
+                            {% endif %}
+
+                        {% endfor %}
                     </div>
                 </div>
             </div>

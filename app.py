@@ -1,5 +1,5 @@
 import hashlib
-from flask import Flask, render_template, request, redirect, url_for, session
+from flask import Flask, render_template, request, redirect, url_for, session, abort
 from flask import Response, json, jsonify, send_file, render_template_string
 from flask_mysqldb import MySQL
 from werkzeug.utils import secure_filename
@@ -77,16 +77,19 @@ def login():
         user_data = cur.fetchall()
         
         if len(user_data)==0:
-            return render_template('/general/login.html',
+            return render_template('general/login.html',
                                    congty = session['congty'],
                                    user_exits='False',
                                    pass_check='False')
         
         if password != user_data[0][2]:
-            return render_template('/general/login.html', 
+            return render_template('general/login.html', 
                                    congty = session['congty'],
                                    user_exits='True', 
                                    pass_check='False')
+    
+        
+        
             
         my_user = user_data[0]
         cur.execute("""
@@ -94,25 +97,43 @@ def login():
                     SET `LastLogin` = CURRENT_TIMESTAMP()
                     WHERE `qlnv_user`.`Id_user` = %s
                     """, (my_user[0],))
-        
         session['username'] = my_user
         mysql.connection.commit()
+        
+        cur.execute("""
+                SELECT r.role_folder
+                FROM qlnv_role r
+                JOIN qlnv_phanquyenuser pq ON pq.role_id = r.role_id
+                WHERE pq.id_user = %s
+            """, (my_user[0], ))
+        role = cur.fetchall()[0][0]
+        session['role'] = role
+        
+        cur.execute("""
+                SELECT r.role_id
+                FROM qlnv_role r
+                JOIN qlnv_phanquyenuser pq ON pq.role_id = r.role_id
+                WHERE pq.id_user = %s
+            """, (my_user[0], ))
+        role_id = cur.fetchall()[0][0]
+        session['role_id'] = role_id
+        
         cur.close()
         return redirect(url_for("home"))
-    return render_template('/general/login.html',
+    return render_template('general/login.html',
                            congty = session['congty'])
 
 @app.route("/home")
 def home():
     if 'username' in session.keys():
-        return render_template('/index.html',
+        return render_template(session['role'] + 'index.html',
                                congty = session['congty'],
                                my_user = session['username'])
     return redirect(url_for("login"))
 
 @app.route("/forgot")
 def forgot():
-    return render_template('/general/forgot.html', 
+    return render_template('general/forgot.html', 
                            congty = session['congty'])
 
 #
@@ -121,6 +142,10 @@ def forgot():
 @login_required
 @app.route("/table_data_employees")
 def table_data_employees():
+    
+    if session['role_id'] != 1:
+        abort(404)
+    
     cur = mysql.connection.cursor()
     cur.execute("""
         SELECT nv.MaNhanVien, nv.TenNV, img.PathToImage, nv.DiaChi, DATE_FORMAT(nv.NgaySinh,"%d-%m-%Y"), nv.GioiTinh, nv.DienThoai, cv.TenCV
@@ -129,7 +154,7 @@ def table_data_employees():
         JOIN qlnv_imagedata img ON nv.ID_profile_image = img.ID_image""")
     nhanvien = cur.fetchall()
     cur.close()
-    return render_template('employees/table_data_employees.html',
+    return render_template(session['role'] + 'employees/table_data_employees.html',
                            nhanvien = nhanvien,
                            congty = session['congty'],
                            my_user = session['username'])
@@ -137,7 +162,10 @@ def table_data_employees():
 @login_required
 @app.route("/form_add_data_employees", methods=['GET','POST'])
 def form_add_data_employees():
-    # https://www.youtube.com/watch?v=rFPzo1VnPXU
+    
+    if session['role_id'] != 1:
+        abort(404)
+    
     cur = mysql.connection.cursor()
     cur.execute("""SELECT * FROM qlnv_chucvu""")
     chucvu = cur.fetchall()
@@ -176,7 +204,7 @@ def form_add_data_employees():
         kiem_tra_ma_nhan_vien = cur.fetchall()
         
         if len(kiem_tra_ma_nhan_vien) != 0:
-            return render_template('employees/form_add_data_employees.html',
+            return render_template(session['role'] +'employees/form_add_data_employees.html',
                         ma_err="True",
                         trinhdohocvan = trinhdohocvan, 
                         chucvu = chucvu,
@@ -223,7 +251,7 @@ def form_add_data_employees():
         mysql.connection.commit()
         cur.close()
         return redirect(url_for("table_data_employees"))
-    return render_template('employees/form_add_data_employees.html',
+    return render_template(session['role'] +'employees/form_add_data_employees.html',
                            trinhdohocvan = trinhdohocvan, 
                            chucvu = chucvu,
                            phongban = phongban,
@@ -233,7 +261,10 @@ def form_add_data_employees():
 @login_required
 @app.route("/form_view_update_employees/<string:maNV>_<string:canEdit>", methods=['GET','POST'])
 def form_view_update_employees(maNV, canEdit):
-    # https://www.youtube.com/watch?v=rFPzo1VnPXU
+    
+    if session['role_id'] != 1:
+        if (session['username'][4] != maNV):
+            abort(404)
     
     mode = "disabled"
     if (canEdit == "Y"):
@@ -335,7 +366,7 @@ def form_view_update_employees(maNV, canEdit):
         mysql.connection.commit()
         cur.close()
         return redirect(url_for("table_data_employees"))
-    return render_template('employees/form_view_update_employees.html',
+    return render_template(session['role'] +'employees/form_view_update_employees.html',
                            mode=mode,
                            data_default = data_default,
                            trinhdohocvan = trinhdohocvan, 
@@ -348,6 +379,9 @@ def form_view_update_employees(maNV, canEdit):
 @login_required
 @app.route("/form_add_data_employees_upload_file", methods=['GET','POST'])
 def form_add_data_employees_upload_file():
+    if session['role_id'] != 1:
+        abort(404)
+    
     if request.method == 'POST':
         data_file = request.files['FileDataUpload']
         if data_file.filename != '':
@@ -358,13 +392,16 @@ def form_add_data_employees_upload_file():
             data_file.save(pathToFile)
             return redirect(url_for("form_add_data_employees_upload_process", filename=filename))
         return redirect(url_for("form_add_data_employees_upload_file"))
-    return render_template('employees/form_add_data_employees_upload_file.html',
+    return render_template(session['role'] +'employees/form_add_data_employees_upload_file.html',
                            congty = session['congty'],
                            my_user = session['username'])
 
 @login_required
 @app.route("/form_add_data_employees_upload_process/<string:filename>", methods=['GET','POST'])
 def form_add_data_employees_upload_process(filename):
+    if session['role_id'] != 1:
+        abort(404)
+    
     pathToFile = app.config['UPLOAD_FOLDER'] + "/" + filename
     
     default_tag_Column = ['MaNhanVien', 'MaChucVu', 'MaPhongBan',
@@ -464,7 +501,7 @@ def form_add_data_employees_upload_process(filename):
         os.remove(pathToFile)
         return redirect(url_for('table_data_employees'))
     
-    return render_template("employees/form_add_data_employees_upload_process.html",
+    return render_template(session['role'] +"employees/form_add_data_employees_upload_process.html",
                            filename = filename,
                            congty = session['congty'],
                            my_user = session['username'],
@@ -474,6 +511,9 @@ def form_add_data_employees_upload_process(filename):
 @login_required
 @app.route("/get_data_employees_excel", methods=['GET','POST'])
 def get_data_employees_excel():
+    if session['role_id'] != 1:
+        abort(404)
+    
     cur = mysql.connection.cursor()
     cur.execute("""
         SELECT nv.MaNhanVien, nv.TenNV, cv.TenCV, pb.TenPB, CONCAT(td.TenTDHV,"-",td.ChuyenNganh) AS "TrinhDoHocVan", nv.Luong, nv.DiaChi, nv.NoiSinh,
@@ -511,6 +551,9 @@ def get_print_data_employees():
 @login_required
 @app.route("/get_pdf_data_employees")
 def get_pdf_data_employees():
+    if session['role_id'] != 1:
+        abort(404)
+    
     pathFile = app.config['SAVE_FOLDER_PDF']  + '/Table Nhan Vien.pdf'
     pdfkit.from_url("/".join(request.url.split("/")[:-1:]) + '/get_print_data_employees',pathFile)
     return send_file(pathFile, as_attachment=True)
@@ -518,32 +561,67 @@ def get_pdf_data_employees():
 @login_required
 @app.route("/get_information_one_employee/<string:maNV>")
 def get_infomation_one_employee(maNV):
+    if session['role_id'] != 1:
+        if (maNV != session['username'][4]):
+            abort(404)
+    
     cur = mysql.connection.cursor()
     cur.execute("""
         SELECT nv.MaNhanVien, nv.TenNV, nv.GioiTinh, DATE_FORMAT(nv.NgaySinh,"%d-%m-%Y"), nv.DanToc,
         nv.SoCMT, nv.NgayCMND, nv.NoiCMND, nv.DienThoai, nv.Email, nv.DiaChi, 
         nv.NoiSinh, nv.BHYT, NV.BHXH, img.PathToImage, pb.TenPB, cv.TenCV,
         nv.MaHD, nv.Luong, nv.TTHonNhan, concat(hv.TenTDHV," - " , hv.ChuyenNganh),
-        nv.MaChucVu, nv.MaPhongBan, nv.MATDHV, img.ID_image
+        nv.MaChucVu, nv.MaPhongBan, nv.MATDHV, img.ID_image, hd.LoaiHopDong
         FROM qlnv_nhanvien nv
         LEFT JOIN qlnv_imagedata img ON nv.ID_profile_image = img.ID_image
         LEFT JOIN qlnv_phongban pb ON nv.MaPhongBan = pb.MaPB
         LEFT JOIN qlnv_chucvu cv ON nv.MaChucVu = cv.MaCV
+        LEFT JOIN qlnv_hopdong hd ON hd.MaHopDong = nv.MaHD
         LEFT JOIN qlnv_trinhdohocvan hv ON nv.MATDHV = hv.MATDHV
         WHERE nv.MaNhanVien = \"""" + maNV + "\"" )
     nhanvien = cur.fetchall()
-    
     if (len(nhanvien) != 1):
         return "Error"
     
+    cur.execute("""
+                SELECT tg.id, tg.MaNV, cv.TenCV, tg.NgayNhanChuc, tg.NgayKetThuc, tg.DuongNhiem
+                FROM qlnv_thoigiancongtac tg
+                JOIN qlnv_chucvu cv ON tg.MaCV = cv.MaCV
+                WHERE tg.MaNV = %s
+                ORDER BY tg.NgayNhanChuc DESC
+                """, (maNV, ))
+    thoigiancongtac = cur.fetchall()
+    
+    
+    cur.execute("""
+                SELECT * FROM qlnv_congty
+                """)
+    congty = cur.fetchall()[0]
     cur.close()
+    
     return render_template("employees/form_information_one_employee.html",
-                           congty = session['congty'],
+                           thoigiancongtac = thoigiancongtac,
+                           congty = congty,
                            nhanvien = nhanvien[0])
+    
+@login_required
+@app.route('/get_pdf_one_employee/<string:maNV>')
+def get_pdf_one_employee(maNV):
+    if session['role_id'] != 1:
+        if (maNV != session['username'][4]):
+            abort(404)
+    
+    pathFile = app.config['SAVE_FOLDER_PDF']  + '/Nhan Vien_' + maNV + '.pdf'
+    link = request.url.split("/")[:-2:]
+    pdfkit.from_url("/".join(link) + '/get_information_one_employee/' + maNV,pathFile)
+    return send_file(pathFile, as_attachment=True)
     
 @login_required
 @app.route("/delete_nhan_vien/<string:maNV>")
 def delete_nhan_vien(maNV):
+    if session['role_id'] != 1:
+        abort(404)
+    
     cur = mysql.connection.cursor()
     cur.execute("SELECT ID_profile_image FROM qlnv_nhanvien WHERE MaNhanVien=%s", (maNV, ))
     id_image = cur.fetchall()[0][0]
@@ -571,6 +649,9 @@ def delete_nhan_vien(maNV):
 @login_required
 @app.route("/form_add_trinhdohocvan", methods=['GET','POST'])
 def form_add_trinhdohocvan():
+    if session['role_id'] != 1:
+        abort(404)
+    
     cur = mysql.connection.cursor()
     cur.execute("""SELECT * FROM qlnv_trinhdohocvan""")
     trinhdohocvan = cur.fetchall()
@@ -582,7 +663,7 @@ def form_add_trinhdohocvan():
         ChuyenNganh = details['ChuyenNganh'].strip()
         for data in trinhdohocvan:
             if (MATDHV in data):
-                return render_template("form_add_trinhdohocvan.html", 
+                return render_template(session['role'] +"form_add_trinhdohocvan.html", 
                                        ma_err = "True", 
                                        congty = session['congty'],
                                        my_user = session['username'])
@@ -593,13 +674,16 @@ def form_add_trinhdohocvan():
         cur.close()
         
         return redirect(url_for("table_trinh_do_hoc_van"))
-    return render_template("trinhdohocvan/form_add_trinhdohocvan.html", 
+    return render_template(session['role'] +"trinhdohocvan/form_add_trinhdohocvan.html", 
                            congty = session['congty'],
                            my_user = session['username'])
 
 @login_required
 @app.route("/table_trinh_do_hoc_van")
 def table_trinh_do_hoc_van():
+    if session['role_id'] != 1:
+        abort(404)
+    
     cur = mysql.connection.cursor()
     cur.execute("""
                 SELECT hv.*, COUNT(nv.MaNhanVien)
@@ -609,7 +693,7 @@ def table_trinh_do_hoc_van():
                 """)
     trinhdohocvan = cur.fetchall()
     cur.close()
-    return render_template("trinhdohocvan/table_trinh_do_hoc_van.html", 
+    return render_template(session['role'] +"trinhdohocvan/table_trinh_do_hoc_van.html", 
                            trinhdohocvan = trinhdohocvan,
                            congty = session['congty'],
                            my_user = session['username'])
@@ -617,6 +701,9 @@ def table_trinh_do_hoc_van():
 @login_required
 @app.route("/form_view_update_trinh_do_hoc_van/<string:mode>_<string:maTDHV>", methods=['GET','POST'])
 def form_view_update_trinh_do_hoc_van(mode, maTDHV):
+    if session['role_id'] != 1:
+        abort(404)
+        
     cur = mysql.connection.cursor()
     cur.execute("""
                 SELECT *
@@ -655,7 +742,7 @@ def form_view_update_trinh_do_hoc_van(mode, maTDHV):
         if (len(trinhdohocvan) == 0):
             return "Error"
         
-        return render_template("trinhdohocvan/form_view_update_trinh_do_hoc_van.html", 
+        return render_template(session['role'] +"trinhdohocvan/form_view_update_trinh_do_hoc_van.html", 
                                 edit_view = mode,
                                 maTDHV = maTDHV,
                                 trinhdohocvan = trinhdohocvan[0],
@@ -663,7 +750,7 @@ def form_view_update_trinh_do_hoc_van(mode, maTDHV):
                                 my_user = session['username'])
     
     cur.close()
-    return render_template("trinhdohocvan/form_view_update_trinh_do_hoc_van.html", 
+    return render_template(session['role'] +"trinhdohocvan/form_view_update_trinh_do_hoc_van.html", 
                            trinhdohocvan = trinhdohocvan,
                            congty = session['congty'],
                            my_user = session['username'])
@@ -671,6 +758,9 @@ def form_view_update_trinh_do_hoc_van(mode, maTDHV):
 @login_required
 @app.route("/table_trinh_do_hoc_van/<string:maTDHV>")
 def table_trinh_do_hoc_van_one(maTDHV):
+    if session['role_id'] != 1:
+        abort(404)
+    
     cur = mysql.connection.cursor()
     cur.execute("""
                 SELECT *
@@ -693,7 +783,7 @@ def table_trinh_do_hoc_van_one(maTDHV):
     if len(trinhdohocvan) == 0:
         return "Error"
     
-    return render_template("trinhdohocvan/table_trinh_do_hoc_van_nhan_vien.html", 
+    return render_template(session['role'] +"trinhdohocvan/table_trinh_do_hoc_van_nhan_vien.html", 
                            tenTDHV = tenTDHV,
                            trinhdohocvan = trinhdohocvan,
                            congty = session['congty'],
@@ -702,6 +792,9 @@ def table_trinh_do_hoc_van_one(maTDHV):
 @login_required
 @app.route("/delete_trinh_do_hoc_van/<string:maTDHV>")
 def delete_trinh_do_hoc_van(maTDHV):
+    if session['role_id'] != 1:
+        abort(404)
+    
     cur = mysql.connection.cursor()
     cur.execute("""
                 SELECT COUNT(*)
@@ -723,6 +816,7 @@ def delete_trinh_do_hoc_van(maTDHV):
 @login_required
 @app.route("/table_print_trinh_do_hoc_van")
 def table_print_trinh_do_hoc_van():
+    
     cur = mysql.connection.cursor()
     cur.execute("""
                 SELECT hv.*, COUNT(nv.MaNhanVien)
@@ -738,6 +832,9 @@ def table_print_trinh_do_hoc_van():
 @login_required
 @app.route("/get_table_trinh_do_hoc_van_excel")
 def get_table_trinh_do_hoc_van_excel():
+    if session['role_id'] != 1:
+        abort(404)
+    
     cur = mysql.connection.cursor()
     cur.execute("""
         SELECT hv.*, COUNT(nv.MaNhanVien)
@@ -757,6 +854,9 @@ def get_table_trinh_do_hoc_van_excel():
 @login_required
 @app.route("/get_table_trinh_do_hoc_van_pdf")
 def get_table_trinh_do_hoc_van_pdf():
+    if session['role_id'] != 1:
+        abort(404)
+    
     pathFile = app.config['SAVE_FOLDER_PDF']  + '/Table Trinh Do Hoc Van.pdf'
     pdfkit.from_url("/".join(request.url.split("/")[:-1:]) + '/table_print_trinh_do_hoc_van',pathFile)
     return send_file(pathFile, as_attachment=True)
@@ -764,6 +864,7 @@ def get_table_trinh_do_hoc_van_pdf():
 @login_required
 @app.route("/table_print_trinh_do_hoc_van_nhan_vien/<string:maTDHV>")
 def table_print_trinh_do_hoc_van_nhan_vien(maTDHV):
+    
     cur = mysql.connection.cursor()
     cur.execute("""
                 SELECT *
@@ -793,6 +894,9 @@ def table_print_trinh_do_hoc_van_nhan_vien(maTDHV):
 @login_required
 @app.route("/get_table_trinh_do_hoc_van_nhan_vien_excel/<string:maTDHV>")
 def get_table_trinh_do_hoc_van_nhan_vien_excel(maTDHV):
+    if session['role_id'] != 1:
+        abort(404)
+    
     cur = mysql.connection.cursor()
     cur.execute("""
                 SELECT *
@@ -825,6 +929,8 @@ def get_table_trinh_do_hoc_van_nhan_vien_excel(maTDHV):
 @login_required
 @app.route("/get_table_trinh_do_hoc_van_nhan_vien_pdf/<string:maTDHV>")
 def get_table_trinh_do_hoc_van_nhan_vien_pdf(maTDHV):
+    if session['role_id'] != 1:
+        abort(404)
     pathFile = app.config['SAVE_FOLDER_PDF']  + '/Table Trinh Do Hoc Van_' + maTDHV + '.pdf'
     pdfkit.from_url("/".join(request.url.split("/")[:-2:]) + '/table_print_trinh_do_hoc_van_nhan_vien/' + maTDHV,pathFile)
     return send_file(pathFile, as_attachment=True)
@@ -839,6 +945,8 @@ def get_table_trinh_do_hoc_van_nhan_vien_pdf(maTDHV):
 @login_required
 @app.route("/table_chuc_vu")
 def table_chuc_vu():
+    if session['role_id'] != 1:
+        abort(404)
     cur = mysql.connection.cursor()
     cur.execute("""
         SELECT cv.MaCV, cv.TenCV, COUNT(NV.MaNhanVien) 
@@ -849,7 +957,7 @@ def table_chuc_vu():
         GROUP BY cv.MaCV""")
     chucvu = cur.fetchall()
     cur.close()
-    return render_template("chucvu/table_chuc_vu.html",
+    return render_template(session['role'] +"chucvu/table_chuc_vu.html",
                            chucvu = chucvu,
                            congty = session['congty'],
                            my_user = session['username'])
@@ -857,6 +965,8 @@ def table_chuc_vu():
 @login_required
 @app.route("/form_view_update_chuc_vu/<string:mode>_<string:maCV>", methods=['GET','POST'])
 def form_view_update_chuc_vu(mode, maCV):
+    if session['role_id'] != 1:
+        abort(404)
     cur = mysql.connection.cursor()
     cur.execute("""
         SELECT *
@@ -893,14 +1003,14 @@ def form_view_update_chuc_vu(mode, maCV):
         if (len(chucvu) == 0):
             return "Error"
         
-        return render_template("chucvu/form_view_update_chuc_vu.html", 
+        return render_template(session['role'] +"chucvu/form_view_update_chuc_vu.html", 
                                 edit_view = mode,
                                 maCV = maCV,
                                 chucvu = chucvu[0],
                                 congty = session['congty'],
                                 my_user = session['username'])
     cur.close()
-    return render_template("chucvu/form_view_update_chuc_vu.html",
+    return render_template(session['role'] +"chucvu/form_view_update_chuc_vu.html",
                            chucvu = chucvu,
                            congty = session['congty'],
                            my_user = session['username'])
@@ -908,6 +1018,8 @@ def form_view_update_chuc_vu(mode, maCV):
 @login_required
 @app.route("/form_add_chuc_vu", methods=['GET','POST'])
 def form_add_chuc_vu():
+    if session['role_id'] != 1:
+        abort(404)
     cur = mysql.connection.cursor()
     cur.execute("""SELECT * FROM qlnv_chucvu""")
     chucvu = cur.fetchall()
@@ -919,7 +1031,7 @@ def form_add_chuc_vu():
         
         for data in chucvu:
             if (MaCV in data):
-                return render_template("form_add_chuc_vu.html", 
+                return render_template(session['role'] +"form_add_chuc_vu.html", 
                                        congty = session['congty'],
                                        ma_err = "True",
                                        my_user = session['username'])
@@ -929,13 +1041,15 @@ def form_add_chuc_vu():
         cur.close()
         
         return redirect(url_for("table_chuc_vu"))
-    return render_template("chucvu/form_add_chuc_vu.html",
+    return render_template(session['role'] +"chucvu/form_add_chuc_vu.html",
                            congty=session['congty'],
                            my_user = session['username'])
 
 @login_required
 @app.route("/form_add_data_chuc_vu_upload_file", methods=['GET','POST'])
 def form_add_data_chuc_vu_upload_file():
+    if session['role_id'] != 1:
+        abort(404)
     if request.method == 'POST':
         data_file = request.files['FileDataUpload']
         if data_file.filename != '':
@@ -946,13 +1060,15 @@ def form_add_data_chuc_vu_upload_file():
             data_file.save(pathToFile)
             return redirect(url_for("form_add_chuc_vu_upload_process", filename=filename))
         return redirect(url_for("form_add_data_chuc_vu_upload_file"))
-    return render_template('chucvu/form_add_data_chuc_vu_upload_file.html',
+    return render_template(session['role'] +'chucvu/form_add_data_chuc_vu_upload_file.html',
                            congty = session['congty'],
                            my_user = session['username'])
 
 @login_required
 @app.route("/form_add_chuc_vu_upload_process/<string:filename>", methods=['GET','POST'])
 def form_add_chuc_vu_upload_process(filename):
+    if session['role_id'] != 1:
+        abort(404)
     pathToFile = app.config['UPLOAD_FOLDER'] + "/" + filename
     
     default_tag_Column = ['MaCV', 'TenCV']
@@ -1008,7 +1124,7 @@ def form_add_chuc_vu_upload_process(filename):
         os.remove(pathToFile)
         return redirect(url_for('table_chuc_vu'))
     
-    return render_template("chucvu/form_add_data_chuc_vu_upload_process.html",
+    return render_template(session['role'] +"chucvu/form_add_data_chuc_vu_upload_process.html",
                            filename = filename,
                            congty = session['congty'],
                            my_user = session['username'],
@@ -1019,6 +1135,8 @@ def form_add_chuc_vu_upload_process(filename):
 @login_required
 @app.route("/table_chuc_vu/<string:maCV>")
 def table_chuc_vu_nhan_vien(maCV):
+    if session['role_id'] != 1:
+        abort(404)
     cur = mysql.connection.cursor()
     cur.execute("""
         SELECT TenCV
@@ -1037,7 +1155,7 @@ def table_chuc_vu_nhan_vien(maCV):
     nv_chuc_vu = cur.fetchall()
     
     cur.close()
-    return render_template("chucvu/table_chuc_vu_nhan_vien.html",
+    return render_template(session['role'] +"chucvu/table_chuc_vu_nhan_vien.html",
                            tenCV = tenCV,
                            nv_chuc_vu=nv_chuc_vu,
                            maCV = maCV,
@@ -1107,6 +1225,8 @@ def get_chuc_vu_table_excel():
 @login_required
 @app.route("/get_nhan_vien_chuc_vu_table_excel/<string:maCV>")
 def get_nhan_vien_chuc_vu_table_excel(maCV):
+    if session['role_id'] != 1:
+        abort(404)
     cur = mysql.connection.cursor()
     cur.execute("""
         SELECT nv.MaNhanVien, nv.TenNV,DATE_FORMAT(nv.NgaySinh,"%d-%m-%Y"), nv.DienThoai, cv.TenCV, DATE_FORMAT(tg.NgayNhanChuc,"%d-%m-%Y")
@@ -1131,6 +1251,8 @@ def get_nhan_vien_chuc_vu_table_excel(maCV):
 @login_required
 @app.route("/get_chuc_vu_table_pdf")
 def get_chuc_vu_table_pdf():
+    if session['role_id'] != 1:
+        abort(404)
     pathFile = app.config['SAVE_FOLDER_PDF']  + '/Table Chuc Vu.pdf'
     pdfkit.from_url("/".join(request.url.split("/")[:-1:]) + '/table_print_chuc_vu',pathFile)
     return send_file(pathFile, as_attachment=True)
@@ -1138,6 +1260,8 @@ def get_chuc_vu_table_pdf():
 @login_required
 @app.route("/get_nhan_vien_chuc_vu_table_pdf/<string:maCV>")
 def get_nhan_vien_chuc_vu_table_pdf(maCV):
+    if session['role_id'] != 1:
+        abort(404)
     pathFile = app.config['SAVE_FOLDER_PDF']  + '/Table Chuc Vu _ ' + maCV + '.pdf'
     pdfkit.from_url("/".join(request.url.split("/")[:-2:]) + '/table_print_chuc_vu_nhan_vien/' + maCV,pathFile)
     return send_file(pathFile, as_attachment=True)
@@ -1145,6 +1269,8 @@ def get_nhan_vien_chuc_vu_table_pdf(maCV):
 @login_required
 @app.route("/delete_chuc_vu/<string:maCV>")
 def delete_chuc_vu(maCV):
+    if session['role_id'] != 1:
+        abort(404)
     cur = mysql.connection.cursor()
     cur.execute("""
         SELECT cv.MaCV, cv.TenCV, COUNT(nv.MaNhanVien) 
@@ -1174,6 +1300,8 @@ def delete_chuc_vu(maCV):
 @login_required
 @app.route("/danh_sach_cham_cong", methods=['GET','POST'])
 def danh_sach_cham_cong():
+    if session['role_id'] != 1:
+        abort(404)
     cur = mysql.connection.cursor()
     
     mucPhanLoaiChamCong = [10,20]
@@ -1196,7 +1324,7 @@ def danh_sach_cham_cong():
         chamcongtheocacthang = cur.fetchall()
     
     cur.close()
-    return render_template('chamcong/bang_cham_cong_thang.html',
+    return render_template(session['role'] +'chamcong/bang_cham_cong_thang.html',
                            mucPhanLoaiChamCong = mucPhanLoaiChamCong,
                            Nam = Nam,
                            chamcongtheocacthang = chamcongtheocacthang,
@@ -1252,6 +1380,8 @@ def get_danh_sach_cham_cong_excel(year):
 @login_required
 @app.route('/get_danh_sach_cham_cong_pdf/<string:year>')
 def get_danh_sach_cham_cong_pdf(year):
+    if session['role_id'] != 1:
+        abort(404)
     pathFile = app.config['SAVE_FOLDER_PDF']  + '/Data_Cham_Cong_Thang_Trong_Nam_' + year + ".pdf"
     pdfkit.from_url("/".join(request.url.split("/")[:-2:]) + '/get_print_danh_sach_cham_cong/' + str(year),pathFile)
     return send_file(pathFile, as_attachment=True)
@@ -1285,7 +1415,7 @@ def table_cham_cong_tong_ket_thang(maNV,year):
     
     data_tong_ket_thang = data_tong_ket_thang
     
-    return render_template('chamcong/bang_cham_cong_thang_tong_ket.html',
+    return render_template(session['role'] +'chamcong/bang_cham_cong_thang_tong_ket.html',
                            TenNV = tenNV,
                            Nam = year,
                            MaNV = maNV,
@@ -1471,7 +1601,7 @@ def table_cham_cong_ngay_trong_thang(maNV,year,month):
     data_day_tong_ket = [data_tong_ket[4 + i] for i in range(1,1+len(day))]
     cur.close()
 
-    return render_template('chamcong/bang_cham_cong_ngay.html',
+    return render_template(session['role'] +'chamcong/bang_cham_cong_ngay.html',
                            TenNV = tenNV,
                            date_weekday = date_weekday,
                            month = month,
@@ -1564,7 +1694,7 @@ def get_plot_cham_cong_tong_ket_thang(maNV,year,month):
     
     fig,axis=plt.subplots(figsize=(7,8))
     axis=sns.set(style="darkgrid")
-    g = sns.barplot(x= date_str, y =data_day_tong_ket)
+    g = sns.lineplot(x= date_str, y =data_day_tong_ket)
     g.set_title("Biểu đồ cho nhân viên " + tenNV + " trong tháng " + month + " năm " + year)
     g.set_xlabel("Ngày")
     g.set_ylabel("Tổng số giờ làm trong ngày")
@@ -1744,6 +1874,8 @@ def get_cham_cong_ngay_trong_thang_pdf(maNV,year,month):
 @login_required
 @app.route('/form_view_update_cham_cong/<string:canEdit>_<string:maNV>_<string:id>_<string:day>_<string:month>_<string:year>', methods = ['GET','POST'])
 def form_view_update_cham_cong(canEdit, maNV, id, day, month, year):
+    if session['role_id'] != 1:
+        abort(404)
     sql = """
         SELECT * 
         FROM qlnv_chamcong cc 
@@ -1923,7 +2055,7 @@ def form_view_update_cham_cong(canEdit, maNV, id, day, month, year):
             new_chamcong.append(str(chamcong[4]))
         new_chamcong.append(chamcong[5])
         
-        return render_template("chamcong/form_view_update_cham_cong.html",
+        return render_template(session['role'] +"chamcong/form_view_update_cham_cong.html",
                            TenNV = tenNV,
                            edit = 'E',
                            chamcong = new_chamcong,
@@ -1937,7 +2069,7 @@ def form_view_update_cham_cong(canEdit, maNV, id, day, month, year):
                            my_user = session['username'])
     
     cur.close()
-    return render_template("chamcong/form_view_update_cham_cong.html",
+    return render_template(session['role'] +"chamcong/form_view_update_cham_cong.html",
                            TenNV = tenNV,
                            chamcong = chamcong,
                            index_arr = index_arr,
@@ -1955,6 +2087,8 @@ def form_view_update_cham_cong(canEdit, maNV, id, day, month, year):
 @login_required
 @app.route('/delete_cham_cong/<string:id>')
 def delete_cham_cong(id):
+    if session['role_id'] != 1:
+        abort(404)
     sql = """
         SELECT * 
         FROM qlnv_chamcong
@@ -2258,7 +2392,7 @@ def form_add_data_cham_cong():
         mysql.connection.commit()
         cur.close()
         return redirect(url_for('danh_sach_cham_cong'))
-    return render_template("chamcong/form_add_cham_cong.html",
+    return render_template(session['role'] +"chamcong/form_add_cham_cong.html",
                            congty = session['congty'],
                            my_user = session['username'])
 
@@ -2274,6 +2408,8 @@ def form_add_data_cham_cong():
 @login_required
 @app.route('/view_all_phong_ban')
 def view_all_phong_ban():
+    if session['role_id'] == 3:
+        abort(404)
     cur = mysql.connection.cursor()
     cur.execute("""SELECT *
                 FROM qlnv_phongban
@@ -2299,7 +2435,7 @@ def view_all_phong_ban():
         tmp_lst.append(count_data[i][0])
         phongban.append(tmp_lst)
     
-    return render_template("phongban/view_all_phong_ban.html",
+    return render_template(session['role'] +"phongban/view_all_phong_ban.html",
                            phongban = phongban,
                            congty = session['congty'],
                            my_user = session['username'])
@@ -2307,6 +2443,8 @@ def view_all_phong_ban():
 @login_required
 @app.route('/view_phong_ban/<string:maPB>')
 def view_phong_ban(maPB):
+    if session['role_id'] == 3:
+        abort(404)
     cur = mysql.connection.cursor()
     cur.execute("""SELECT *
                 FROM qlnv_phongban
@@ -2366,7 +2504,7 @@ def view_phong_ban(maPB):
                 """, (maPB, ))
     num_thuong = cur.fetchall()[0][0]
     
-    return render_template('phongban/view_phong_ban.html',
+    return render_template(session['role'] +'phongban/view_phong_ban.html',
                            num_thuong = num_thuong,
                            num_phat = num_phat,
                            truongphong = truongphong,
@@ -2378,6 +2516,8 @@ def view_phong_ban(maPB):
 @login_required
 @app.route('/form_update_phong_ban/<string:maPB>', methods=['GET', 'POST'])
 def form_update_phong_ban(maPB):
+    if session['role_id'] != 1:
+        abort(404)
     cur = mysql.connection.cursor()
     
     cur.execute("""
@@ -2407,7 +2547,7 @@ def form_update_phong_ban(maPB):
                         """, (MaTP, ))
 
             if (len(cur.fetchall()) != 1):
-                return render_template('phongban/form_add_data_phong_ban.html',
+                return render_template(session['role'] +'phongban/form_add_data_phong_ban.html',
                                     err = "Không tồn lại mã nhân viên " + MaTP,
                                     phongban = phongban,
                             congty = session['congty'],
@@ -2420,7 +2560,7 @@ def form_update_phong_ban(maPB):
                         """, (MaTP, ))
             
             if (len(cur.fetchall()) != 0):
-                return render_template('phongban/form_add_data_phong_ban.html',
+                return render_template(session['role'] +'phongban/form_add_data_phong_ban.html',
                                     phongban = phongban,
                                     err = "Nhân viên " + MaTP + " đã làm trưởng phòng phòng khác",
                             congty = session['congty'],
@@ -2434,7 +2574,7 @@ def form_update_phong_ban(maPB):
         mysql.connection.commit()
         return redirect(url_for('view_all_phong_ban'))
     
-    return render_template('phongban/form_update_phong_ban.html',
+    return render_template(session['role'] +'phongban/form_update_phong_ban.html',
                            phongban = phongban,
                            congty = session['congty'],
                            my_user = session['username'])
@@ -2442,6 +2582,8 @@ def form_update_phong_ban(maPB):
 @login_required
 @app.route('/delete_phong_ban/<string:maPB>')
 def delete_phong_ban(maPB):
+    if session['role_id'] != 1:
+        abort(404)
     cur = mysql.connection.cursor()
 
     cur.execute("""
@@ -2463,6 +2605,8 @@ def delete_phong_ban(maPB):
 @login_required
 @app.route('/form_add_data_phong_ban', methods=['GET','POST'])
 def form_add_data_phong_ban():
+    if session['role_id'] != 1:
+        abort(404)
     cur = mysql.connection.cursor()
 
     if request.method == 'POST':
@@ -2480,7 +2624,7 @@ def form_add_data_phong_ban():
                     """, (MaTP, ))
 
         if (len(cur.fetchall()) != 1):
-            return render_template('phongban/form_add_data_phong_ban.html',
+            return render_template(session['role'] +'phongban/form_add_data_phong_ban.html',
                                    err = "Không tồn lại mã nhân viên " + MaTP,
                            congty = session['congty'],
                            my_user = session['username'])
@@ -2492,7 +2636,7 @@ def form_add_data_phong_ban():
                     """, (MaTP, ))
         
         if (len(cur.fetchall()) != 0):
-            return render_template('phongban/form_add_data_phong_ban.html',
+            return render_template(session['role'] +'phongban/form_add_data_phong_ban.html',
                                    err = "Nhân viên " + MaTP + " đã làm trưởng phòng phòng khác",
                            congty = session['congty'],
                            my_user = session['username'])
@@ -2504,7 +2648,7 @@ def form_add_data_phong_ban():
                     """, (MaPB, ))
         
         if (len(cur.fetchall()) != 0):
-            return render_template('phongban/form_add_data_phong_ban.html',
+            return render_template(session['role'] +'phongban/form_add_data_phong_ban.html',
                                    err = "Mã " + MaPB + " đã tồn tại",
                            congty = session['congty'],
                            my_user = session['username'])
@@ -2514,13 +2658,15 @@ def form_add_data_phong_ban():
                     """, (MaPB, TenPB, DIACHI, SDT, MaTP))
         mysql.connection.commit()
         return redirect(url_for('view_all_phong_ban'))
-    return render_template('phongban/form_add_data_phong_ban.html',
+    return render_template(session['role'] +'phongban/form_add_data_phong_ban.html',
                            congty = session['congty'],
                            my_user = session['username'])
 
 @login_required
 @app.route('/form_add_thuong_phat_phong_ban/<string:maPB>', methods=['GET','POST'])
 def form_add_thuong_phat_phong_ban(maPB):
+    if session['role_id'] == 3:
+        abort(404)
     cur = mysql.connection.cursor()
     
     dct_type = {
@@ -2544,7 +2690,7 @@ def form_add_thuong_phat_phong_ban(maPB):
                     """, (MaNV, maPB))
 
         if (len(cur.fetchall()) != 1):
-            return render_template('phongban/form_add_thuong_phat_phong_ban.html',
+            return render_template(session['role'] +'phongban/form_add_thuong_phat_phong_ban.html',
                                    err = "Không tồn lại mã nhân viên " + MaNV + " ở phòng ban này",
                                    maPB = maPB,
                                     type = list(dct_type.keys()),
@@ -2558,7 +2704,7 @@ def form_add_thuong_phat_phong_ban(maPB):
         mysql.connection.commit()
         return redirect(url_for('view_phong_ban', maPB = maPB))
     
-    return render_template('phongban/form_add_thuong_phat_phong_ban.html',
+    return render_template(session['role'] +'phongban/form_add_thuong_phat_phong_ban.html',
                            maPB = maPB,
                            type = list(dct_type.keys()),
                            congty = session['congty'],
@@ -2567,6 +2713,8 @@ def form_add_thuong_phat_phong_ban(maPB):
 @login_required
 @app.route('/view_phat_phong_ban/<string:maPB>')
 def view_phat_phong_ban(maPB):
+    if session['role_id'] == 3:
+        abort(404)
     cur = mysql.connection.cursor()
     
     cur.execute("""SELECT *
@@ -2612,7 +2760,7 @@ def view_phat_phong_ban(maPB):
                 """, (maPB, ))
     phat_phong_ban = cur.fetchall()
     
-    return render_template('phongban/view_phat_phong_ban.html',
+    return render_template(session['role'] +'phongban/view_phat_phong_ban.html',
                            num_thuong = num_thuong,
                            num_phat = len(phat_phong_ban),
                            phongban = phongban,
@@ -2623,6 +2771,8 @@ def view_phat_phong_ban(maPB):
 @login_required
 @app.route('/view_thuong_phong_ban/<string:maPB>')
 def view_thuong_phong_ban(maPB):
+    if session['role_id'] == 3:
+        abort(404)
     cur = mysql.connection.cursor()
     
     cur.execute("""SELECT *
@@ -2668,7 +2818,7 @@ def view_thuong_phong_ban(maPB):
                 """, (maPB, ))
     thuong_phong_ban = cur.fetchall()
     
-    return render_template('phongban/view_thuong_phong_ban.html',
+    return render_template(session['role'] +'phongban/view_thuong_phong_ban.html',
                            num_phat = num_phat,
                            num_thuong = len(thuong_phong_ban),
                            phongban = phongban,
@@ -2679,6 +2829,8 @@ def view_thuong_phong_ban(maPB):
 @login_required
 @app.route('/form_update_thuong_phat_phong_ban/<string:maPB>_<string:id>', methods=['GET','POST'])
 def form_update_thuong_phat_phong_ban(maPB, id):
+    if session['role_id'] == 3:
+        abort(404)
     cur = mysql.connection.cursor()
     
     dct_type = {
@@ -2714,7 +2866,7 @@ def form_update_thuong_phat_phong_ban(maPB, id):
         mysql.connection.commit()
         return redirect(url_for('view_phong_ban', maPB = maPB))
     
-    return render_template('phongban/form_update_thuong_phat_phong_ban.html',
+    return render_template(session['role'] +'phongban/form_update_thuong_phat_phong_ban.html',
                            maPB = maPB,
                            type = list(dct_type.keys()),
                            thuongphat = thuongphat,
@@ -2724,6 +2876,8 @@ def form_update_thuong_phat_phong_ban(maPB, id):
 @login_required
 @app.route('/delete_thuong_phat/<string:maPB>_<string:id>')
 def delete_thuong_phat(maPB, id):
+    if session['role_id'] == 3:
+        abort(404)
     cur = mysql.connection.cursor()
     
     cur.execute("""
@@ -2752,6 +2906,8 @@ def delete_thuong_phat(maPB, id):
 @login_required
 @app.route("/view_all_thoi_gian_cong_tac")
 def view_all_thoi_gian_cong_tac():
+    if session['role_id'] != 1:
+        abort(404)
     cur = mysql.connection.cursor()
     cur.execute("""
                 SELECT nv.MaNhanVien, nv.TenNV, cv.TenCV, pb.TenPB, COUNT(tg.MaNV)
@@ -2764,7 +2920,7 @@ def view_all_thoi_gian_cong_tac():
                 """)
     thoigiancongtac = cur.fetchall()
     
-    return render_template("thoigiancongtac/view_all_thoi_gian_cong_tac.html",
+    return render_template(session['role'] +"thoigiancongtac/view_all_thoi_gian_cong_tac.html",
                            thoigiancongtac = thoigiancongtac,
                            congty = session['congty'],
                            my_user = session['username'])
@@ -2790,6 +2946,8 @@ def get_print_all_thoi_gian_cong_tac():
 @login_required
 @app.route("/get_all_thoi_gian_cong_tac_pdf")
 def get_all_thoi_gian_cong_tac_pdf():
+    if session['role_id'] != 1:
+        abort(404)
     pathFile = app.config['SAVE_FOLDER_PDF']  + "/Thoi_Gian_Cong_Tac.pdf"
     pdfkit.from_url("/".join(request.url.split("/")[:-1:]) + '/get_print_all_thoi_gian_cong_tac' ,pathFile)
     return send_file(pathFile, as_attachment=True)
@@ -2797,6 +2955,8 @@ def get_all_thoi_gian_cong_tac_pdf():
 @login_required
 @app.route("/get_all_thoi_gian_cong_tac_excel")
 def get_all_thoi_gian_cong_tac_excel():
+    if session['role_id'] != 1:
+        abort(404)
     cur = mysql.connection.cursor()
     cur.execute("""
                 SELECT nv.MaNhanVien, nv.TenNV, cv.TenCV, pb.TenPB, COUNT(tg.MaNV)
@@ -2843,7 +3003,7 @@ def view_thoi_gian_cong_tac(maNV):
     if (len(thoigiancongtac) == 0):
         return "Error"
     
-    return render_template("thoigiancongtac/view_thoi_gian_cong_tac.html",
+    return render_template(session['role'] +"thoigiancongtac/view_thoi_gian_cong_tac.html",
                            thoigiancongtac = thoigiancongtac,
                            TenNV = TenNV,
                            MaNV = maNV,
@@ -2853,6 +3013,8 @@ def view_thoi_gian_cong_tac(maNV):
 @login_required
 @app.route("/delete_thoi_gian_cong_tac/<string:id>")
 def delete_thoi_gian(id):
+    if session['role_id'] != 1:
+        abort(404)
     cur = mysql.connection.cursor()
     cur.execute("""
                 SELECT *
@@ -2956,6 +3118,8 @@ def get_thoi_gian_cong_tac_pdf(maNV):
 @login_required
 @app.route("/danh_sach_hop_dong")
 def danh_sach_hop_dong():
+    if session['role_id'] != 1:
+        abort(404)
     cur = mysql.connection.cursor()
     cur.execute("""
                 SELECT * 
@@ -2963,7 +3127,7 @@ def danh_sach_hop_dong():
                 """)
     hopdong = cur.fetchall()
     
-    return render_template('hopdong/danh_sach_hop_dong.html', 
+    return render_template(session['role'] +'hopdong/danh_sach_hop_dong.html', 
                            hopdong = hopdong,
                            congty = session['congty'],
                            my_user = session['username'])
@@ -2984,7 +3148,8 @@ def get_print_danh_sach_hop_dong():
 @login_required
 @app.route('/form_add_hop_dong', methods=['GET','POST'])
 def form_add_hop_dong():
-    
+    if session['role_id'] != 1:
+        abort(404)
     if request.method == 'POST':
         cur = mysql.connection.cursor()
         details = request.form
@@ -3000,7 +3165,7 @@ def form_add_hop_dong():
                     WHERE MaHopDong = %s
                     """, (MaHD, ))
         if (len(cur.fetchall()) != 0):
-            return render_template('hopdong/form_add_hop_dong.html', 
+            return render_template(session['role'] +'hopdong/form_add_hop_dong.html', 
                                    ma_err = "Mã hợp đồng đã tồn tại",
                            congty = session['congty'],
                            my_user = session['username'])
@@ -3012,13 +3177,15 @@ def form_add_hop_dong():
         mysql.connection.commit()
         return redirect(url_for('danh_sach_hop_dong'))
     
-    return render_template('hopdong/form_add_hop_dong.html', 
+    return render_template(session['role'] +'hopdong/form_add_hop_dong.html', 
                            congty = session['congty'],
                            my_user = session['username'])
     
 @login_required
 @app.route('/get_danh_sach_hop_dong_excel')
 def get_danh_sach_hop_dong_excel():
+    if session['role_id'] != 1:
+        abort(404)
     cur = mysql.connection.cursor()
     cur.execute("""
                 SELECT * 
@@ -3036,6 +3203,8 @@ def get_danh_sach_hop_dong_excel():
 @login_required
 @app.route('/get_danh_sach_hop_dong_pdf')
 def get_danh_sach_hop_dong_pdf():
+    if session['role_id'] != 1:
+        abort(404)
     pathFile = app.config['SAVE_FOLDER_PDF']  + "/Danh_sach_hop_dong.pdf"
     pdfkit.from_url("/".join(request.url.split("/")[:-1:]) + '/get_print_danh_sach_hop_dong' ,pathFile)
     return send_file(pathFile, as_attachment=True)
@@ -3043,6 +3212,8 @@ def get_danh_sach_hop_dong_pdf():
 @login_required
 @app.route('/delete_hop_dong/<string:id>')
 def delete_hop_dong(id):
+    if session['role_id'] != 1:
+        abort(404)
     cur = mysql.connection.cursor()
     cur.execute("""
                 DELETE FROM qlnv_hopdong
@@ -3063,6 +3234,8 @@ def delete_hop_dong(id):
 @login_required
 @app.route('/table_data_money')
 def table_data_money():
+    if session['role_id'] != 1:
+        abort(404)
     cur = mysql.connection.cursor()
     cur.execute("""
               SELECT l.id, nv.TenNV, nv.GioiTinh, cv.TenCV, l.Thang, l.Nam,
@@ -3073,7 +3246,7 @@ def table_data_money():
                 ORDER BY l.Nam DESC, l.Thang DESC, l.MaNV ASC
                 """)
     luong = cur.fetchall()
-    return render_template('luong/table_data_money.html',
+    return render_template(session['role'] +'luong/table_data_money.html',
                            luong = luong,
                            congty = session['congty'],
                            my_user = session['username'])
@@ -3097,6 +3270,8 @@ def get_print_data_money():
 @login_required
 @app.route('/get_data_money_pdf')
 def get_data_money_pdf():
+    if session['role_id'] != 1:
+        abort(404)
     pathFile = app.config['SAVE_FOLDER_PDF']  + "/Bang ke Luong.pdf"
     pdfkit.from_url("/".join(request.url.split("/")[:-1:]) + '/get_print_data_money' ,pathFile)
     return send_file(pathFile, as_attachment=True)
@@ -3104,6 +3279,8 @@ def get_data_money_pdf():
 @login_required
 @app.route("/get_data_money_excel")
 def get_data_money_excel():
+    if session['role_id'] != 1:
+        abort(404)
     cur = mysql.connection.cursor()
     cur.execute("""
               SELECT l.id, nv.TenNV, nv.GioiTinh, cv.TenCV, l.Thang, l.Nam,
@@ -3148,7 +3325,7 @@ def view_data_money(maNV):
 
     nhanvien = nhanvien[0]
     
-    return render_template('luong/view_data_money_one.html',
+    return render_template(session['role'] +'luong/view_data_money_one.html',
                            MaNV = maNV,
                             nhanvien = nhanvien,
                            luong = luong,
@@ -3247,7 +3424,7 @@ def cai_dat():
                 """)
     so_user = cur.fetchall()[0][0]
     
-    return render_template('caidat/cai_dat.html', 
+    return render_template(session['role'] +'caidat/cai_dat.html', 
                            so_user = so_user,
                            congty = session['congty'],
                            my_user = session['username'])
@@ -3255,6 +3432,8 @@ def cai_dat():
 @login_required
 @app.route("/form_tao_tk", methods=['GET','POST'])
 def form_tao_tk():
+    if session['role_id'] != 1:
+        abort(404)
     cur = mysql.connection.cursor()
     cur.execute("""
                 SELECT MaNhanVien
@@ -3286,7 +3465,7 @@ def form_tao_tk():
                     WHERE username = %s
                     """, (username, ))
         if (len(cur.fetchall()) != 0):
-            return render_template('caidat/form_tao_tk.html',
+            return render_template(session['role'] +'caidat/form_tao_tk.html',
                                 my_err = "Tài khoản đã tồn tại",
                            congty = session['congty'],
                            my_user = session['username'])
@@ -3298,7 +3477,7 @@ def form_tao_tk():
                     """, (MNV, ))
         this_nv = cur.fetchall()
         if (len(this_nv) != 1):
-            return render_template('caidat/form_tao_tk.html',
+            return render_template(session['role'] +'caidat/form_tao_tk.html',
                                 type_account = list(type_account.keys()),
                            nhanvien = nhanvien,
                             my_err = "Mã nhân viên không tồn tại",
@@ -3307,7 +3486,7 @@ def form_tao_tk():
         this_nv = this_nv[0]
     
         if password != password_repeat:
-            return render_template('caidat/form_tao_tk.html', 
+            return render_template(session['role'] +'caidat/form_tao_tk.html', 
                                 type_account = list(type_account.keys()),
                            nhanvien = nhanvien,
                             my_err = "Nhập lại mật khẩu mới không đúng",
@@ -3321,7 +3500,7 @@ def form_tao_tk():
                         WHERE MaTruongPhong = %s
                         """, (MNV,))
             if (len(cur.fetchall()) == 0):
-                return render_template('caidat/form_tao_tk.html', 
+                return render_template(session['role'] +'caidat/form_tao_tk.html', 
                                 type_account = list(type_account.keys()),
                            nhanvien = nhanvien,
                             my_err = "Nhân viên không là trưởng phòng",
@@ -3347,7 +3526,7 @@ def form_tao_tk():
                     """, (acc_id, type))
         mysql.connection.commit()
         return redirect(url_for('form_view_tk'))
-    return render_template('caidat/form_tao_tk.html', 
+    return render_template(session['role'] +'caidat/form_tao_tk.html', 
                            type_account = list(type_account.keys()),
                            nhanvien = nhanvien,
                            congty = session['congty'],
@@ -3356,6 +3535,8 @@ def form_tao_tk():
 @login_required
 @app.route("/delete_account/<string:id>")
 def delete_account(id):
+    if session['role_id'] != 1:
+        abort(404)
     cur = mysql.connection.cursor()
     cur.execute("""
                 DELETE FROM qlnv_phanquyenuser
@@ -3372,6 +3553,8 @@ def delete_account(id):
 @login_required
 @app.route("/form_view_tk")
 def form_view_tk():
+    if session['role_id'] != 1:
+        abort(404)
     cur = mysql.connection.cursor()
     cur.execute("""
                 SELECT us.Id_user, us.username, us.password, us.tennguoidung, r.role_name,
@@ -3391,7 +3574,7 @@ def form_view_tk():
                 tmp_data.append(info)
             index += 1
         data_user_format.append(tmp_data)
-    return render_template('caidat/form_view_tk.html', 
+    return render_template(session['role'] +'caidat/form_view_tk.html', 
                            users = data_user_format,
                            congty = session['congty'],
                            my_user = session['username'])
@@ -3399,6 +3582,8 @@ def form_view_tk():
 @login_required
 @app.route("/form_chinh_sua_mk/<string:id>", methods = ['GET','POST'])
 def form_chinh_sua_mk(id):
+    if session['role_id'] != 1:
+        abort(404)
     cur = mysql.connection.cursor()
     cur.execute("""
                 SELECT username
@@ -3434,7 +3619,7 @@ def form_chinh_sua_mk(id):
         #                    my_user = session['username'])
         
         if new_password != new_password_repeat:
-            return render_template('caidat/form_chinh_sua_mk.html', 
+            return render_template(session['role'] +'caidat/form_chinh_sua_mk.html', 
                             id = id,
                             my_err = "Nhập lại mật khẩu mới không đúng",
                            this_user = this_user,
@@ -3448,7 +3633,7 @@ def form_chinh_sua_mk(id):
                     """, (new_password, id))
         mysql.connection.commit()
         return redirect(url_for('form_view_tk'))
-    return render_template('caidat/form_chinh_sua_mk.html', 
+    return render_template(session['role'] +'caidat/form_chinh_sua_mk.html', 
                            id = id,
                            this_user = this_user,
                            congty = session['congty'],
@@ -3457,6 +3642,8 @@ def form_chinh_sua_mk(id):
 @login_required
 @app.route("/form_view_cong_ty/<string:canEdit>", methods = ['GET','POST'])
 def form_view_cong_ty(canEdit):
+    if session['role_id'] != 1:
+        abort(404)
     cur = mysql.connection.cursor()
     cur.execute("""
                 SELECT * 
@@ -3497,13 +3684,13 @@ def form_view_cong_ty(canEdit):
         return redirect(url_for('cai_dat'))
     
     if canEdit == 'E':
-        return render_template('caidat/form_view_cong_ty.html', 
+        return render_template(session['role'] +'caidat/form_view_cong_ty.html', 
                            mode = '',
                            lst_congty = lst_congty,
                            congty = session['congty'],
                            my_user = session['username'])
     
-    return render_template('caidat/form_view_cong_ty.html', 
+    return render_template(session['role'] +'caidat/form_view_cong_ty.html', 
                            mode = 'disabled',
                            lst_congty = lst_congty,
                            congty = session['congty'],
@@ -3516,15 +3703,20 @@ def form_view_cong_ty(canEdit):
 @login_required
 @app.route("/index")
 def index():
-    return render_template('index.html', 
+    return render_template(session['role'] +'index.html', 
                            congty = session['congty'],
                            my_user = session['username'])
 
 
 # Error Handler
-# @app.errorhandler(404)
-# def page_not_found(error):
-#     return render_template('page_not_found.html'), 404
+@app.errorhandler(404)
+def page_not_found(error):
+    return render_template('error.html',
+                           error = error), 404
+# @app.errorhandler(500)
+# def no_role_access(error):
+#     return render_template('error.html',
+#                            error = error), 404
 
 def take_image_to_save(id_image, path_to_img):
     cur = mysql.connection.cursor()
