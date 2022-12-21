@@ -1297,27 +1297,40 @@ def delete_chuc_vu(maCV):
 @login_required
 @app.route("/danh_sach_cham_cong", methods=['GET','POST'])
 def danh_sach_cham_cong():
-    if session['role_id'] != 1:
-        abort(404)
     cur = mysql.connection.cursor()
     
     mucPhanLoaiChamCong = [10,20]
     Nam = datetime.datetime.now().year
-    cur.execute("""
-                SELECT * 
-                FROM qlnv_chamcongthang
-                WHERE Nam = %s
-                """, (Nam, ))
+    
+    if session['role_id'] != 1:
+        cur.execute("""
+                    SELECT * 
+                    FROM qlnv_chamcongthang
+                    WHERE Nam = %s AND MaNV = %s
+                    """, (Nam, session['username'][4]))
+    else:
+        cur.execute("""
+                    SELECT * 
+                    FROM qlnv_chamcongthang
+                    WHERE Nam = %s
+                    """, (Nam, ))
     chamcongtheocacthang = cur.fetchall()
     
     if request.method == 'POST':
         detail = request.form
         Nam = int(detail['Year'].strip())
-        cur.execute("""
-                SELECT * 
-                FROM qlnv_chamcongthang
-                WHERE Nam = %s
-                """, (Nam, ))
+        if session['role_id'] != 1:
+            cur.execute("""
+                        SELECT * 
+                        FROM qlnv_chamcongthang
+                        WHERE Nam = %s AND MaNV = %s
+                        """, (Nam, session['username'][4]))
+        else:
+            cur.execute("""
+                        SELECT * 
+                        FROM qlnv_chamcongthang
+                        WHERE Nam = %s
+                        """, (Nam, ))
         chamcongtheocacthang = cur.fetchall()
     
     cur.close()
@@ -3792,10 +3805,10 @@ def index():
 
 
 # Error Handler
-@app.errorhandler(404)
-def page_not_found(error):
-    return render_template('error.html',
-                           error = error), 404
+# @app.errorhandler(404)
+# def page_not_found(error):
+#     return render_template('error.html',
+#                            error = error), 404
 # @app.errorhandler(500)
 # def no_role_access(error):
 #     return render_template('error.html',

@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>Bảng chấm công tháng tổng kết - {{TenNV}} - {{Nam}}</title>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Main CSS-->
+  <link rel="stylesheet" href="{{ url_for('static', filename='doc/css/main.css') }}">
+  <link rel="shortcut icon" type="image/x-icon" href="{{ url_for('static', filename=congty[3])}}" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/boxicons@latest/css/boxicons.min.css">
+  <!-- or -->
+  <link rel="stylesheet" href="https://unpkg.com/boxicons@latest/css/boxicons.min.css">
+
+  <!-- Font-icon css-->
+  <link rel="stylesheet" type="text/css"
+    href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.js"></script>
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.css">
+
+  <!-- Chấm công -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='doc/css/chamcong.css') }}">
+</head>
+
+<body onload="time()" class="app sidebar-mini rtl">
+  <!-- Navbar-->
+  <header class="app-header">
+    <!-- Sidebar toggle button--><a class="app-sidebar__toggle" href="#" data-toggle="sidebar"
+      aria-label="Hide Sidebar"></a>
+    <!-- Navbar Right Menu-->
+    <ul class="app-nav">
+
+
+      <!-- User Menu-->
+      <li><a class="app-nav__item" href="/logout"><i class='bx bx-log-out bx-rotate-180'></i> </a>
+      </li>
+    </ul>
+  </header>
+  <!-- Sidebar menu-->
+  <div class="app-sidebar__overlay" data-toggle="sidebar"></div>
+  <aside class="app-sidebar">
+    <div class="app-sidebar__user"><img class="app-sidebar__user-avatar"
+        src="{{ url_for('static', filename=my_user[7]) }}" style="border-radius: 50%;" width="50px" alt="User Image">
+      <div>
+        <p class="app-sidebar__user-name"><b>{{my_user[3]}}</b></p>
+        <p class="app-sidebar__user-designation">Chào mừng bạn trở lại</p>
+      </div>
+    </div>
+    <hr>
+    <ul class="app-menu">
+      <li><a class="app-menu__item haha"><i class='app-menu__icon bx bx-user'></i>
+          <span class="app-menu__label">Quản lý</span></a></li>
+      <li><a class="app-menu__item" href="/home"><i class='app-menu__icon bx bx-tachometer'></i><span
+            class="app-menu__label">Bảng điều khiển</span></a></li>
+      <li><a class="app-menu__item" href="/table_data_employees"><i class='app-menu__icon bx bx-id-card'></i>
+          <span class="app-menu__label">Quản lý nhân viên</span></a></li>
+      <li><a class="app-menu__item" href="/table_chuc_vu"><i class='app-menu__icon bx bxs-book-content'></i>
+          <span class="app-menu__label">Quản lý chức vụ</span></a></li>
+      <li><a class="app-menu__item" href="/danh_sach_hop_dong"><i class='app-menu__icon bx bx-user-voice'></i><span
+            class="app-menu__label">Danh sách hợp
+            đồng</span></a></li>
+      <li><a class="app-menu__item" href="/table_data_money"><i class='app-menu__icon bx bx-dollar'></i><span
+            class="app-menu__label">Bảng kê lương</span></a></li>
+      <li><a class="app-menu__item active" href="/danh_sach_cham_cong"><i class='app-menu__icon bx bx-edit-alt'></i><span
+            class="app-menu__label">Danh sách chấm công</span></a></li>
+      <li><a class="app-menu__item" href="/view_all_thoi_gian_cong_tac"><i class='app-menu__icon bx bx-history'></i><span
+            class="app-menu__label">Thời gian công tác</span></a></li>
+      <li><a class="app-menu__item" href="/view_all_phong_ban"><i class='app-menu__icon bx bxs-business'></i><span
+            class="app-menu__label">Phòng ban</span></a></li>
+      <li><a class="app-menu__item" href="/cai_dat"><i class='app-menu__icon bx bx-cog'></i><span
+            class="app-menu__label">Cài đặt</span></a></li>
+    </ul>
+  </aside>
+  <main class="app-content">
+    <div class="app-title">
+      <ul class="app-breadcrumb breadcrumb side">
+        <li class="breadcrumb-item active"><a href="/danh_sach_cham_cong"><b>Danh sách chấm công </b></a></li>
+        <li class="breadcrumb-item active"><a href="#"><b>Chấm công tháng tổng kết - {{TenNV}} - {{Nam}} </b></a></li>
+
+      </ul>
+      <div id="clock"></div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-12">
+        <div class="tile">
+          <div class="tile-body">
+
+            <div class="row element-button">
+
+              <div class="col-sm-2">
+                <a class="btn btn-delete btn-sm print-file" type="button" title="In"
+                  onclick="myApp.printTongKetThangTable()"><i class="fas fa-print"></i> In dữ liệu</a>
+              </div>
+
+              <div class="col-sm-2">
+                <a class="btn btn-excel btn-sm" href="/get_cham_cong_tong_ket_thang_excel/{{MaNV}}_{{Nam}}"
+                  title="In"><i class="fas fa-file-excel"></i> Xuất Excel</a>
+              </div>
+              <div class="col-sm-2">
+                <a class="btn btn-delete btn-sm pdf-file" type="button" title="In"
+                  href="/get_cham_cong_tong_ket_thang_pdf/{{MaNV}}_{{Nam}}"><i class="fas fa-file-pdf"></i> Xuất PDF</a>
+              </div>
+            </div>
+            <table class="table table-hover table-bordered" id="sampleTable">
+              <thead>
+                <tr>
+                  <th class="center-text" rowspan="2" style="background-color: #eee">Tháng</th>
+                  <th colspan="5" style="text-align: center; background-color: #eee">Thông tin</th>
+                </tr>
+                <tr>
+                  <th class="center" width="200">Số ngày đi làm</th>
+                  <th class="center" width="200">Số ngày vắng</th>
+                  <th class="center" width="200">Số ngày tăng ca</th>
+                  <th class="center" width="200">Tổng số ngày</th>
+                  <th class="center" width="50">Xem</th>
+                </tr>
+              <tbody>
+                {% for data in data_tong_ket_thang %}
+                <tr>
+                  <td class="center">{{data[3]}}</td>
+                  <td class="center">{{data[4]}}</td>
+                  <td class="center">{{data[5]}}</td>
+                  <td class="center">{{data[6]}}</td>
+                  <td class="center">{{data[7]}}</td>
+                  <td class="center">
+                    <button class="btn btn-primary btn-sm edit" type="button" title="Xem chi tiết tháng" id="show-emp">
+                      <a href="/table_cham_cong_ngay_trong_thang/{{MaNV}}_{{Nam}}_{{data[3]}}"><i class="fa fa-eye"
+                          aria-hidden="true"></i></a>
+                    </button>
+                  </td>
+                </tr>
+                {% endfor %}
+
+              </tbody>
+              </thead>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!--
+  MODAL
+-->
+
+  <!-- Essential javascripts for application to work-->
+  <script src="{{url_for('static', filename='doc/js/jquery-3.2.1.min.js')}}"></script>
+  <script src="{{url_for('static', filename='doc/js/popper.min.js')}}"></script>
+  <script src="{{url_for('static', filename='doc/js/bootstrap.min.js')}}"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+  <script src="{{url_for('static', filename='doc/js/main.js')}}"></script>
+  <!-- The javascript plugin to display page loading on top-->
+  <script src="{{url_for('static', filename='doc/js/plugins/pace.min.js')}}"></script>
+  <!-- Page specific javascripts-->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.js"></script>
+  <!-- Data table plugin-->
+  <!-- <script type="text/javascript" src="js/plugins/jquery.dataTables.min.js"></script> -->
+  <script src="{{url_for('static', filename='doc/js/plugins/jquery.dataTables.min.js')}}"></script>
+  <!-- <script type="text/javascript" src="js/plugins/dataTables.bootstrap.min.js"></script> -->
+  <script src="{{url_for('static', filename='doc/js/plugins/dataTables.bootstrap.min.js')}}"></script>
+  <script type="text/javascript">$('#sampleTable').DataTable();</script>
+  <!-- Display time -->
+  <script src="{{url_for('static', filename='js/displaytime/displaytime.js')}}"></script>
+  <script>
+    //In dữ liệu
+    var myApp = new function () {
+      this.printTongKetThangTable = function () {
+        var win = window.open('/get_print_cham_cong_tong_ket_thang/{{MaNV}}_{{Nam}}', '', 'height=700,width=1400');
+        win.document.close();
+        win.print();
+      }
+    }
+
+    function dieu_huong() {
+      //     //Sao chép dữ liệu
+      var copyTextareaBtn = document.querySelector('.js-textareacopybtn');
+
+      copyTextareaBtn.addEventListener('click', function (event) {
+        var copyTextarea = document.querySelector('.js-copytextarea');
+        copyTextarea.focus();
+        copyTextarea.select();
+
+        try {
+          var successful = document.execCommand('copy');
+          var msg = successful ? 'successful' : 'unsuccessful';
+          console.log('Copying text command was ' + msg);
+        } catch (err) {
+          console.log('Oops, unable to copy');
+        }
+      });
+
+
+      //Modal
+      $("#show-emp").on("click", function () {
+        $("#ModalUP").modal({ backdrop: false, keyboard: false })
+      });
+    }
+  </script>
+</body>
+
+</html>

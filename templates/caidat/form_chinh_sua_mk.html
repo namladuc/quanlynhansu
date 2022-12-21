@@ -31,7 +31,6 @@
 
 
             <!-- User Menu-->
-            <li><a class="app-nav__item" style="margin: 0 25px 0 0;" href=""><i class='bx bx-bell'></i> </a></li>
             <li><a class="app-nav__item" href="/logout"><i class='bx bx-log-out bx-rotate-180'></i> </a>
 
             </li>
@@ -51,8 +50,8 @@
         <hr>
         <ul class="app-menu">
             <li><a class="app-menu__item haha"><i class='app-menu__icon bx bx-user'></i>
-                    <span class="app-menu__label">Quản lý</span></a></li>
-            <li><a class="app-menu__item" href="/index"><i class='app-menu__icon bx bx-tachometer'></i><span
+                <span class="app-menu__label">Quản lý</span></a></li>
+            <li><a class="app-menu__item" href="/home"><i class='app-menu__icon bx bx-tachometer'></i><span
                         class="app-menu__label">Bảng điều khiển</span></a></li>
             <li><a class="app-menu__item" href="/table_data_employees"><i class='app-menu__icon bx bx-id-card'></i>
                     <span class="app-menu__label">Quản lý nhân viên</span></a></li>
@@ -61,18 +60,13 @@
             <li><a class="app-menu__item" href="/danh_sach_hop_dong"><i
                         class='app-menu__icon bx bx-user-voice'></i><span class="app-menu__label">Danh sách hợp
                         đồng</span></a></li>
-            <li><a class="app-menu__item" href="/table-data-banned.html"><i class='app-menu__icon bx bx-run'></i><span
-                        class="app-menu__label">Quản lý nội bộ
-                    </span></a></li>
             <li><a class="app-menu__item" href="/table_data_money"><i class='app-menu__icon bx bx-dollar'></i><span
                         class="app-menu__label">Bảng kê lương</span></a></li>
-            <li><a class="app-menu__item" href="/page_calendar"><i class='app-menu__icon bx bx-calendar-check'></i><span
-                        class="app-menu__label">Lịch công tác </span></a></li>
             <li><a class="app-menu__item" href="/danh_sach_cham_cong"><i class='app-menu__icon bx bx-edit-alt'></i><span
                         class="app-menu__label">Danh sách chấm công</span></a></li>
             <li><a class="app-menu__item" href="/view_all_thoi_gian_cong_tac"><i class='app-menu__icon bx bx-history'></i><span
                         class="app-menu__label">Thời gian công tác</span></a></li>
-            <li><a class="app-menu__item active" href="/view_all_phong_ban"><i class='app-menu__icon bx bxs-business'></i><span
+            <li><a class="app-menu__item" href="/view_all_phong_ban"><i class='app-menu__icon bx bxs-business'></i><span
                         class="app-menu__label">Phòng ban</span></a></li>
             <li><a class="app-menu__item active" href="/cai_dat"><i class='app-menu__icon bx bx-cog'></i><span
                         class="app-menu__label">Cài đặt</span></a></li>
@@ -85,6 +79,7 @@
                 <li class="breadcrumb-item"><a href="/form_view_tk">Tài khoản</a></li>
                 <li class="breadcrumb-item active"><a href="">Đổi mật khẩu cho tài khoản {{this_user}}</a></li>
             </ul>
+            <div id="clock"></div>
         </div>
         <div class="row">
             <div class="col-md-12">
