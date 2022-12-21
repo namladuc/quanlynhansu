@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>Chấm công nhân viên</title>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Main CSS-->
+  <link rel="stylesheet" href="{{ url_for('static', filename='doc/css/main.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='doc/css/buttonchamcong.css') }}">
+  <script src="{{url_for('static', filename='js/displaytime/displaytime.js')}}"></script>
+  <link rel="shortcut icon" type="image/x-icon" href="{{ url_for('static', filename=congty[3])}}"/>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/boxicons@latest/css/boxicons.min.css">
+  <!-- or -->
+  <link rel="stylesheet" href="https://unpkg.com/boxicons@latest/css/boxicons.min.css">
+  <!-- Font-icon css-->
+  <link rel="stylesheet" type="text/css"
+    href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+  <script src="http://code.jquery.com/jquery.min.js" type="text/javascript"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.js"></script>
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.css">
+ 
+</head>
+
+<body onload="time()" class="app sidebar-mini rtl">
+  
+  <!-- Navbar-->
+  <header class="app-header">
+    <!-- Sidebar toggle button--><a class="app-sidebar__toggle" href="#" data-toggle="sidebar"
+      aria-label="Hide Sidebar"></a>
+    <!-- Navbar Right Menu-->
+    <ul class="app-nav">
+
+      <!-- User Menu-->
+      <li><a class="app-nav__item" style="margin: 0 25px 0 0;" href=""><i class='bx bx-bell'></i> </a></li>
+      <li><a class="app-nav__item" href="/logout"><i class='bx bx-log-out bx-rotate-180'></i> </a>
+
+      </li>
+    </ul>
+  </header>
+  <!-- Sidebar menu-->
+  <div class="app-sidebar__overlay" data-toggle="sidebar"></div>
+    <aside class="app-sidebar">
+      <div class="app-sidebar__user"><img class="app-sidebar__user-avatar" src="{{ url_for('static', filename=my_user[7]) }}" style="border-radius: 50%;" width="50px"
+        alt="User Image">
+            <div>
+                <p class="app-sidebar__user-name"><b>{{my_user[3]}}</b></p>
+                <p class="app-sidebar__user-designation">Chào mừng bạn trở lại</p>
+            </div>
+        </div>
+    <hr>
+    <ul class="app-menu">
+      <li><a class="app-menu__item haha"><i class='app-menu__icon bx bx-user'></i>
+          <span class="app-menu__label">Quản lý</span></a></li>
+      
+    </ul>
+  </aside>
+  <main class="app-content">
+    <div class="app-title">
+      <ul class="app-breadcrumb breadcrumb side">
+        <li class="breadcrumb-item"><a href="/form_add_data_cham_cong">Chấm công</a></li>
+      </ul>
+      <div id="clock"></div>
+    </div>
+    <div class="row">
+      <div class="col-md-12">
+
+        <div class="tile">
+
+          <h3 class="tile-title">Chấm công nhân viên</h3>
+          <div class="tile-body">
+
+            <form class="row" method="post" action="/form_add_data_cham_cong" >
+            <!-- 
+                <button class="" role="button">Button 29</button> 
+                <button class="" role="button">Button 24</button>
+            !-->
+                {% if chamcong %}
+                <div class="form-group col-md-12">
+                <label class="control-label">Tên nhân viên: {{my_user[3]}}</label>
+                </div>
+                
+                <div class="form-group col-md-12">
+                <label class="control-label">Mã nhân viên: {{chamcong[1]}}</label><br>
+                </div>
+
+                <div class="form-group col-md-12">
+                <label class="control-label">Ngày: {{chamcong[0]}}</label><br>
+                </div>
+
+                <div class="form-group col-md-12">
+                <label class="control-label">Bắt đầu chấm: {{chamcong[2]}}</label><br>
+                </div>
+                {% else %}
+
+                    <div class="form-group col-md-12">
+                    <label class="control-label">Tên nhân viên: {{my_user[3]}}</label>
+                    </div>
+                    
+                    <div class="form-group col-md-12">
+                    <label class="control-label">Mã nhân viên: {{my_user[4]}}</label><br>
+                    </div>
+
+                {% endif %}
+
+              <div class="form-group col-md-4">
+                {% if is_chamcong %}
+                    <input style="width: 160%; height: 140%;"  class="button-24" type="submit" value="Dừng chấm công"/>
+                {% else %}
+                    <input style="width: 160%; height: 140%;" class="button-29" type="submit" value="Bắt đầu chấm công"/>
+                {% endif %}
+              </div>
+             
+
+
+
+            </form>
+
+  </main>
+  <!-- Essential javascripts for application to work-->
+  <script src="{{url_for('static', filename='doc/js/jquery-3.2.1.min.js')}}"></script>
+  <script src="{{url_for('static', filename='doc/js/popper.min.js')}}"></script>
+  <script src="{{url_for('static', filename='doc/js/bootstrap.min.js')}}"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+  <script src="{{url_for('static', filename='doc/js/main.js')}}"></script>
+  <!-- The javascript plugin to display page loading on top-->
+  <script src="{{url_for('static', filename='doc/js/plugins/pace.min.js')}}"></script>
+   <!-- Page specific javascripts-->
+   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.js"></script>
+
+</body>
+
+</html>

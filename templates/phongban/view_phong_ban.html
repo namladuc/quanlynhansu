@@ -52,24 +52,25 @@
         <ul class="app-menu">
             <li><a class="app-menu__item haha"><i class='app-menu__icon bx bx-user'></i>
                     <span class="app-menu__label">Quản lý</span></a></li>
-            <li><a class="app-menu__item " href="/index"><i class='app-menu__icon bx bx-tachometer'></i><span
+            <li><a class="app-menu__item" href="/home"><i class='app-menu__icon bx bx-tachometer'></i><span
                         class="app-menu__label">Bảng điều khiển</span></a></li>
-            <li><a class="app-menu__item" href="/table_data_employees"><i
-                        class='app-menu__icon bx bx-id-card'></i>
+            <li><a class="app-menu__item" href="/table_data_employees"><i class='app-menu__icon bx bx-id-card'></i>
                     <span class="app-menu__label">Quản lý nhân viên</span></a></li>
-            <li><a class="app-menu__item" href="/danh_sach_hop_dong"><i class='app-menu__icon bx bx-user-voice'></i><span
-                        class="app-menu__label">Danh sách hợp đồng</span></a></li>
-            <li><a class="app-menu__item active" href="/view_all_phong_ban"><i class='app-menu__icon bx bxs-business'></i><span
-                class="app-menu__label">Phòng ban</span></a></li>
+            <li><a class="app-menu__item" href="/table_chuc_vu"><i class='app-menu__icon bx bxs-book-content'></i>
+                    <span class="app-menu__label">Quản lý chức vụ</span></a></li>
+            <li><a class="app-menu__item" href="/danh_sach_hop_dong"><i
+                        class='app-menu__icon bx bx-user-voice'></i><span class="app-menu__label">Danh sách hợp
+                        đồng</span></a></li>
             <li><a class="app-menu__item" href="/table_data_money"><i class='app-menu__icon bx bx-dollar'></i><span
                         class="app-menu__label">Bảng kê lương</span></a></li>
-            <li><a class="app-menu__item" href="/page_calendar"><i class='app-menu__icon bx bx-calendar-check'></i><span
-                        class="app-menu__label">Lịch công tác </span></a></li>
             <li><a class="app-menu__item" href="/danh_sach_cham_cong"><i class='app-menu__icon bx bx-edit-alt'></i><span
                         class="app-menu__label">Danh sách chấm công</span></a></li>
             <li><a class="app-menu__item" href="/view_all_thoi_gian_cong_tac"><i class='app-menu__icon bx bx-history'></i><span
-                class="app-menu__label">Thời gian công tác</span></a></li>
-
+                        class="app-menu__label">Thời gian công tác</span></a></li>
+            <li><a class="app-menu__item active" href="/view_all_phong_ban"><i class='app-menu__icon bx bxs-business'></i><span
+                        class="app-menu__label">Phòng ban</span></a></li>
+            <li><a class="app-menu__item" href="/cai_dat"><i class='app-menu__icon bx bx-cog'></i><span
+                        class="app-menu__label">Cài đặt</span></a></li>
         </ul>
     </aside>
     <main class="app-content">
@@ -87,19 +88,19 @@
                         <div class="row element-button">
 
                             <div class="col-sm-2">
-                                <a class="btn btn-warning" href="/form_update_phong_ban/{{phongban[0]}}" title="Thêm"><i class="fa fa-pencil-square-o"></i>
+                                <a class="btn btn-warning" href="/form_update_phong_ban/{{phongban[0]}}" title="Sửa"><i class="fa fa-pencil-square-o"></i>
                                   Sửa phòng ban</a>
                               </div>
-
+                            
                               <div class="col-sm-2">
-                                <a class="btn btn-add btn-sm" href="/form_add_thuong_phat_phong_ban/{{phongban[0]}}" title="Thêm"><i class="fas fa-plus"></i>
+                                <a class="btn btn-add btn-sm" href="/form_add_thuong_phat_phong_ban/{{phongban[0]}}" title="Tạo"><i class="fas fa-plus"></i>
                                   Tạo mới khen thưởng / kỷ luật</a>
                               </div>
          
 
                             {% if phongban[-1] == 0 %}
                             <div class="col-sm-2">
-                              <a class="btn btn-add btn-sm trash" href="/delete_phong_ban/{{phongban[0]}}" title="Thêm"><i class="fas fa-trash-alt"></i>
+                              <a class="btn btn-add btn-sm trash" href="/delete_phong_ban/{{phongban[0]}}" title="Xóa"><i class="fas fa-trash-alt"></i>
                                 Xóa phòng ban</a>
                             </div>
                             {% endif %}
@@ -129,7 +130,7 @@
                                     </div>
                                 </div>
                                 <div class="card-footer">
-                                    <a href="/view_thuong_phong_ban/{{phongban[0]}}">View all</a>
+                                    <a href="/view_thuong_phong_ban/{{phongban[0]}}">Xem thêm</a>
                                 </div>
                             </div>
 
@@ -142,7 +143,7 @@
                                     </div>
                                 </div>
                                 <div class="card-footer">
-                                    <a href="/view_phat_phong_ban/{{phongban[0]}}">View all</a>
+                                    <a href="/view_phat_phong_ban/{{phongban[0]}}">Xem thêm</a>
                                 </div>
                             </div>
 

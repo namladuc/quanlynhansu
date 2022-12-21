@@ -8,7 +8,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <!-- Main CSS-->
   <link rel="stylesheet" href="{{ url_for('static', filename='doc/css/main.css') }}">
-  <script src="{{url_for('static', filename='js/displaytime/displaytime.js')}}"></script>
   <link rel="shortcut icon" type="image/x-icon" href="{{ url_for('static', filename=congty[3])}}" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/boxicons@latest/css/boxicons.min.css">
   <!-- or -->
@@ -32,13 +31,8 @@
       aria-label="Hide Sidebar"></a>
     <!-- Navbar Right Menu-->
     <ul class="app-nav">
-
-
       <!-- User Menu-->
-      <li><a class="app-nav__item" style="margin: 0 25px 0 0;" href=""><i class='bx bx-bell'></i> </a></li>
-
       <li><a class="app-nav__item" href="/logout"><i class='bx bx-log-out bx-rotate-180'></i> </a>
-
       </li>
     </ul>
   </header>
@@ -56,35 +50,33 @@
     <ul class="app-menu">
       <li><a class="app-menu__item haha"><i class='app-menu__icon bx bx-user'></i>
           <span class="app-menu__label">Quản lý</span></a></li>
-      <li><a class="app-menu__item" href="/index"><i class='app-menu__icon bx bx-tachometer'></i><span
+      <li><a class="app-menu__item" href="/home"><i class='app-menu__icon bx bx-tachometer'></i><span
             class="app-menu__label">Bảng điều khiển</span></a></li>
       <li><a class="app-menu__item" href="/table_data_employees"><i class='app-menu__icon bx bx-id-card'></i>
           <span class="app-menu__label">Quản lý nhân viên</span></a></li>
       <li><a class="app-menu__item" href="/table_chuc_vu"><i class='app-menu__icon bx bxs-book-content'></i>
           <span class="app-menu__label">Quản lý chức vụ</span></a></li>
       <li><a class="app-menu__item" href="/danh_sach_hop_dong"><i class='app-menu__icon bx bx-user-voice'></i><span
-            class="app-menu__label">Danh sách hợp đồng</span></a></li>
-
-      <li><a class="app-menu__item" href="/view_all_phong_ban"><i class='app-menu__icon bx bxs-business'></i><span
-                        class="app-menu__label">Phòng ban</span></a></li>
-      <li><a class="app-menu__item" href="table-data-banned.html"><i class='app-menu__icon bx bx-run'></i><span
-        class="app-menu__label">Quản lý nội bộ
-                      </span></a></li>
+            class="app-menu__label">Danh sách hợp
+            đồng</span></a></li>
       <li><a class="app-menu__item" href="/table_data_money"><i class='app-menu__icon bx bx-dollar'></i><span
             class="app-menu__label">Bảng kê lương</span></a></li>
-      <li><a class="app-menu__item" href="/page_calendar"><i class='app-menu__icon bx bx-calendar-check'></i><span
-            class="app-menu__label">Lịch công tác </span></a></li>
       <li><a class="app-menu__item active" href="/danh_sach_cham_cong"><i class='app-menu__icon bx bx-edit-alt'></i><span
             class="app-menu__label">Danh sách chấm công</span></a></li>
       <li><a class="app-menu__item" href="/view_all_thoi_gian_cong_tac"><i class='app-menu__icon bx bx-history'></i><span
             class="app-menu__label">Thời gian công tác</span></a></li>
+      <li><a class="app-menu__item" href="/view_all_phong_ban"><i class='app-menu__icon bx bxs-business'></i><span
+            class="app-menu__label">Phòng ban</span></a></li>
+      <li><a class="app-menu__item" href="/cai_dat"><i class='app-menu__icon bx bx-cog'></i><span
+            class="app-menu__label">Cài đặt</span></a></li>
     </ul>
   </aside>
   <main class="app-content">
     <div class="app-title">
       <ul class="app-breadcrumb breadcrumb side">
         <li class="breadcrumb-item"><a href="/danh_sach_cham_cong"><b>Danh sách chấm công </b></a></li>
-        <li class="breadcrumb-item active"><a href=""><b>Bảng chấm công các ngày trong tháng -  {{month}} / {{year}} - {{TenNV}}</b></a></li>
+        <li class="breadcrumb-item active"><a href=""><b>Bảng chấm công các ngày trong tháng - {{month}} / {{year}} -
+              {{TenNV}}</b></a></li>
 
       </ul>
       <div id="clock"></div>
@@ -97,36 +89,39 @@
 
             <div class="row element-button">
               <div class="col-sm-2">
-                <a class="btn btn-info btn-sm" href="/table_cham_cong_tong_ket_thang/{{maNV}}_{{year}}" title="Các trình độ học vấn hiện có"><i class="fa fa-book"></i>
+                <a class="btn btn-info btn-sm" href="/table_cham_cong_tong_ket_thang/{{maNV}}_{{year}}"
+                  title="Xem tổng kết các tháng của nhân viên này"><i class="fa fa-book"></i>
                   Xem tổng kết các tháng của nhân viên này</a>
               </div>
 
               <div class="col-sm-2">
-                <a class="btn btn-info btn-sm" href="/graph_cham_cong_ngay/{{maNV}}_{{year}}_{{month}}" title="Xem"><i class="fa fa-area-chart"></i>
+                <a class="btn btn-info btn-sm" href="/graph_cham_cong_ngay/{{maNV}}_{{year}}_{{month}}" title="Xem biểu đồ của nhân viên"><i
+                    class="fa fa-area-chart"></i>
                   Xem biểu đồ của nhân viên {{TenNV}}</a>
               </div>
 
               <div class="col-sm-2">
-                <a class="btn btn-add btn-sm" href="/form_add_data_cham_cong" title="Thêm"><i class="fas fa-plus"></i>
+                <a class="btn btn-add btn-sm" href="/form_add_data_cham_cong" title="Thêm dữ liệu chấm công cho nhân viên"><i class="fas fa-plus"></i>
                   Thêm dữ liệu chấm công cho nhân viên</a>
               </div>
 
               <div class="col-sm-2">
-                <a class="btn btn-delete btn-sm print-file" type="button" title="In" onclick="myApp.printChamCongNgayTable()"><i
-                    class="fas fa-print"></i> In dữ liệu</a>
+                <a class="btn btn-delete btn-sm print-file" type="button" title="In dữ liệu"
+                  onclick="myApp.printChamCongNgayTable()"><i class="fas fa-print"></i> In dữ liệu</a>
               </div>
 
               <div class="col-sm-2">
-                <a class="btn btn-excel btn-sm" href="/get_cham_cong_ngay_trong_thang_excel/{{maNV}}_{{year}}_{{month}}" title="In"><i class="fas fa-file-excel"></i
-                  > Xuất Excel</a>
+                <a class="btn btn-excel btn-sm" href="/get_cham_cong_ngay_trong_thang_excel/{{maNV}}_{{year}}_{{month}}"
+                  title="Xuất Excel"><i class="fas fa-file-excel"></i>Xuất Excel</a>
               </div>
 
               <div class="col-sm-2">
-                <a class="btn btn-delete btn-sm pdf-file" type="button" title="In" href="/get_cham_cong_ngay_trong_thang_pdf/{{maNV}}_{{year}}_{{month}}"><i
-                    class="fas fa-file-pdf"></i> Xuất PDF</a>
+                <a class="btn btn-delete btn-sm pdf-file" type="button" title="Xuất PDF"
+                  href="/get_cham_cong_ngay_trong_thang_pdf/{{maNV}}_{{year}}_{{month}}"><i class="fas fa-file-pdf"></i>
+                  Xuất PDF</a>
               </div>
 
-              
+
             </div>
             <table class="table table-hover table-bordered" id="sampleTable">
               <thead>
@@ -145,29 +140,34 @@
                   <td class="center"> {{date_weekday[i]}} <br> {{date_str[i]}} </td>
 
                   {% if data_day_tong_ket[i] >= 6 %}
-                  <td class="icon icon--sucess" title="Tổng thời gian làm việc trong ngày: {{data_day_tong_ket[i]}}"><i class="fa fa-check-circle" aria-hidden="true"></i></td>
-                  {% elif data_day_tong_ket[i] >= 4 and data_day_tong_ket[i] < 6 %}
-                  <td class="icon icon--warning" title="Tổng thời gian làm việc trong ngày: {{data_day_tong_ket[i]}}"><i class="fa fa-minus-circle" aria-hidden="true"></i></td>
-                  {% else %}
-                  <td class="icon icon--error" title="Tổng thời gian làm việc trong ngày: {{data_day_tong_ket[i]}}"><i class="fa fa-times-circle" aria-hidden="true"></i></td>
-                  {% endif %}
+                  <td class="icon icon--sucess" title="Tổng thời gian làm việc trong ngày: {{data_day_tong_ket[i]}}"><i
+                      class="fa fa-check-circle" aria-hidden="true"></i></td>
+                  {% elif data_day_tong_ket[i] >= 4 and data_day_tong_ket[i] < 6 %} <td class="icon icon--warning"
+                    title="Tổng thời gian làm việc trong ngày: {{data_day_tong_ket[i]}}"><i class="fa fa-minus-circle"
+                      aria-hidden="true"></i></td>
+                    {% else %}
+                    <td class="icon icon--error" title="Tổng thời gian làm việc trong ngày: {{data_day_tong_ket[i]}}"><i
+                        class="fa fa-times-circle" aria-hidden="true"></i></td>
+                    {% endif %}
 
-                  <td class="center">
-                    
-                    {% for elm in time_arr_str[i] %}
-                    <strong>Bắt đầu:</strong> <span class="text-info">{{elm[0]}}</span>  <strong>-- đến -- ></strong> <span class="text-info">{{elm[1]}}</span> <br>
-                    {% endfor %}
+                    <td class="center">
 
-                  </td>
+                      {% for elm in time_arr_str[i] %}
+                      <strong>Bắt đầu:</strong> <span class="text-info">{{elm[0]}}</span> <strong>-- đến -- ></strong>
+                      <span class="text-info">{{elm[1]}}</span> <br>
+                      {% endfor %}
 
-                  <td class="center">
-                    <button class="btn btn-primary btn-sm edit" type="button" title="Sửa" id="show-emp">
-                      <a href="/form_view_update_cham_cong/V_{{maNV}}_NONE_{{day[i]}}_{{month}}_{{year}}"><i class="fa fa-eye" aria-hidden="true"></i></a>
-                    </button>
-                </td>
+                    </td>
+
+                    <td class="center">
+                      <button class="btn btn-primary btn-sm edit" type="button" title="Sửa" id="show-emp">
+                        <a href="/form_view_update_cham_cong/V_{{maNV}}_NONE_{{day[i]}}_{{month}}_{{year}}"><i
+                            class="fa fa-eye" aria-hidden="true"></i></a>
+                      </button>
+                    </td>
                 </tr>
                 {% endfor %}
-       
+
               </tbody>
               </thead>
             </table>
@@ -197,6 +197,8 @@
   <!-- <script type="text/javascript" src="js/plugins/dataTables.bootstrap.min.js"></script> -->
   <script src="{{url_for('static', filename='doc/js/plugins/dataTables.bootstrap.min.js')}}"></script>
   <script type="text/javascript">$('#sampleTable').DataTable();</script>
+  <!-- Display time -->
+  <script src="{{url_for('static', filename='js/displaytime/displaytime.js')}}"></script>
   <script>
     //In dữ liệu
     var myApp = new function () {
@@ -210,5 +212,3 @@
 </body>
 
 </html>
-
-

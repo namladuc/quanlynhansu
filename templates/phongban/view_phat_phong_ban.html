@@ -34,7 +34,6 @@
 
 
             <!-- User Menu-->
-            <li><a class="app-nav__item" style="margin: 0 25px 0 0;" href=""><i class='bx bx-bell'></i> </a></li>
             <li><a class="app-nav__item" href="/logout"><i class='bx bx-log-out bx-rotate-180'></i> </a>
 
             </li>
@@ -55,7 +54,7 @@
         <ul class="app-menu">
             <li><a class="app-menu__item haha"><i class='app-menu__icon bx bx-user'></i>
                     <span class="app-menu__label">Quản lý</span></a></li>
-            <li><a class="app-menu__item" href="/index"><i class='app-menu__icon bx bx-tachometer'></i><span
+            <li><a class="app-menu__item" href="/home"><i class='app-menu__icon bx bx-tachometer'></i><span
                         class="app-menu__label">Bảng điều khiển</span></a></li>
             <li><a class="app-menu__item" href="/table_data_employees"><i class='app-menu__icon bx bx-id-card'></i>
                     <span class="app-menu__label">Quản lý nhân viên</span></a></li>
@@ -64,19 +63,16 @@
             <li><a class="app-menu__item" href="/danh_sach_hop_dong"><i
                         class='app-menu__icon bx bx-user-voice'></i><span class="app-menu__label">Danh sách hợp
                         đồng</span></a></li>
-            <li><a class="app-menu__item" href="/table-data-banned.html"><i class='app-menu__icon bx bx-run'></i><span
-                        class="app-menu__label">Quản lý nội bộ
-                    </span></a></li>
             <li><a class="app-menu__item" href="/table_data_money"><i class='app-menu__icon bx bx-dollar'></i><span
                         class="app-menu__label">Bảng kê lương</span></a></li>
-            <li><a class="app-menu__item" href="/page_calendar"><i class='app-menu__icon bx bx-calendar-check'></i><span
-                        class="app-menu__label">Lịch công tác </span></a></li>
             <li><a class="app-menu__item" href="/danh_sach_cham_cong"><i class='app-menu__icon bx bx-edit-alt'></i><span
                         class="app-menu__label">Danh sách chấm công</span></a></li>
-            <li><a class="app-menu__item" href="/thoi_gian_cong_tac"><i class='app-menu__icon bx bx-edit-alt'></i><span
+            <li><a class="app-menu__item" href="/view_all_thoi_gian_cong_tac"><i class='app-menu__icon bx bx-history'></i><span
                         class="app-menu__label">Thời gian công tác</span></a></li>
-            <li><a class="app-menu__item active" href="/phong_ban"><i class='app-menu__icon bx bxs-business'></i><span
+            <li><a class="app-menu__item active" href="/view_all_phong_ban"><i class='app-menu__icon bx bxs-business'></i><span
                         class="app-menu__label">Phòng ban</span></a></li>
+            <li><a class="app-menu__item" href="/cai_dat"><i class='app-menu__icon bx bx-cog'></i><span
+                        class="app-menu__label">Cài đặt</span></a></li>
         </ul>
     </aside>
     <main class="app-content">
@@ -145,10 +141,12 @@
                             <div class="tile-body">
                                 <div class="row element-button">
                                     <div class="col-sm-2">
-                                        <a class="btn btn-add btn-sm" href="/form_add_thuong_phat_phong_ban/{{phongban[0]}}"><b><i class="fas fa-folder-plus"></i> Thêm nhân viên
-                                              vi phạm</b></a>
+                                        <a class="btn btn-add btn-sm" title="Thêm nhân viên vi phạm"
+                                            href="/form_add_thuong_phat_phong_ban/{{phongban[0]}}"><b><i
+                                                    class="fas fa-folder-plus"></i> Thêm nhân viên
+                                                vi phạm</b></a>
                                     </div>
-        
+
                                 </div>
                                 <table class="table table-hover table-bordered js-copytextarea" cellpadding="0"
                                     cellspacing="0" border="0" id="sampleTable">
@@ -173,10 +171,14 @@
                                             <td>{{data[6]}}</td>
                                             <td>
                                                 <button class="btn btn-primary btn-sm trash" type="button" title="Xóa"
-                                                onclick="deletePhatRow({{data[0]}})"><i class="fas fa-trash-alt"></i>
+                                                    onclick="deletePhatRow({{data[0]}})"><i
+                                                        class="fas fa-trash-alt"></i>
                                                 </button>
-                                                <button class="btn btn-primary btn-sm edit" type="button" title="Sửa" id="show-emp">
-                                                    <a href="/form_update_thuong_phat_phong_ban/{{phongban[0]}}_{{data[0]}}"><i class="fa fa-eye" aria-hidden="true"></i></a>
+                                                <button class="btn btn-primary btn-sm edit" type="button" title="Sửa"
+                                                    id="show-emp">
+                                                    <a
+                                                        href="/form_update_thuong_phat_phong_ban/{{phongban[0]}}_{{data[0]}}"><i
+                                                            class="fa fa-eye" aria-hidden="true"></i></a>
                                                 </button>
                                             </td>
                                         </tr>
@@ -210,20 +212,20 @@
 
         function deletePhatRow(id) {
             swal({
-              title: "Cảnh báo",
-              text: "Bạn có chắc chắn là muốn xóa bản ghi này?", // index = 3
-              buttons: ["Hủy bỏ", "Đồng ý"],
+                title: "Cảnh báo",
+                text: "Bạn có chắc chắn là muốn xóa bản ghi này?", // index = 3
+                buttons: ["Hủy bỏ", "Đồng ý"],
             })
-              .then((willDelete) => {
-                if (willDelete) {
-                  $.ajax({
-                    url:"/delete_thuong_phat/{{phongban[0]}}" + "_" + id,
-                    context: document.body
-                  })
-                  location.href="/view_phong_ban/{{phongban[0]}}";
-                }
-              });
-          }
+                .then((willDelete) => {
+                    if (willDelete) {
+                        $.ajax({
+                            url: "/delete_thuong_phat/{{phongban[0]}}" + "_" + id,
+                            context: document.body
+                        })
+                        location.href = "/view_phong_ban/{{phongban[0]}}";
+                    }
+                });
+        }
     </script>
 </body>
 

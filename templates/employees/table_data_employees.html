@@ -33,7 +33,6 @@
 
 
       <!-- User Menu-->
-      <li><a class="app-nav__item" style="margin: 0 25px 0 0;" href=""><i class='bx bx-bell'></i> </a></li>
       <li><a class="app-nav__item" href="/logout"><i class='bx bx-log-out bx-rotate-180'></i> </a>
 
       </li>
@@ -52,29 +51,27 @@
     <hr>
     <ul class="app-menu">
       <li><a class="app-menu__item haha"><i class='app-menu__icon bx bx-user'></i>
-          <span class="app-menu__label">Quản lý</span></a></li>
-      <li><a class="app-menu__item " href="/index"><i class='app-menu__icon bx bx-tachometer'></i><span
-            class="app-menu__label">Bảng điều khiển</span></a></li>
+              <span class="app-menu__label">Quản lý</span></a></li>
+      <li><a class="app-menu__item" href="/home"><i class='app-menu__icon bx bx-tachometer'></i><span
+                  class="app-menu__label">Bảng điều khiển</span></a></li>
       <li><a class="app-menu__item active" href="/table_data_employees"><i class='app-menu__icon bx bx-id-card'></i>
-          <span class="app-menu__label">Quản lý nhân viên</span></a></li>
+              <span class="app-menu__label">Quản lý nhân viên</span></a></li>
       <li><a class="app-menu__item" href="/table_chuc_vu"><i class='app-menu__icon bx bxs-book-content'></i>
-        <span class="app-menu__label">Quản lý chức vụ</span></a></li>
-      <li><a class="app-menu__item" href="/danh_sach_hop_dong"><i class='app-menu__icon bx bx-user-voice'></i><span
-            class="app-menu__label">Danh sách hợp đồng</span></a></li>
-      <li><a class="app-menu__item" href="/view_all_phong_ban"><i class='app-menu__icon bx bxs-business'></i><span
-                        class="app-menu__label">Phòng ban</span></a></li>
-      <li><a class="app-menu__item" href="table-data-banned.html"><i class='app-menu__icon bx bx-run'></i><span
-        class="app-menu__label">Quản lý nội bộ
-          </span></a></li>
+              <span class="app-menu__label">Quản lý chức vụ</span></a></li>
+      <li><a class="app-menu__item" href="/danh_sach_hop_dong"><i
+                  class='app-menu__icon bx bx-user-voice'></i><span class="app-menu__label">Danh sách hợp
+                  đồng</span></a></li>
       <li><a class="app-menu__item" href="/table_data_money"><i class='app-menu__icon bx bx-dollar'></i><span
-            class="app-menu__label">Bảng kê lương</span></a></li>
-      <li><a class="app-menu__item" href="/page_calendar"><i class='app-menu__icon bx bx-calendar-check'></i><span
-            class="app-menu__label">Lịch công tác </span></a></li>
+                  class="app-menu__label">Bảng kê lương</span></a></li>
       <li><a class="app-menu__item" href="/danh_sach_cham_cong"><i class='app-menu__icon bx bx-edit-alt'></i><span
-            class="app-menu__label">Danh sách chấm công</span></a></li>
+                  class="app-menu__label">Danh sách chấm công</span></a></li>
       <li><a class="app-menu__item" href="/view_all_thoi_gian_cong_tac"><i class='app-menu__icon bx bx-history'></i><span
-        class="app-menu__label">Thời gian công tác</span></a></li>
-    </ul>
+                  class="app-menu__label">Thời gian công tác</span></a></li>
+      <li><a class="app-menu__item" href="/view_all_phong_ban"><i class='app-menu__icon bx bxs-business'></i><span
+                  class="app-menu__label">Phòng ban</span></a></li>
+      <li><a class="app-menu__item" href="/cai_dat"><i class='app-menu__icon bx bx-cog'></i><span
+                  class="app-menu__label">Cài đặt</span></a></li>
+  </ul>
   </aside>
   <main class="app-content">
     <div class="app-title">
@@ -92,7 +89,7 @@
             <div class="row element-button">
 
               <div class="col-sm-2">
-                <a class="btn btn-add btn-sm" href="/form_add_data_employees" title="Thêm"><i class="fas fa-plus"></i>
+                <a class="btn btn-add btn-sm" href="/form_add_data_employees" title="Tạo mới nhân viên"><i class="fas fa-plus"></i>
                   Tạo mới nhân viên</a>
               </div>
 
@@ -102,7 +99,7 @@
               </div>
 
               <div class="col-sm-2">
-                <a class="btn btn-delete btn-sm nhap-tu-file" href="/form_add_data_employees_upload_file" type="button" title="Nhập"><i
+                <a class="btn btn-delete btn-sm nhap-tu-file" href="/form_add_data_employees_upload_file" type="button" title="Tải từ file"><i
                     class="fas fa-file-upload"></i> Tải từ file</a>
               </div>
 
@@ -117,17 +114,17 @@
               </div>
 
               <div class="col-sm-2">
-                <a class="btn btn-excel btn-sm" href="/get_data_employees_excel" title="In"><i 
+                <a class="btn btn-excel btn-sm" href="/get_data_employees_excel" title="Xuất Excel"><i 
                   class="fas fa-file-excel"></i> Xuất Excel</a>
               </div>
 
               <div class="col-sm-2">
-                <a class="btn btn-delete btn-sm pdf-file" type="button" title="In" href="/get_pdf_data_employees"><i
-                    class="fas fa-file-pdf"></i> Xuất PDF</a>
+                <a class="btn btn-delete btn-sm pdf-file" type="button" title="Xuất PDF" href="/get_pdf_data_employees"><i
+                    class="fas fa-file-pdf"></i>Xuất PDF</a>
               </div>
 
               <div class="col-sm-2">
-                <a class="btn btn-delete btn-sm" type="button" title="Xóa tát cả các phần tử đã chọn" 
+                <a class="btn btn-delete btn-sm" type="button" title="Xóa tất cả các phần tử đã chọn" 
                       onclick="deleteMoreRow(this)"><i
                     class="fas fa-trash-alt"></i> Xóa phần tử đã chọn </a>
               </div>

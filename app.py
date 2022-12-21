@@ -561,9 +561,6 @@ def get_pdf_data_employees():
 @login_required
 @app.route("/get_information_one_employee/<string:maNV>")
 def get_infomation_one_employee(maNV):
-    if session['role_id'] != 1:
-        if (maNV != session['username'][4]):
-            abort(404)
     
     cur = mysql.connection.cursor()
     cur.execute("""
@@ -2022,6 +2019,58 @@ def form_view_update_cham_cong(canEdit, maNV, id, day, month, year):
             sql_chamcongthang += " WHERE MaNV = '" + maNV  + "' AND Nam = '" + str(NGAY.year) + "'"
             cur.execute(sql_chamcongthang)
             mysql.connection.commit()
+        
+        # Xử lý trong bảng tổng kết tháng    
+        cur.execute("""SELECT *
+                    FROM qlnv_chamcongtongketthang
+                    WHERE Nam = %s AND Thang = %s AND MaNhanVien = %s""", (NGAY.year, NGAY.month,maNV) )
+        chamCongTongKet = cur.fetchall()
+        
+        day_to_count = calendar.SUNDAY
+
+        matrix = calendar.monthcalendar(NGAY.year,NGAY.month)
+
+        num_sun_days = sum(1 for x in matrix if x[day_to_count] != 0)
+        
+        if (len(chamCongTongKet) == 0):
+            soNgayDiLam = 1
+            soNgayDiVang = monthrange(NGAY.year, NGAY.month)[1] - 1 - num_sun_days
+            soNgayTangCa = 0
+            if OT == 1:
+                soNgayTangCa = 1
+            tongSoNgay = 1
+            cur.execute("""INSERT INTO `qlnv_chamcongtongketthang` (`Id`, `MaNhanVien`, `Nam`, `Thang`,
+                        `SoNgayDiLam`, `SoNgayDiVang`, `SoNgayTangCa`, `TongSoNgay`)
+                        VALUES (NULL, %s, %s, %s, %s, %s, %s, %s)""", (maNV, NGAY.year, NGAY.month, soNgayDiLam,
+                                                                       soNgayDiVang, soNgayTangCa, tongSoNgay))
+            mysql.connection.commit()
+        else:
+            cur.execute("""
+                        SELECT COUNT(DISTINCT Ngay)
+                        FROM qlnv_chamcong
+                        WHERE MaNV = %s AND Month(Ngay)=%s AND YEAR(Ngay)=%s
+                        GROUP BY Month(Ngay)
+                        """, (maNV, NGAY.month, NGAY.year))
+            soNgayDiLam = cur.fetchall()[0][0]
+            soNgayDiVang = monthrange(NGAY.year, NGAY.month)[1] - soNgayDiLam - num_sun_days
+            cur.execute("""
+                        SELECT COUNT(DISTINCT Ngay)
+                        FROM qlnv_chamcong
+                        WHERE MaNV = %s AND Month(Ngay)=%s AND YEAR(Ngay)=%s AND OT = 1
+                        GROUP BY Month(Ngay)
+                        """, (maNV, NGAY.month, NGAY.year))
+            soNgayTangCa = cur.fetchall()
+            if (len(soNgayTangCa) == 0):
+                soNgayTangCa = 0
+            else:
+                soNgayTangCa = soNgayTangCa[0][0]
+            tongSoNgay = soNgayDiLam
+            cur.execute("""UPDATE qlnv_chamcongtongketthang
+                        SET SoNgayDiLam = %s, SoNgayDiVang = %s, SoNgayTangCa=%s, TongSoNgay = %s
+                        WHERE MaNhanVien = %s AND Nam = %s AND Thang = %s""", (soNgayDiLam, soNgayDiVang, soNgayTangCa,
+                                                                               tongSoNgay, maNV, NGAY.year, NGAY.month))
+            mysql.connection.commit()
+        
         mysql.connection.commit()
         cur.close()
         return redirect(url_for('table_cham_cong_ngay_trong_thang', maNV = maNV, year = year, month = month))
@@ -2261,13 +2310,35 @@ def delete_cham_cong(id):
 def form_add_data_cham_cong():
     if request.method == 'POST':
         cur = mysql.connection.cursor()
-        detail = request.form
-        NGAY = datetime.datetime.strptime(detail['Ngay'].strip(), '%Y-%m-%d')
-        MANV = detail['MANV']
-        GIOVAO = detail['GioVao']
-        GIORA = detail['GioRa']
-        OT = detail['OT']
-        
+        if (session['role_id'] == 1):
+            detail = request.form
+            NGAY = datetime.datetime.strptime(detail['Ngay'].strip(), '%Y-%m-%d')
+            MANV = detail['MANV']
+            GIOVAO = detail['GioVao']
+            GIORA = detail['GioRa']
+            OT = detail['OT']
+        else:
+            if 'chamcong' not in session.keys():
+                NGAY = datetime.datetime.now().strftime('%Y-%m-%d')
+                MANV = session['username'][4]
+                GIOVAO = datetime.datetime.now().strftime("%H:%M:%S")
+                # GIORA = detail['GioRa']
+                OT = 0
+                data_in_session = (NGAY, MANV, GIOVAO, OT)
+                session['chamcong'] = data_in_session
+                return render_template(session['role'] +"chamcong/form_add_cham_cong.html",
+                            chamcong = data_in_session,
+                               is_chamcong = 'YES',
+                           congty = session['congty'],
+                           my_user = session['username'])
+            else:
+                NGAY = datetime.datetime.strptime(session['chamcong'][0], '%Y-%m-%d')
+                MANV = session['username'][4]
+                GIOVAO = session['chamcong'][2]
+                GIORA = datetime.datetime.now().strftime("%H:%M:%S")
+                OT = 0
+                session.pop('chamcong')
+                return "OKE"
         sql_chamcong = """
             INSERT INTO `qlnv_chamcong` (`id`, `MaNV`, `Ngay`, `GioVao`, `GioRa`, `OT`, `ThoiGianLamViec`, `ThoiGian_thap_phan`) 
             VALUES (NULL, %s, %s, %s, %s, %s, '', '0');
@@ -2299,11 +2370,13 @@ def form_add_data_cham_cong():
         chamCongTheoNam = cur.fetchall()
         
         # Xử lý trong bảng chấm công ngày và trong bảng tổng hợp theo các năm
-        if (len(chamCongTheoThang) == 0 and len(chamCongTheoNam) == 0):
-            cur.execute("""INSERT INTO `qlnv_chamcongngay` (`MaChamCong`, `MaNV`, `Nam`, `Thang`, `SoNgayThang`) VALUES
+        if (len(chamCongTheoThang) == 0 or len(chamCongTheoNam) == 0):
+            if len(chamCongTheoThang) == 0:
+                cur.execute("""INSERT INTO `qlnv_chamcongngay` (`MaChamCong`, `MaNV`, `Nam`, `Thang`, `SoNgayThang`) VALUES
                         (NULL, %s, %s, %s, %s)""", (MANV, NGAY.year, NGAY.month, monthrange(NGAY.year, NGAY.month)[1]))
-            
-            cur.execute("""INSERT INTO qlnv_chamcongthang (id, MaNV, Nam) VALUES
+                 
+            if len(chamCongTheoNam) == 0:
+                cur.execute("""INSERT INTO qlnv_chamcongthang (id, MaNV, Nam) VALUES
                         (NULL, %s, %s)""", (MANV, NGAY.year))
             mysql.connection.commit()
             
@@ -2392,6 +2465,13 @@ def form_add_data_cham_cong():
         mysql.connection.commit()
         cur.close()
         return redirect(url_for('danh_sach_cham_cong'))
+    
+    if 'chamcong' in session:
+        return render_template(session['role'] +"chamcong/form_add_cham_cong.html",
+                               is_chamcong = 'YES',
+                           congty = session['congty'],
+                           my_user = session['username'])
+    
     return render_template(session['role'] +"chamcong/form_add_cham_cong.html",
                            congty = session['congty'],
                            my_user = session['username'])
@@ -3303,13 +3383,14 @@ def get_data_money_excel():
 def view_data_money(maNV):
     cur = mysql.connection.cursor()
     cur.execute("""
-              SELECT l.id,  l.Thang, l.Nam, tk.SoNgayDiLam, tk.SoNgayDiVang, tk.SoNgayTangCa, l.LuongCoDinh, l.LuongChamCong,
+              SELECT l.id,  l.Thang, l.Nam, tk.SoNgayDiLam, tk.SoNgayDiVang,
+              tk.SoNgayTangCa, l.LuongCoDinh, l.LuongChamCong,
               l.SoTienPhat, l.SoTienThuong, l.TongSoTien
                 FROM qlnv_luong l
                 JOIN qlnv_chamcongtongketthang tk ON tk.Nam = l.Nam AND tk.Thang = l.Thang
-                WHERE l.MaNV = %s
+                WHERE l.MaNV = %s AND tk.MaNhanVien = %s
                 ORDER BY l.Nam DESC, l.Thang DESC
-                """, (maNV, ))
+                """, (maNV, maNV))
     luong = cur.fetchall()
     
     cur.execute("""
@@ -3337,7 +3418,8 @@ def view_data_money(maNV):
 def get_print_view_data_money(maNV):
     cur = mysql.connection.cursor()
     cur.execute("""
-              SELECT l.id,  l.Thang, l.Nam, tk.SoNgayDiLam, tk.SoNgayDiVang, tk.SoNgayTangCa, l.LuongCoDinh, l.LuongChamCong,
+              SELECT l.id,  l.Thang, l.Nam, tk.SoNgayDiLam, tk.SoNgayDiVang,
+              tk.SoNgayTangCa, l.LuongCoDinh, l.LuongChamCong,
               l.SoTienPhat, l.SoTienThuong, l.TongSoTien
                 FROM qlnv_luong l
                 JOIN qlnv_chamcongtongketthang tk ON tk.Nam = l.Nam AND tk.Thang = l.Thang
@@ -3667,6 +3749,7 @@ def form_view_cong_ty(canEdit):
             pathToImage = app.config['UPLOAD_FOLDER_IMG'] + "/" + filename
             image_profile.save(pathToImage)
             take_image_to_save(ID_image, pathToImage)
+            pathToImage = "/".join(pathToImage.split("/")[1::])
             
         cur.execute("""
                     UPDATE qlnv_congty
