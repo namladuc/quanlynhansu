@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<link rel="stylesheet" href="{{ url_for('static', filename='doc/css/info.css') }}">
+	<link rel="stylesheet" type="text/css"
+    href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/boxicons@latest/css/boxicons.min.css">
+  <!-- or -->
+  <link rel="stylesheet" href="https://unpkg.com/boxicons@latest/css/boxicons.min.css">
+	<link rel="stylesheet" href="{{ url_for('static', filename='vendor/bootstrap/css/bootstrap.min.css') }}">
+
+</head>
+
+<body>
+    <div class="container-fluid">
+        <div class="container profile-container">
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="data-box">
+                        <div class="pro-s-cover">
+                            <img src="{{ url_for('static', filename=nhanvien[14])}}" style="border-radius: 50%;" width="130px" height="130px" alt="Ảnh">
+                            <h6>{{nhanvien[1]}}</h6>
+                            <span>{{nhanvien[15]}}</span>
+                            <p>{{nhanvien[16]}}</p>
+                        </div>
+                    </div>
+
+                    <div class="data-box">
+                        <h6>Thông tin về công ty</h6>
+                        <span class="font-italic" style="font-weight: bold;">{{congty[1]}}</span>
+                        <p>{{congty[2]}}</p>
+                        <p>{{congty[4]}}</p>
+
+                    </div>
+                </div>
+                <div class="col-md-8">
+                    <div class="data-box">
+                        <h2>Thông tin cá nhân</h2>
+                        <table>
+                            <tr>
+                            <tr>
+                                <td class="font-italic">Mã nhân viên</td>
+                                <td>: {{nhanvien[0]}}</td>
+                            </tr>
+                            <tr>
+                                <td class="font-italic">Họ và tên</td>
+                                <td>: {{nhanvien[1]}}</td>
+                            </tr>
+                            <tr>
+                                <td class="font-italic">Giới tính</td>
+                                <td>: {{nhanvien[2]}}</td>
+                            </tr>
+                            <tr>
+                                <td class="font-italic">Địa chỉ</td>
+                                <td>: {{nhanvien[10]}}</td>
+                            </tr>
+                            <tr>
+                                <td class="font-italic">CMND/CCCD</td>
+                                <td>: {{nhanvien[5]}}</td>
+                            </tr>
+                            <tr>
+                                <td class="font-italic">Ngày sinh</td>
+                                <td>: {{nhanvien[3]}}</td>
+                            </tr>
+                            <tr>
+                                <td class="font-italic">Quê quán</td>
+                                <td>: {{nhanvien[12]}}</td>
+                            </tr>
+                            <tr>
+                                <td class="font-italic">Số điện thoại</td>
+                                <td>: {{nhanvien[8]}}</td>
+                            </tr>
+                            <tr>
+                                <td class="font-italic">Email</td>
+                                <td>: {{nhanvien[9]}}</td>
+                            </tr>
+                            <tr>
+                                <td class="font-italic">Tình trạng hôn nhân</td>
+                                <td>: {{nhanvien[19]}}</td>
+                            </tr>
+                            <tr>
+                                <td class="font-italic">Trình độ học vấn</td>
+                                <td>: {{nhanvien[20]}}</td>
+                            </tr>
+                            <tr>
+                                <td class="font-italic">Tên phòng ban</td>
+                                <td>: {{nhanvien[15]}}</td>
+                            </tr>
+                            <tr>
+                                <td class="font-italic">Tên chức vụ</td>
+                                <td>: {{nhanvien[16]}}</td>
+                            </tr>
+                            <tr>
+                                <td class="font-italic">Loại hợp đồng</td>
+                                <td>: {{nhanvien[-1]}}</td>
+                            </tr>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="data-box">
+                        <h2>Quá trình công tác</h2>
+                        {% for elm in thoigiancongtac %}
+
+                            {% if elm[-1] == 1 %}
+                                <p><i class='bx bx-stopwatch'></i>{{elm[2]}} - Từ ngày: {{elm[3]}} </p>                                
+                            {% else %}
+                                <p><i class='bx bx-stopwatch'></i>{{elm[2]}} - Từ ngày: {{elm[3]}} đến {{elm[4]}}</p>
+                            {% endif %}
+
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

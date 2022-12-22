@@ -2,7 +2,7 @@
 <html lang="en">
 
 <head>
-  <title>Tổng kết chấm công tháng của bạn - {{TenNV}} - {{Nam}}</title>
+  <title>Bảng chấm công các ngày trong tháng</title>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -47,30 +47,32 @@
       </div>
     </div>
     <hr>
-    <hr>
-      <ul class="app-menu">
-        <li><a class="app-menu__item haha"><i class='app-menu__icon bx bx-user'></i>
-                <span class="app-menu__label">Nhân viên</span></a></li>
-        <li><a class="app-menu__item" href="/home"><i class='app-menu__icon bx bx-tachometer'></i><span
-                    class="app-menu__label">Trang chủ</span></a></li>
-        <li><a class="app-menu__item" href="/form_view_update_employees/{{my_user[4]}}_N"><i
-                    class='app-menu__icon bx bx-id-card'></i>
-                <span class="app-menu__label">Thông tin cá nhân</span></a></li>
-        <li><a class="app-menu__item" href="/view_data_money/{{my_user[4]}}"><i class='app-menu__icon bx bx-dollar'></i><span
-                    class="app-menu__label">Thống kê lương</span></a></li>
-        <li><a class="app-menu__item" href="/form_add_data_cham_cong"><i class='app-menu__icon bx bx-edit-alt'></i><span
-            class="app-menu__label">Chấm công ngày</span></a></li>
-        <li><a class="app-menu__item active" href="/danh_sach_cham_cong"><i class='app-menu__icon bx bxs-report'></i><span
-            class="app-menu__label">Thống kê chấm công</span></a></li>
-        <li><a class="app-menu__item" href="/cai_dat"><i class='app-menu__icon bx bx-cog'></i><span
-            class="app-menu__label">Cài đặt</span></a></li>
-    </ul>
+    <ul class="app-menu">
+      <li><a class="app-menu__item haha"><i class='app-menu__icon bx bx-user'></i>
+              <span class="app-menu__label">Trưởng phòng</span></a></li>
+      <li><a class="app-menu__item" href="/home"><i class='app-menu__icon bx bx-tachometer'></i><span
+                  class="app-menu__label">Trang chủ</span></a></li>
+      <li><a class="app-menu__item" href="/form_view_update_employees/{{my_user[4]}}_N"><i
+                  class='app-menu__icon bx bx-id-card'></i>
+              <span class="app-menu__label">Thông tin cá nhân</span></a></li>
+      <li><a class="app-menu__item" href="/view_data_money/{{my_user[4]}}"><i class='app-menu__icon bx bx-dollar'></i><span
+                  class="app-menu__label">Thống kê lương</span></a></li>
+      <li><a class="app-menu__item" href="/form_add_data_cham_cong"><i class='app-menu__icon bx bx-edit-alt'></i><span
+          class="app-menu__label">Chấm công ngày</span></a></li>
+      <li><a class="app-menu__item active" href="/danh_sach_cham_cong"><i class='app-menu__icon bx bxs-report'></i><span
+          class="app-menu__label">Thống kê chấm công</span></a></li>
+        <li><a class="app-menu__item" href="/view_phong_ban/{{my_user[-1]}}"><i class='app-menu__icon bx bxs-business'></i><span
+          class="app-menu__label">Phòng ban</span></a></li>
+      <li><a class="app-menu__item" href="/cai_dat"><i class='app-menu__icon bx bx-cog'></i><span
+          class="app-menu__label">Cài đặt</span></a></li>
+  </ul>
   </aside>
   <main class="app-content">
     <div class="app-title">
       <ul class="app-breadcrumb breadcrumb side">
-        <li class="breadcrumb-item active"><a href="/danh_sach_cham_cong"><b>Thống kê chấm công năm {{Nam}}</b></a></li>
-        <li class="breadcrumb-item active"><a href="#"><b>Chấm công tháng tổng kết - {{TenNV}} - {{Nam}} </b></a></li>
+        <li class="breadcrumb-item"><a href="/danh_sach_cham_cong"><b>Thống kê chấm công năm {{Nam}}</b></a></li>
+        <li class="breadcrumb-item active"><a href=""><b>Bảng chấm công các ngày trong tháng - {{month}} / {{year}} -
+              {{TenNV}}</b></a></li>
 
       </ul>
       <div id="clock"></div>
@@ -81,33 +83,48 @@
         <div class="tile">
           <div class="tile-body">
 
+            <div class="row element-button">
+              <div class="col-sm-2">
+                <a class="btn btn-info btn-sm" href="/table_cham_cong_tong_ket_thang/{{maNV}}_{{year}}"
+                  title="Xem tổng kết các tháng của nhân viên này"><i class="fa fa-book"></i>
+                  Xem tổng kết các tháng</a>
+              </div>
+
+            </div>
             <table class="table table-hover table-bordered" id="sampleTable">
               <thead>
                 <tr>
-                  <th class="center-text" rowspan="2" style="background-color: #eee">Tháng</th>
-                  <th colspan="5" style="text-align: center; background-color: #eee">Thông tin</th>
+                  <th class="center-text" rowspan="2" style="background-color: #eee">Ngày</th>
+                  <th colspan="2" style="text-align: center; background-color: #eee">Thông tin</th>
                 </tr>
                 <tr>
-                  <th class="center" width="200">Số ngày đi làm</th>
-                  <th class="center" width="200">Số ngày vắng</th>
-                  <th class="center" width="200">Số ngày tăng ca</th>
-                  <th class="center" width="200">Tổng số ngày</th>
-                  <th class="center" width="50">Xem</th>
+                  <th class="center" width="50">Trạng thái</th>
+                  <th class="center" width="1000">Giờ</th>
                 </tr>
               <tbody>
-                {% for data in data_tong_ket_thang %}
+                {% for i in index_arr %}
                 <tr>
-                  <td class="center">{{data[3]}}</td>
-                  <td class="center">{{data[4]}}</td>
-                  <td class="center">{{data[5]}}</td>
-                  <td class="center">{{data[6]}}</td>
-                  <td class="center">{{data[7]}}</td>
-                  <td class="center">
-                    <button class="btn btn-primary btn-sm edit" type="button" title="Xem chi tiết tháng" id="show-emp">
-                      <a href="/table_cham_cong_ngay_trong_thang/{{MaNV}}_{{Nam}}_{{data[3]}}"><i class="fa fa-eye"
-                          aria-hidden="true"></i></a>
-                    </button>
-                  </td>
+                  <td class="center"> {{date_weekday[i]}} <br> {{date_str[i]}} </td>
+
+                  {% if data_day_tong_ket[i] >= 6 %}
+                  <td class="icon icon--sucess" title="Tổng thời gian làm việc trong ngày: {{data_day_tong_ket[i]}}"><i
+                      class="fa fa-check-circle" aria-hidden="true"></i></td>
+                  {% elif data_day_tong_ket[i] >= 4 and data_day_tong_ket[i] < 6 %} <td class="icon icon--warning"
+                    title="Tổng thời gian làm việc trong ngày: {{data_day_tong_ket[i]}}"><i class="fa fa-minus-circle"
+                      aria-hidden="true"></i></td>
+                    {% else %}
+                    <td class="icon icon--error" title="Tổng thời gian làm việc trong ngày: {{data_day_tong_ket[i]}}"><i
+                        class="fa fa-times-circle" aria-hidden="true"></i></td>
+                    {% endif %}
+
+                    <td class="center">
+
+                      {% for elm in time_arr_str[i] %}
+                      <strong>Bắt đầu:</strong> <span class="text-info">{{elm[0]}}</span> <strong>-- đến -- ></strong>
+                      <span class="text-info">{{elm[1]}}</span> <br>
+                      {% endfor %}
+
+                    </td>
                 </tr>
                 {% endfor %}
 
@@ -145,36 +162,11 @@
   <script>
     //In dữ liệu
     var myApp = new function () {
-      this.printTongKetThangTable = function () {
-        var win = window.open('/get_print_cham_cong_tong_ket_thang/{{MaNV}}_{{Nam}}', '', 'height=700,width=1400');
+      this.printChamCongNgayTable = function () {
+        var win = window.open('/get_print_cham_cong_ngay_trong_thang/{{maNV}}_{{year}}_{{month}}', '', 'height=700,width=1400');
         win.document.close();
         win.print();
       }
-    }
-
-    function dieu_huong() {
-      //     //Sao chép dữ liệu
-      var copyTextareaBtn = document.querySelector('.js-textareacopybtn');
-
-      copyTextareaBtn.addEventListener('click', function (event) {
-        var copyTextarea = document.querySelector('.js-copytextarea');
-        copyTextarea.focus();
-        copyTextarea.select();
-
-        try {
-          var successful = document.execCommand('copy');
-          var msg = successful ? 'successful' : 'unsuccessful';
-          console.log('Copying text command was ' + msg);
-        } catch (err) {
-          console.log('Oops, unable to copy');
-        }
-      });
-
-
-      //Modal
-      $("#show-emp").on("click", function () {
-        $("#ModalUP").modal({ backdrop: false, keyboard: false })
-      });
     }
   </script>
 </body>

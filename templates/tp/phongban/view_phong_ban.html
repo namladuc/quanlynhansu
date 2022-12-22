@@ -2,7 +2,7 @@
 <html lang="en">
 
 <head>
-    <title>Phòng ban {{phongban[1]}} | Quản trị Admin</title>
+    <title>Phòng ban {{phongban[1]}}</title>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -34,7 +34,7 @@
         <!-- Navbar Right Menu-->
         <ul class="app-nav">
             <!-- User Menu-->
-            <li><a class="app-nav__item" href="\logout"><i class='bx bx-log-out bx-rotate-180'></i> </a>
+            <li><a class="app-nav__item" href="/logout"><i class='bx bx-log-out bx-rotate-180'></i> </a>
             </li>
         </ul>
     </header>
@@ -51,32 +51,28 @@
         <hr>
         <ul class="app-menu">
             <li><a class="app-menu__item haha"><i class='app-menu__icon bx bx-user'></i>
-                    <span class="app-menu__label">Quản lý</span></a></li>
+                <span class="app-menu__label">Trưởng phòng</span></a></li>
             <li><a class="app-menu__item" href="/home"><i class='app-menu__icon bx bx-tachometer'></i><span
-                        class="app-menu__label">Bảng điều khiển</span></a></li>
-            <li><a class="app-menu__item" href="/table_data_employees"><i class='app-menu__icon bx bx-id-card'></i>
-                    <span class="app-menu__label">Quản lý nhân viên</span></a></li>
-            <li><a class="app-menu__item" href="/table_chuc_vu"><i class='app-menu__icon bx bxs-book-content'></i>
-                    <span class="app-menu__label">Quản lý chức vụ</span></a></li>
-            <li><a class="app-menu__item" href="/danh_sach_hop_dong"><i
-                        class='app-menu__icon bx bx-user-voice'></i><span class="app-menu__label">Danh sách hợp
-                        đồng</span></a></li>
-            <li><a class="app-menu__item" href="/table_data_money"><i class='app-menu__icon bx bx-dollar'></i><span
-                        class="app-menu__label">Bảng kê lương</span></a></li>
-            <li><a class="app-menu__item" href="/danh_sach_cham_cong"><i class='app-menu__icon bx bx-edit-alt'></i><span
-                        class="app-menu__label">Danh sách chấm công</span></a></li>
-            <li><a class="app-menu__item" href="/view_all_thoi_gian_cong_tac"><i class='app-menu__icon bx bx-history'></i><span
-                        class="app-menu__label">Thời gian công tác</span></a></li>
-            <li><a class="app-menu__item active" href="/view_all_phong_ban"><i class='app-menu__icon bx bxs-business'></i><span
-                        class="app-menu__label">Phòng ban</span></a></li>
+                  class="app-menu__label">Trang chủ</span></a></li>
+            <li><a class="app-menu__item" href="/form_view_update_employees/{{my_user[4]}}_N"><i
+                  class='app-menu__icon bx bx-id-card'></i>
+                <span class="app-menu__label">Thông tin cá nhân</span></a></li>
+            <li><a class="app-menu__item" href="/view_data_money/{{my_user[4]}}"><i
+                  class='app-menu__icon bx bx-dollar'></i><span class="app-menu__label">Thống kê lương</span></a></li>
+            <li><a class="app-menu__item" href="/form_add_data_cham_cong"><i class='app-menu__icon bx bx-edit-alt'></i><span
+                  class="app-menu__label">Chấm công ngày</span></a></li>
+            <li><a class="app-menu__item" href="/danh_sach_cham_cong"><i class='app-menu__icon bx bxs-report'></i><span
+                  class="app-menu__label">Thống kê chấm công</span></a></li>
+            <li><a class="app-menu__item active" href="/view_phong_ban/{{my_user[-1]}}"><i class='app-menu__icon bx bxs-business'></i><span
+                  class="app-menu__label">Phòng ban</span></a></li>
             <li><a class="app-menu__item" href="/cai_dat"><i class='app-menu__icon bx bx-cog'></i><span
-                        class="app-menu__label">Cài đặt</span></a></li>
-        </ul>
+                  class="app-menu__label">Cài đặt</span></a></li>
+          </ul>
     </aside>
     <main class="app-content">
         <div class="app-title">
             <ul class="app-breadcrumb breadcrumb">
-                <li class="breadcrumb-item"><a href="/view_all_phong_ban">Phòng ban</a></li>
+                <li class="breadcrumb-item"><a href="/view_phong_ban/{{my_user[-1]}}">Phòng ban</a></li>
                 <li class="breadcrumb-item active"><a href="">Phòng {{phongban[1]}}</a></li>
             </ul>
         </div>
@@ -86,11 +82,6 @@
                     <h3 class="tile-title">Tổng quan</h3>
                     <div class="tile-body">
                         <div class="row element-button">
-
-                            <div class="col-sm-2">
-                                <a class="btn btn-warning" href="/form_update_phong_ban/{{phongban[0]}}" title="Sửa"><i class="fa fa-pencil-square-o"></i>
-                                  Sửa phòng ban</a>
-                              </div>
                             
                               <div class="col-sm-2">
                                 <a class="btn btn-add btn-sm" href="/form_add_thuong_phat_phong_ban/{{phongban[0]}}" title="Tạo"><i class="fas fa-plus"></i>

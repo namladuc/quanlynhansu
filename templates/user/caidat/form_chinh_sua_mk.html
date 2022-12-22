@@ -50,34 +50,27 @@
         <hr>
         <ul class="app-menu">
             <li><a class="app-menu__item haha"><i class='app-menu__icon bx bx-user'></i>
-                <span class="app-menu__label">Quản lý</span></a></li>
+                    <span class="app-menu__label">Nhân viên</span></a></li>
             <li><a class="app-menu__item" href="/home"><i class='app-menu__icon bx bx-tachometer'></i><span
-                        class="app-menu__label">Bảng điều khiển</span></a></li>
-            <li><a class="app-menu__item" href="/table_data_employees"><i class='app-menu__icon bx bx-id-card'></i>
-                    <span class="app-menu__label">Quản lý nhân viên</span></a></li>
-            <li><a class="app-menu__item" href="/table_chuc_vu"><i class='app-menu__icon bx bxs-book-content'></i>
-                    <span class="app-menu__label">Quản lý chức vụ</span></a></li>
-            <li><a class="app-menu__item" href="/danh_sach_hop_dong"><i
-                        class='app-menu__icon bx bx-user-voice'></i><span class="app-menu__label">Danh sách hợp
-                        đồng</span></a></li>
-            <li><a class="app-menu__item" href="/table_data_money"><i class='app-menu__icon bx bx-dollar'></i><span
-                        class="app-menu__label">Bảng kê lương</span></a></li>
-            <li><a class="app-menu__item" href="/danh_sach_cham_cong"><i class='app-menu__icon bx bx-edit-alt'></i><span
-                        class="app-menu__label">Danh sách chấm công</span></a></li>
-            <li><a class="app-menu__item" href="/view_all_thoi_gian_cong_tac"><i class='app-menu__icon bx bx-history'></i><span
-                        class="app-menu__label">Thời gian công tác</span></a></li>
-            <li><a class="app-menu__item" href="/view_all_phong_ban"><i class='app-menu__icon bx bxs-business'></i><span
-                        class="app-menu__label">Phòng ban</span></a></li>
+                        class="app-menu__label">Trang chủ</span></a></li>
+            <li><a class="app-menu__item" href="/form_view_update_employees/{{my_user[4]}}_N"><i
+                        class='app-menu__icon bx bx-id-card'></i>
+                    <span class="app-menu__label">Thông tin cá nhân</span></a></li>
+            <li><a class="app-menu__item" href="/view_data_money/{{my_user[4]}}"><i class='app-menu__icon bx bx-dollar'></i><span
+                        class="app-menu__label">Thống kê lương</span></a></li>
+            <li><a class="app-menu__item" href="/form_add_data_cham_cong"><i class='app-menu__icon bx bx-edit-alt'></i><span
+                class="app-menu__label">Chấm công ngày</span></a></li>
+            <li><a class="app-menu__item" href="/danh_sach_cham_cong"><i class='app-menu__icon bx bxs-report'></i><span
+                class="app-menu__label">Thống kê chấm công</span></a></li>
             <li><a class="app-menu__item active" href="/cai_dat"><i class='app-menu__icon bx bx-cog'></i><span
-                        class="app-menu__label">Cài đặt</span></a></li>
+                class="app-menu__label">Cài đặt</span></a></li>
         </ul>
     </aside>
     <main class="app-content">
         <div class="app-title">
             <ul class="app-breadcrumb breadcrumb">
                 <li class="breadcrumb-item"><a href="/cai_dat"><b>Cài đặt</b></a></li>
-                <li class="breadcrumb-item"><a href="/form_view_tk">Tài khoản</a></li>
-                <li class="breadcrumb-item active"><a href="">Đổi mật khẩu cho tài khoản {{this_user}}</a></li>
+                <li class="breadcrumb-item active"><a href="">Đổi mật khẩu </a></li>
             </ul>
             <div id="clock"></div>
         </div>
@@ -97,10 +90,13 @@
                             </div>
                           {% endif %}
 
-                            <!-- <div class="form-group col-md-12">
-                                <label class="control-label">Mật khẩu cũ</label>
-                                <input class="form-control" type="password" name="password_old" required>
-                            </div> -->
+                            {% if role != 1 %}
+                                <div class="form-group col-md-12">
+                                    <label class="control-label">Mật khẩu cũ</label>
+                                    <input class="form-control" type="password" name="password_old" required>
+                                </div> 
+                            {% endif %}
+
                             <div class="form-group col-md-12">
                                 <label class="control-label">Mật khẩu mới</label>
                                 <input class="form-control" type="password" name="password" required>

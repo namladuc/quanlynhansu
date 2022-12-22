@@ -9,7 +9,7 @@
     <!-- Main CSS-->
     <link rel="stylesheet" href="{{ url_for('static', filename='doc/css/main.css') }}">
     <script src="{{url_for('static', filename='js/displaytime/displaytime.js')}}"></script>
-    <link rel="shortcut icon" type="image/x-icon" href="{{ url_for('static', filename=congty[3])}}" />
+    <link rel="shortcut icon" type="image/x-icon" href="{{ url_for('static', filename=congty[3])}}"/>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/boxicons@latest/css/boxicons.min.css">
     <!-- or -->
     <link rel="stylesheet" href="https://unpkg.com/boxicons@latest/css/boxicons.min.css">
@@ -39,9 +39,8 @@
     <!-- Sidebar menu-->
     <div class="app-sidebar__overlay" data-toggle="sidebar"></div>
     <aside class="app-sidebar">
-        <div class="app-sidebar__user"><img class="app-sidebar__user-avatar"
-                src="{{ url_for('static', filename=my_user[7]) }}" style="border-radius: 50%;" width="50px"
-                alt="User Image">
+        <div class="app-sidebar__user"><img class="app-sidebar__user-avatar" src="{{ url_for('static', filename=my_user[7]) }}" style="border-radius: 50%;" width="50px"
+            alt="User Image">
             <div>
                 <p class="app-sidebar__user-name"><b>{{my_user[3]}}</b></p>
                 <p class="app-sidebar__user-designation">Chào mừng bạn trở lại</p>
@@ -50,22 +49,22 @@
         <hr>
         <ul class="app-menu">
             <li><a class="app-menu__item haha"><i class='app-menu__icon bx bx-user'></i>
-                    <span class="app-menu__label">Nhân viên</span></a></li>
+                    <span class="app-menu__label">Trưởng phòng</span></a></li>
             <li><a class="app-menu__item active" href="/home"><i class='app-menu__icon bx bx-tachometer'></i><span
                         class="app-menu__label">Trang chủ</span></a></li>
             <li><a class="app-menu__item" href="/form_view_update_employees/{{my_user[4]}}_N"><i
                         class='app-menu__icon bx bx-id-card'></i>
                     <span class="app-menu__label">Thông tin cá nhân</span></a></li>
-            <li><a class="app-menu__item" href="/view_data_money/{{my_user[4]}}"><i
-                        class='app-menu__icon bx bx-dollar'></i><span class="app-menu__label">Thống kê lương</span></a>
-            </li>
-            <li><a class="app-menu__item" href="/form_add_data_cham_cong"><i
-                        class='app-menu__icon bx bx-edit-alt'></i><span class="app-menu__label">Chấm công
-                        ngày</span></a></li>
+            <li><a class="app-menu__item" href="/view_data_money/{{my_user[4]}}"><i class='app-menu__icon bx bx-dollar'></i><span
+                        class="app-menu__label">Thống kê lương</span></a></li>
+            <li><a class="app-menu__item" href="/form_add_data_cham_cong"><i class='app-menu__icon bx bx-edit-alt'></i><span
+                class="app-menu__label">Chấm công ngày</span></a></li>
             <li><a class="app-menu__item" href="/danh_sach_cham_cong"><i class='app-menu__icon bx bxs-report'></i><span
-                        class="app-menu__label">Thống kê chấm công</span></a></li>
+                class="app-menu__label">Thống kê chấm công</span></a></li>
+            <li><a class="app-menu__item" href="/view_phong_ban/{{my_user[-1]}}"><i class='app-menu__icon bx bxs-business'></i><span
+                class="app-menu__label">Phòng ban</span></a></li>
             <li><a class="app-menu__item" href="/cai_dat"><i class='app-menu__icon bx bx-cog'></i><span
-                        class="app-menu__label">Cài đặt</span></a></li>
+                class="app-menu__label">Cài đặt</span></a></li>
         </ul>
     </aside>
     <main class="app-content">
@@ -81,7 +80,8 @@
         </div>
         <div class="row">
             <!--Left-->
-            <div class="col-md-12">
+             <!--Left-->
+             <div class="col-md-12">
                 <div class="tile">
                     <h3 class="tile-title">Giới thiệu</h3>
                     <div class="tile-body">
@@ -115,8 +115,6 @@
                     </div>
                 </div>
             </div>
-
-
     </main>
     <script src="{{url_for('static', filename='doc/js/jquery-3.2.1.min.js')}}"></script>
     <!--===============================================================================================-->

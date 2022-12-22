@@ -88,10 +88,19 @@ def login():
                                    user_exits='True', 
                                    pass_check='False')
     
-        
-        
-            
         my_user = user_data[0]
+        
+        cur.execute("""
+            SELECT MaPhongBan
+            FROM qlnv_nhanvien
+            WHERE MaNhanVien = %s
+            """, (my_user[4],))
+        maPB = cur.fetchall()[0][0]
+        
+        elms = list(my_user)
+        elms.append(maPB)
+        my_user = elms
+        
         cur.execute("""
                     UPDATE `qlnv_user` 
                     SET `LastLogin` = CURRENT_TIMESTAMP()
@@ -126,7 +135,18 @@ def login():
 @app.route("/home")
 def home():
     if 'username' in session.keys():
+        cur = mysql.connection.cursor()
+        cur.execute("SELECT COUNT(*) FROM qlnv_nhanvien")
+        num_nv = cur.fetchall()[0][0]
+        
+        cur.execute("SELECT COUNT(*) FROM qlnv_phongban")
+        num_pb = cur.fetchall()[0][0]
+        
+        
+        
         return render_template(session['role'] + 'index.html',
+                               num_nv = num_nv,
+                               num_pb = num_pb,
                                congty = session['congty'],
                                my_user = session['username'])
     return redirect(url_for("login"))
@@ -287,7 +307,7 @@ def form_view_update_employees(maNV, canEdit):
     data_default = cur.fetchall()
     
     if (len(data_default) != 1): # Need page error
-        return "Error"
+        abort(404)
     data_default = data_default[0]
     
     cur.execute("""SELECT * FROM qlnv_chucvu WHERE MaCV != %s""", (data_default[21], ))
@@ -320,13 +340,19 @@ def form_view_update_employees(maNV, canEdit):
         GIOITINH = details['GIOITINH'].strip()
         MATDHV = details['MATDHV'].strip().split(" - ")[0]
         HONHAN = details['HONHAN'].strip()
-        LUONG = details['LUONG'].strip()
-        MAHD = details['MAHD'].strip()
+        LUONG = data_default[18]
+        MAHD = data_default[17]
+        CV = data_default[16]
+        PB = data_default[15]
         DANTOC = details['DANTOC'].strip()
-        CV = details['CV'].strip()
-        PB = details['MAPB'].strip()
         ID_image = data_default[24]
-                
+        
+        if session['role_id'] == 1:
+            LUONG = details['LUONG'].strip()
+            MAHD = details['MAHD'].strip()
+            CV = details['CV'].strip()
+            PB = details['MAPB'].strip()
+        
         if (CV != data_default[16]):
             for data in chucvu:
                 if (CV in data):
@@ -365,6 +391,8 @@ def form_view_update_employees(maNV, canEdit):
             MAIL, HONHAN, DANTOC, MATDHV, NGAYCMND, NOICMND, BHYT, BHXH, ID_image, MNV))
         mysql.connection.commit()
         cur.close()
+        if session['role_id'] != 1:
+            return redirect(url_for("form_view_update_employees", maNV = maNV, canEdit = 'N'))
         return redirect(url_for("table_data_employees"))
     return render_template(session['role'] +'employees/form_view_update_employees.html',
                            mode=mode,
@@ -419,7 +447,7 @@ def form_add_data_employees_upload_process(filename):
     data_column = list(data_nv.columns)
     
     if (len(data_column) > len(default_tag_Column)) or len(data_column) < 3:
-        return "Error"
+        abort(404)
     
     if request.method == 'POST':
         cur = mysql.connection.cursor()
@@ -428,10 +456,10 @@ def form_add_data_employees_upload_process(filename):
         column_match = [default_name_Column.index(elm) for elm in column_link]
         
         if (len(set(column_match)) != len(column_link)):
-            return "Error"
+            abort(404)
         
         if 0 not in column_match or 1 not in column_match or 2 not in column_match:
-            return "Error"
+            abort(404)
     
         # convert Ten CV to ChucVu
         tmp = tuple(set(data_nv[data_column[column_match.index(1)]]))
@@ -445,7 +473,7 @@ def form_add_data_employees_upload_process(filename):
         for elm in data_tuple:
             data_tmp_take.append(elm[0])
         if (len(data_tmp_take) != len(tmp)):
-            return "Error"
+            abort(404)
         data_nv[data_column[column_match.index(1)]] = data_nv[data_column[column_match.index(1)]].replace(list(tmp), data_tmp_take)
 
         # convert Ten PB to PhongBan
@@ -460,7 +488,7 @@ def form_add_data_employees_upload_process(filename):
         for elm in data_tuple:
             data_tmp_take.append(elm[0])
         if (len(data_tmp_take) != len(tmp)):
-            return "Error"
+            abort(404)
         data_nv[data_column[column_match.index(2)]] = data_nv[data_column[column_match.index(2)]].replace(list(tmp), data_tmp_take)
         
         # Chuyển đổi trình độ học vấn
@@ -479,7 +507,7 @@ def form_add_data_employees_upload_process(filename):
             for elm in data_tdhv:
                 data_tdhv_lst.append(elm[0])
             if (len(tdhv_cn) != len(data_tdhv_lst)):
-                return "Error"
+                abort(404)
             data_nv[data_column[column_match.index(15)]] = data_nv[data_column[column_match.index(15)]].replace(list(tdhv_cn), data_tdhv)
         
         sql = "INSERT INTO `qlnv_nhanvien` ("
@@ -578,7 +606,7 @@ def get_infomation_one_employee(maNV):
         WHERE nv.MaNhanVien = \"""" + maNV + "\"" )
     nhanvien = cur.fetchall()
     if (len(nhanvien) != 1):
-        return "Error"
+        abort(404)
     
     cur.execute("""
                 SELECT tg.id, tg.MaNV, cv.TenCV, tg.NgayNhanChuc, tg.NgayKetThuc, tg.DuongNhiem
@@ -737,7 +765,7 @@ def form_view_update_trinh_do_hoc_van(mode, maTDHV):
         trinhdohocvan = cur.fetchall()
         
         if (len(trinhdohocvan) == 0):
-            return "Error"
+            abort(404)
         
         return render_template(session['role'] +"trinhdohocvan/form_view_update_trinh_do_hoc_van.html", 
                                 edit_view = mode,
@@ -766,7 +794,7 @@ def table_trinh_do_hoc_van_one(maTDHV):
                 """, (maTDHV, ))
     tenTDHV = cur.fetchall()
     if (len(tenTDHV) == 0):
-        return "Error"
+        abort(404)
     tenTDHV = tenTDHV[0]
         
     cur.execute("""
@@ -778,7 +806,7 @@ def table_trinh_do_hoc_van_one(maTDHV):
     cur.close()
     
     if len(trinhdohocvan) == 0:
-        return "Error"
+        abort(404)
     
     return render_template(session['role'] +"trinhdohocvan/table_trinh_do_hoc_van_nhan_vien.html", 
                            tenTDHV = tenTDHV,
@@ -801,7 +829,7 @@ def delete_trinh_do_hoc_van(maTDHV):
     trinhdohocvan = cur.fetchall()[0][0]
     
     if trinhdohocvan != 0:
-        return "Error"
+        abort(404)
 
     sql = "DELETE FROM qlnv_trinhdohocvan WHERE MATDHV=%s"
     val = (maTDHV, )
@@ -870,7 +898,7 @@ def table_print_trinh_do_hoc_van_nhan_vien(maTDHV):
                 """, (maTDHV, ))
     tenTDHV = cur.fetchall()
     if (len(tenTDHV) == 0):
-        return "Error"
+        abort(404)
     tenTDHV = tenTDHV[0]
         
     cur.execute("""
@@ -882,7 +910,7 @@ def table_print_trinh_do_hoc_van_nhan_vien(maTDHV):
     cur.close()
     
     if len(trinhdohocvan) == 0:
-        return "Error"
+        abort(404)
     
     return render_template("trinhdohocvan/table_print_trinh_do_hoc_van_nhan_vien.html", 
                            tenTDHV = tenTDHV,
@@ -902,7 +930,7 @@ def get_table_trinh_do_hoc_van_nhan_vien_excel(maTDHV):
                 """, (maTDHV, ))
     tenTDHV = cur.fetchall()
     if (len(tenTDHV) == 0):
-        return "Error"
+        abort(404)
     tenTDHV = tenTDHV[0]
         
     cur.execute("""
@@ -914,7 +942,7 @@ def get_table_trinh_do_hoc_van_nhan_vien_excel(maTDHV):
     cur.close()
     
     if len(trinhdohocvan) == 0:
-        return "Error"
+        abort(404)
     
     columnName = ['MaNhanVien', 'TenNhanVien', 'NgaySinh', 'DienThoai', 'TenTDHV', 'ChuyenNganh']
     data = pd.DataFrame.from_records(trinhdohocvan, columns=columnName)
@@ -998,7 +1026,7 @@ def form_view_update_chuc_vu(mode, maCV):
         chucvu = cur.fetchall()
         
         if (len(chucvu) == 0):
-            return "Error"
+            abort(404)
         
         return render_template(session['role'] +"chucvu/form_view_update_chuc_vu.html", 
                                 edit_view = mode,
@@ -1076,7 +1104,7 @@ def form_add_chuc_vu_upload_process(filename):
     data_column = list(data_nv.columns)
     
     if len(data_column) != 2:
-        return "Error"
+        abort(404)
     
     if request.method == 'POST':
         cur = mysql.connection.cursor()
@@ -1086,13 +1114,13 @@ def form_add_chuc_vu_upload_process(filename):
         
         # kiểm tra xem có gán hai cột cùng 1 loại cột không
         if (len(set(column_match)) != len(column_link)):
-            return "Error"
+            abort(404)
         
         
         tmp = tuple(set(data_nv[data_column[column_match.index(0)]]))
         # Kiểm tra xem trong tập dữ liệu nhập vào có bị trùng lặp về mã chức vụ không
         if len(tmp) != data_nv.shape[0]:
-            return "Error"
+            abort(404)
         
         # Kiểm tra xem bản nhập vào có chứa mã chức vụ đã tồn tại không
         new_tmp = ["\"" + text +"\"" for text in tmp]
@@ -1100,7 +1128,7 @@ def form_add_chuc_vu_upload_process(filename):
         data_tuple = cur.fetchall()
         
         if len(data_tuple) != 0:
-            return "Error"
+            abort(404)
         
         sql = "INSERT INTO `qlnv_chucvu` ("
         for index in column_match:
@@ -1141,7 +1169,7 @@ def table_chuc_vu_nhan_vien(maCV):
         WHERE MaCV = %s """, (maCV, ))
     tenCV = cur.fetchall()
     if (len(tenCV) != 1):
-        return "Error"
+        abort(404)
     
     cur.execute("""
         SELECT nv.MaNhanVien, nv.TenNV,DATE_FORMAT(nv.NgaySinh,"%d-%m-%Y"), nv.DienThoai, cv.TenCV, DATE_FORMAT(tg.NgayNhanChuc,"%d-%m-%Y")
@@ -1184,7 +1212,7 @@ def table_print_chuc_vu_nhan_vien(maCV):
         WHERE MaCV = %s """, (maCV, ))
     tenCV = cur.fetchall()
     if (len(tenCV) == 0):
-        return "Error"
+        abort(404)
     
     cur.execute("""
         SELECT nv.MaNhanVien, nv.TenNV,DATE_FORMAT(nv.NgaySinh,"%d-%m-%Y"), nv.DienThoai, cv.TenCV, DATE_FORMAT(tg.NgayNhanChuc,"%d-%m-%Y")
@@ -1194,7 +1222,7 @@ def table_print_chuc_vu_nhan_vien(maCV):
         WHERE cv.MaCV = '""" + str(maCV) + """' AND tg.DuongNhiem = 1 """)
     nv_chuc_vu = cur.fetchall()
     if (len(nv_chuc_vu) == 0):
-        return "Error"
+        abort(404)
     cur.close()
     return render_template("chucvu/table_print_chuc_vu_nhan_vien.html",
                            nv_chuc_vu = nv_chuc_vu)
@@ -1234,7 +1262,7 @@ def get_nhan_vien_chuc_vu_table_excel(maCV):
     nv_chuc_vu = cur.fetchall()
     
     if (len(nv_chuc_vu) == 0):
-        return "Error"
+        abort(404)
     
     cur.close()
     
@@ -1280,7 +1308,7 @@ def delete_chuc_vu(maCV):
     
     # Check xem chức vụ này còn nhân viên nào không
     if chucvu[0][2] != 0:
-        return "Error"
+        abort(404)
     
     sql = "DELETE FROM qlnv_chucvu WHERE MaCV=%s"
     val = (maCV, )
@@ -1356,7 +1384,7 @@ def get_print_danh_sach_cham_cong(year):
     chamcongtheocacthang = cur.fetchall()
     
     if (len(chamcongtheocacthang) == 0):
-        return "Error"
+        abort(404)
     
     cur.close()
     return render_template('chamcong/table_print_cham_cong_theo_nam.html',
@@ -1377,7 +1405,7 @@ def get_danh_sach_cham_cong_excel(year):
     chamcongtheocacthang = cur.fetchall()
     
     if (len(chamcongtheocacthang) == 0):
-        return "Error"
+        abort(404)
     
     cur.close()
     column_name = ['id','MaNV','Nam','T1', 'T2', 'T3','T4','T5','T6','T7','T8', 'T9', 'T10', 'T11', 'T12']
@@ -1400,28 +1428,42 @@ def get_danh_sach_cham_cong_pdf(year):
 @app.route("/table_cham_cong_tong_ket_thang/<string:maNV>_<string:year>")
 def table_cham_cong_tong_ket_thang(maNV,year):
     cur = mysql.connection.cursor()
-    cur.execute("""
-                SELECT TenNV
-                FROM qlnv_nhanvien
-                WHERE MaNhanVien = %s
-                """, (maNV,))
+    if session['role_id'] != 1:
+        cur.execute("""
+                    SELECT TenNV
+                    FROM qlnv_nhanvien
+                    WHERE MaNhanVien = %s
+                    """, (session['username'][4],))
+    else:
+        cur.execute("""
+                    SELECT TenNV
+                    FROM qlnv_nhanvien
+                    WHERE MaNhanVien = %s
+                    """, (maNV,))
     tenNV = cur.fetchall()
     
     if (len(tenNV) == 0):
-        return "Error"
+        abort(404)
     
     tenNV = tenNV[0][0]
-    
-    cur.execute("""
-                SELECT * 
-                FROM qlnv_chamcongtongketthang
-                WHERE MaNhanVien = %s AND Nam = %s 
-                ORDER BY Thang ASC
-                """, (maNV, year))
+    if session['role_id'] != 1:
+        cur.execute("""
+                    SELECT * 
+                    FROM qlnv_chamcongtongketthang
+                    WHERE MaNhanVien = %s AND Nam = %s 
+                    ORDER BY Thang ASC
+                    """, (session['username'][4], year))
+    else:
+        cur.execute("""
+                    SELECT * 
+                    FROM qlnv_chamcongtongketthang
+                    WHERE MaNhanVien = %s AND Nam = %s 
+                    ORDER BY Thang ASC
+                    """, (maNV, year))
     data_tong_ket_thang = cur.fetchall()
     
     if (len(data_tong_ket_thang) == 0):
-        return "Error"
+        abort(404)
     
     data_tong_ket_thang = data_tong_ket_thang
     
@@ -1445,7 +1487,7 @@ def get_print_cham_cong_tong_ket_thang(maNV,year):
     tenNV = cur.fetchall()
     
     if (len(tenNV) == 0):
-        return "Error"
+        abort(404)
     
     tenNV = tenNV[0][0]
     
@@ -1458,7 +1500,7 @@ def get_print_cham_cong_tong_ket_thang(maNV,year):
     data_tong_ket_thang = cur.fetchall()
     
     if (len(data_tong_ket_thang) == 0):
-        return "Error"
+        abort(404)
     
     return render_template('chamcong/table_print_cham_cong_tong_ket_thang.html',
                            TenNV = tenNV,
@@ -1478,7 +1520,7 @@ def get_cham_cong_tong_ket_thang_excel(maNV, year):
     tenNV = cur.fetchall()
     
     if (len(tenNV) == 0):
-        return "Error"
+        abort(404)
     
     tenNV = tenNV[0][0]
     
@@ -1491,7 +1533,7 @@ def get_cham_cong_tong_ket_thang_excel(maNV, year):
     data_tong_ket_thang = cur.fetchall()
     
     if (len(data_tong_ket_thang) == 0):
-        return "Error"
+        abort(404)
     
     cur.close()
     column_name = ['id','MaNhanVien','Nam','Thang', 'SoNgayDiLam', 'SoNgayDiVang','SoNgayTangCa','TongSoNgay']
@@ -1517,27 +1559,44 @@ def table_cham_cong_ngay_trong_thang(maNV,year,month):
         WHERE YEAR(cc.Ngay) = %s AND MONTH(cc.Ngay) = %s AND MaNV = %s
         ORDER BY cc.Ngay ASC, cc.GioVao ASC;
     """
+    
     val = (year, month, maNV)
-    
+    if session['role_id'] != 1:
+        sql = """
+            SELECT * 
+            FROM qlnv_chamcong cc 
+            WHERE YEAR(cc.Ngay) = %s AND MONTH(cc.Ngay) = %s AND MaNV = %s
+            ORDER BY cc.Ngay ASC, cc.GioVao ASC;
+        """
+        val = (year, month, session['username'][4])
+        
     cur = mysql.connection.cursor()
-    
-    cur.execute("""
-                SELECT TenNV
-                FROM qlnv_nhanvien
-                WHERE MaNhanVien = %s
-                """, (maNV,))
-    tenNV = cur.fetchall()
-    
-    if (len(tenNV) == 0):
-        return "Error"
-    
-    tenNV = tenNV[0][0]
     
     cur.execute(sql, val)
     chamcong = cur.fetchall()
     
     if (len(chamcong) == 0):
-        return "Error"
+        abort(404)
+    
+    if session['role_id'] != 1:
+        cur.execute("""
+                    SELECT TenNV
+                    FROM qlnv_nhanvien
+                    WHERE MaNhanVien = %s
+                    """, (session['username'][4],))
+    else:
+        cur.execute("""
+                    SELECT TenNV
+                    FROM qlnv_nhanvien
+                    WHERE MaNhanVien = %s
+                    """, (maNV,))
+    tenNV = cur.fetchall()
+    
+    
+    if (len(tenNV) == 0):
+        abort(404)
+    
+    tenNV = tenNV[0][0]
     
     column_name = ['ID','MaNV','Ngay', 'GioVao','GioRa','OT','ThoiGianLamViec','ThoiGianFloat']
     data = pd.DataFrame.from_records(chamcong, columns=column_name)
@@ -1606,7 +1665,7 @@ def table_cham_cong_ngay_trong_thang(maNV,year,month):
     data_tong_ket = cur.fetchall()
     
     if (len(data_tong_ket) == 0):
-        return "Error"
+        abort(404)
     data_tong_ket = data_tong_ket[0]
     data_day_tong_ket = [data_tong_ket[4 + i] for i in range(1,1+len(day))]
     cur.close()
@@ -1639,7 +1698,7 @@ def graph_cham_cong_ngay(maNV,year,month):
     tenNV = cur.fetchall()
     
     if (len(tenNV) == 0):
-        return "Error"
+        abort(404)
     
     tenNV = tenNV[0][0]
     
@@ -1672,7 +1731,7 @@ def get_plot_cham_cong_tong_ket_thang(maNV,year,month):
     tenNV = cur.fetchall()
     
     if (len(tenNV) == 0):
-        return "Error"
+        abort(404)
     
     tenNV = tenNV[0][0]
     
@@ -1680,7 +1739,7 @@ def get_plot_cham_cong_tong_ket_thang(maNV,year,month):
     chamcong = cur.fetchall()
     
     if (len(chamcong) == 0):
-        return "Error"
+        abort(404)
     
     date_str = []
     date_start = datetime.datetime(int(year), int(month), 1)
@@ -1696,7 +1755,7 @@ def get_plot_cham_cong_tong_ket_thang(maNV,year,month):
     data_tong_ket = cur.fetchall()
     
     if (len(data_tong_ket) == 0):
-        return "Error"
+        abort(404)
     
     data_tong_ket = data_tong_ket[0]
     data_day_tong_ket = [data_tong_ket[4 + i] if data_tong_ket[4 + i] != -1 else 0 for i in range(1,data_tong_ket[4]+1)]
@@ -1734,7 +1793,7 @@ def get_print_cham_cong_ngay_trong_thang(maNV,year,month):
     tenNV = cur.fetchall()
     
     if (len(tenNV) == 0):
-        return "Error"
+        abort(404)
     
     tenNV = tenNV[0][0]
     
@@ -1742,7 +1801,7 @@ def get_print_cham_cong_ngay_trong_thang(maNV,year,month):
     chamcong = cur.fetchall()
     
     if (len(chamcong) == 0):
-        return "Error"
+        abort(404)
     
     column_name = ['ID','MaNV','Ngay', 'GioVao','GioRa','OT','ThoiGianLamViec','ThoiGianFloat']
     data = pd.DataFrame.from_records(chamcong, columns=column_name)
@@ -1806,7 +1865,7 @@ def get_print_cham_cong_ngay_trong_thang(maNV,year,month):
     data_tong_ket = cur.fetchall()
     
     if (len(data_tong_ket) == 0):
-        return "Error"
+        abort(404)
     data_tong_ket = data_tong_ket[0]
     data_day_tong_ket = [data_tong_ket[4 + i] for i in range(1,1+len(day))]
     cur.close()
@@ -1845,7 +1904,7 @@ def get_cham_cong_ngay_trong_thang_excel(maNV,year,month):
     tenNV = cur.fetchall()
     
     if (len(tenNV) == 0):
-        return "Error"
+        abort(404)
     
     tenNV = tenNV[0][0]
     
@@ -1853,7 +1912,7 @@ def get_cham_cong_ngay_trong_thang_excel(maNV,year,month):
     chamcong = cur.fetchall()
     
     if (len(chamcong) == 0):
-        return "Error"
+        abort(404)
     
     column_name = ['ID','MaNV','Ngay', 'GioVao','GioRa','OT','ThoiGianLamViec','ThoiGianFloat']
     data = pd.DataFrame.from_records(chamcong, columns=column_name)
@@ -1904,7 +1963,7 @@ def form_view_update_cham_cong(canEdit, maNV, id, day, month, year):
     tenNV = cur.fetchall()
     
     if (len(tenNV) == 0):
-        return "Error"
+        abort(404)
     
     tenNV = tenNV[0][0]
     
@@ -1912,7 +1971,7 @@ def form_view_update_cham_cong(canEdit, maNV, id, day, month, year):
     chamcong = cur.fetchall()
     
     if (len(chamcong) == 0):
-        return "Error"
+        abort(404)
     
     column_name = ['ID','MaNV','Ngay', 'GioVao','GioRa','OT','ThoiGianLamViec','ThoiGianFloat']
     data = pd.DataFrame.from_records(chamcong, columns=column_name)
@@ -1962,7 +2021,7 @@ def form_view_update_cham_cong(canEdit, maNV, id, day, month, year):
         OT = detail['OT']
         
         if (GIORA < GIOVAO):
-            return "Error"
+            abort(404)
         
         sql = """
             SELECT ThoiGian_thap_phan
@@ -1973,7 +2032,7 @@ def form_view_update_cham_cong(canEdit, maNV, id, day, month, year):
         tg_ThapPhan_old = cur.fetchall()
         
         if (len(tg_ThapPhan_old) == 0):
-            return "Error"
+            abort(404)
         
         tg_ThapPhan_old = tg_ThapPhan_old[0][0]
         
@@ -2011,12 +2070,12 @@ def form_view_update_cham_cong(canEdit, maNV, id, day, month, year):
         
         # Xử lý trong bảng chấm công ngày và trong bảng tổng hợp theo các năm
         if (len(chamCongTheoThang) == 0 or len(chamCongTheoNam) == 0):
-            return "Error"
+            abort(404)
         else:
             chamCongTheoThang = chamCongTheoThang[0]
             sql_chamcongngay = "UPDATE qlnv_chamcongngay SET "
             if chamCongTheoThang[2] == -1:
-                return "Error"
+                abort(404)
             else:
                 sql_chamcongngay += "Ngay" + str(NGAY.day) + " = Ngay" + str(NGAY.day) + "+ '" + str(diff) + "'" 
             sql_chamcongngay += " WHERE MaNV = '" + maNV  + "' AND Nam = '" + str(NGAY.year) + "' AND Thang = '" + str(NGAY.month) + "'"
@@ -2026,7 +2085,7 @@ def form_view_update_cham_cong(canEdit, maNV, id, day, month, year):
             chamCongTheoNam = chamCongTheoNam[0]
             sql_chamcongthang = "UPDATE qlnv_chamcongthang SET "
             if chamCongTheoNam[2] == -1:
-                return "Error"
+                abort(404)
             else:
                 sql_chamcongthang += "T" + str(NGAY.month) + " = T" + str(NGAY.month) + "+ '" + str(diff) + "'" 
             sql_chamcongthang += " WHERE MaNV = '" + maNV  + "' AND Nam = '" + str(NGAY.year) + "'"
@@ -2100,7 +2159,7 @@ def form_view_update_cham_cong(canEdit, maNV, id, day, month, year):
         chamcong = cur.fetchall()
         
         if (len(chamcong) == 0):
-            return "Error"
+            abort(404)
         
         chamcong = chamcong[0]
         
@@ -2510,7 +2569,7 @@ def view_all_phong_ban():
     raw_data = cur.fetchall()
     
     if (len(raw_data) == 0):
-        return "Error"
+        abort(404)
     
     cur.execute("""SELECT COUNT(nv.MaNhanVien)
                 FROM qlnv_nhanvien nv
@@ -2546,7 +2605,7 @@ def view_phong_ban(maPB):
     raw_data = cur.fetchall()
     
     if (len(raw_data) == 0):
-        return "Error"
+        abort(404)
     
     cur.execute("""SELECT COUNT(nv.MaNhanVien)
                 FROM qlnv_nhanvien nv
@@ -2620,7 +2679,7 @@ def form_update_phong_ban(maPB):
     phongban = cur.fetchall()
     
     if (len(phongban) == 0):
-        return "Error"
+        abort(404)
     
     phongban = phongban[0]
     
@@ -2686,7 +2745,7 @@ def delete_phong_ban(maPB):
                 """, (maPB, ))
 
     if (cur.fetchall()[0][0] != 0):
-        return "Error"
+        abort(404)
     
     cur.execute("""
                 DELETE FROM qlnv_phongban
@@ -2817,7 +2876,7 @@ def view_phat_phong_ban(maPB):
     raw_data = cur.fetchall()
     
     if (len(raw_data) == 0):
-        return "Error"
+        abort(404)
     
     cur.execute("""SELECT COUNT(nv.MaNhanVien)
                 FROM qlnv_nhanvien nv
@@ -2875,7 +2934,7 @@ def view_thuong_phong_ban(maPB):
     raw_data = cur.fetchall()
     
     if (len(raw_data) == 0):
-        return "Error"
+        abort(404)
     
     cur.execute("""SELECT COUNT(nv.MaNhanVien)
                 FROM qlnv_nhanvien nv
@@ -2938,7 +2997,7 @@ def form_update_thuong_phat_phong_ban(maPB, id):
     thuongphat = cur.fetchall()
     
     if (len(thuongphat) == 0):
-        return "Error"
+        abort(404)
     
     thuongphat = thuongphat[0]
     
@@ -2979,7 +3038,7 @@ def delete_thuong_phat(maPB, id):
                 WHERE id = %s
                 """, (id, ))
     if (len(cur.fetchall()) == 0):
-        return "Error"
+        abort(404)
     
     cur.execute("""
                 DELETE FROM qlnv_thuongphat
@@ -3080,7 +3139,7 @@ def view_thoi_gian_cong_tac(maNV):
                  """, (maNV, ))
     TenNV = cur.fetchall()
     if (len(TenNV) == 0):
-        return "Error"
+        abort(404)
     
     TenNV = TenNV[0][0]
     
@@ -3094,7 +3153,7 @@ def view_thoi_gian_cong_tac(maNV):
     thoigiancongtac = cur.fetchall()
     
     if (len(thoigiancongtac) == 0):
-        return "Error"
+        abort(404)
     
     return render_template(session['role'] +"thoigiancongtac/view_thoi_gian_cong_tac.html",
                            thoigiancongtac = thoigiancongtac,
@@ -3117,7 +3176,7 @@ def delete_thoi_gian(id):
     tg_cong_tac = cur.fetchall()
     
     if (len(tg_cong_tac) == 0):
-        return "Error"
+        abort(404)
     
     cur.execute("""
                 DELETE FROM qlnv_thoigiancongtac
@@ -3138,7 +3197,7 @@ def get_print_thoi_gian_cong_tac(maNV):
                  """, (maNV, ))
     TenNV = cur.fetchall()
     if (len(TenNV) == 0):
-        return "Error"
+        abort(404)
     
     TenNV = TenNV[0][0]
     
@@ -3152,7 +3211,7 @@ def get_print_thoi_gian_cong_tac(maNV):
     thoigiancongtac = cur.fetchall()
     
     if (len(thoigiancongtac) == 0):
-        return "Error"
+        abort(404)
     
     return render_template("thoigiancongtac/table_print_thoi_gian_cong_tac.html",
                            thoigiancongtac = thoigiancongtac,
@@ -3170,7 +3229,7 @@ def get_thoi_gian_cong_tac_excel(maNV):
                  """, (maNV, ))
     TenNV = cur.fetchall()
     if (len(TenNV) == 0):
-        return "Error"
+        abort(404)
     
     TenNV = TenNV[0][0]
     
@@ -3184,7 +3243,7 @@ def get_thoi_gian_cong_tac_excel(maNV):
     thoigiancongtac = cur.fetchall()
     
     if (len(thoigiancongtac) == 0):
-        return "Error"
+        abort(404)
     
     column_name = ['id','MaNV' ,'MaCV', 'NgayNhanChuc', 'NgayKetThuc', 'DuongNhiem', 'TenCV']
     data = pd.DataFrame.from_records(thoigiancongtac, columns=column_name)
@@ -3395,27 +3454,49 @@ def get_data_money_excel():
 @app.route('/view_data_money/<string:maNV>')
 def view_data_money(maNV):
     cur = mysql.connection.cursor()
-    cur.execute("""
-              SELECT l.id,  l.Thang, l.Nam, tk.SoNgayDiLam, tk.SoNgayDiVang,
-              tk.SoNgayTangCa, l.LuongCoDinh, l.LuongChamCong,
-              l.SoTienPhat, l.SoTienThuong, l.TongSoTien
+    
+    if session['role_id'] != 1:
+        cur.execute("""
+            SELECT l.id,  l.Thang, l.Nam, tk.SoNgayDiLam, tk.SoNgayDiVang,
+            tk.SoNgayTangCa, l.LuongCoDinh, l.LuongChamCong,
+            l.SoTienPhat, l.SoTienThuong, l.TongSoTien
                 FROM qlnv_luong l
                 JOIN qlnv_chamcongtongketthang tk ON tk.Nam = l.Nam AND tk.Thang = l.Thang
                 WHERE l.MaNV = %s AND tk.MaNhanVien = %s
                 ORDER BY l.Nam DESC, l.Thang DESC
-                """, (maNV, maNV))
+                """, (session['username'][4], session['username'][4]))
+    else:
+        cur.execute("""
+                SELECT l.id,  l.Thang, l.Nam, tk.SoNgayDiLam, tk.SoNgayDiVang,
+                tk.SoNgayTangCa, l.LuongCoDinh, l.LuongChamCong,
+                l.SoTienPhat, l.SoTienThuong, l.TongSoTien
+                    FROM qlnv_luong l
+                    JOIN qlnv_chamcongtongketthang tk ON tk.Nam = l.Nam AND tk.Thang = l.Thang
+                    WHERE l.MaNV = %s AND tk.MaNhanVien = %s
+                    ORDER BY l.Nam DESC, l.Thang DESC
+                    """, (maNV, maNV))
     luong = cur.fetchall()
     
-    cur.execute("""
-                SELECT nv.TenNV, cv.TenCV, pb.TenPB, nv.GioiTinh
-                FROM qlnv_nhanvien nv
-                JOIN qlnv_chucvu cv ON cv.MaCV = nv.MaChucVu
-                JOIN qlnv_phongban pb ON pb.MaPB = nv.MaPhongBan
-                WHERE nv.MaNhanVien = %s
-                """, (maNV, ))
+    
+    if session['role_id'] != 1:
+        cur.execute("""
+                    SELECT nv.TenNV, cv.TenCV, pb.TenPB, nv.GioiTinh
+                    FROM qlnv_nhanvien nv
+                    JOIN qlnv_chucvu cv ON cv.MaCV = nv.MaChucVu
+                    JOIN qlnv_phongban pb ON pb.MaPB = nv.MaPhongBan
+                    WHERE nv.MaNhanVien = %s
+                    """, (session['username'][4], ))
+    else:
+        cur.execute("""
+                    SELECT nv.TenNV, cv.TenCV, pb.TenPB, nv.GioiTinh
+                    FROM qlnv_nhanvien nv
+                    JOIN qlnv_chucvu cv ON cv.MaCV = nv.MaChucVu
+                    JOIN qlnv_phongban pb ON pb.MaPB = nv.MaPhongBan
+                    WHERE nv.MaNhanVien = %s
+                    """, (maNV, ))
     nhanvien = cur.fetchall()
     if (len(nhanvien) == 0):
-        return "Error"
+        abort(404)
 
     nhanvien = nhanvien[0]
     
@@ -3450,7 +3531,7 @@ def get_print_view_data_money(maNV):
                 """, (maNV, ))
     nhanvien = cur.fetchall()
     if (len(nhanvien) == 0):
-        return "Error"
+        abort(404)
 
     nhanvien = nhanvien[0]
     
@@ -3482,7 +3563,7 @@ def get_data_money_one_excel(maNV):
                 """, (maNV, ))
     nhanvien = cur.fetchall()
     if (len(nhanvien) == 0):
-        return "Error"
+        abort(404)
 
     nhanvien = nhanvien[0]
     
@@ -3677,45 +3758,55 @@ def form_view_tk():
 @login_required
 @app.route("/form_chinh_sua_mk/<string:id>", methods = ['GET','POST'])
 def form_chinh_sua_mk(id):
-    if session['role_id'] != 1:
-        abort(404)
     cur = mysql.connection.cursor()
-    cur.execute("""
+    if session['role_id'] != 1:
+        cur.execute("""
                 SELECT username
                 FROM qlnv_user
                 WHERE Id_user = %s
-                """, (id, ))
+                """, (session['username'][0], ))
+    else:
+        cur.execute("""
+                    SELECT username
+                    FROM qlnv_user
+                    WHERE Id_user = %s
+                    """, (id, ))
     this_user = cur.fetchall()
     
     if (len(this_user) == 0):
-        return "Error"
+        abort(404)
     
     this_user = this_user[0][0]
     
     if request.method == 'POST':
         details = request.form
-        # old_password = hashlib.md5(details['password_old'].encode()).hexdigest()
+        old_password = ""
+        if session['role_id'] != 1:
+            old_password = hashlib.md5(details['password_old'].encode()).hexdigest()
         new_password = hashlib.md5(details['password'].encode()).hexdigest()
         new_password_repeat = hashlib.md5(details['password_repeat'].encode()).hexdigest()
         
-        # cur.execute("""
-        #             SELECT password
-        #             FROM qlnv_user
-        #             WHERE Id_user = %s
-        #             """, (id, ))
-        # old_pass = cur.fetchall()[0][0]
-        
-        # if old_password != old_pass:
-        #     return render_template('caidat/form_chinh_sua_mk.html', 
-        #                     id = id,
-        #                     my_err = "Mật khẩu cũ không đúng",
-        #                    this_user = this_user,
-        #                    congty = session['congty'],
-        #                    my_user = session['username'])
+        if session['role_id'] != 1:
+            cur.execute("""
+                        SELECT password
+                        FROM qlnv_user
+                        WHERE Id_user = %s
+                        """, (session['username'][0], ))
+            old_pass = cur.fetchall()[0][0]
+            
+            if old_password != old_pass:
+                return render_template('caidat/form_chinh_sua_mk.html', 
+                                id = session['username'][0],
+                                role = session['role_id'],
+                                my_err = "Mật khẩu cũ không đúng",
+                            this_user = this_user,
+                            congty = session['congty'],
+                            my_user = session['username'])
         
         if new_password != new_password_repeat:
             return render_template(session['role'] +'caidat/form_chinh_sua_mk.html', 
                             id = id,
+                            role = session['role_id'],
                             my_err = "Nhập lại mật khẩu mới không đúng",
                            this_user = this_user,
                            congty = session['congty'],
@@ -3727,8 +3818,11 @@ def form_chinh_sua_mk(id):
                     WHERE Id_user = %s
                     """, (new_password, id))
         mysql.connection.commit()
+        if session['role_id'] != 1:
+            return redirect(url_for('cai_dat'))
         return redirect(url_for('form_view_tk'))
     return render_template(session['role'] +'caidat/form_chinh_sua_mk.html', 
+                           role = session['role_id'],
                            id = id,
                            this_user = this_user,
                            congty = session['congty'],

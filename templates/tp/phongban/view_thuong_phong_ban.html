@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Phòng ban</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Main CSS-->
+    <link rel="stylesheet" href="{{ url_for('static', filename='doc/css/main.css') }}">
+    <script src="{{url_for('static', filename='js/displaytime/displaytime.js')}}"></script>
+    <link rel="shortcut icon" type="image/x-icon" href="{{ url_for('static', filename=congty[3])}}" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/boxicons@latest/css/boxicons.min.css">
+    <!-- or -->
+    <link rel="stylesheet" href="https://unpkg.com/boxicons@latest/css/boxicons.min.css">
+    <!-- Font-icon css-->
+    <link rel="stylesheet" type="text/css"
+        href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.js"></script>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.css">
+
+    <!-- Phòng ban -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='doc/css/phongban.css') }}">
+</head>
+
+<body onload="time()" class="app sidebar-mini rtl">
+    <!-- Navbar-->
+    <header class="app-header">
+        <!-- Sidebar toggle button--><a class="app-sidebar__toggle" href="#" data-toggle="sidebar"
+            aria-label="Hide Sidebar"></a>
+        <!-- Navbar Right Menu-->
+        <ul class="app-nav">
+
+
+            <!-- User Menu-->
+            <li><a class="app-nav__item" href="/logout"><i class='bx bx-log-out bx-rotate-180'></i> </a>
+
+            </li>
+        </ul>
+    </header>
+    <!-- Sidebar menu-->
+    <div class="app-sidebar__overlay" data-toggle="sidebar"></div>
+    <aside class="app-sidebar">
+        <div class="app-sidebar__user"><img class="app-sidebar__user-avatar"
+                src="{{ url_for('static', filename=my_user[7]) }}" style="border-radius: 50%;" width="50px"
+                alt="User Image">
+            <div>
+                <p class="app-sidebar__user-name"><b>{{my_user[3]}}</b></p>
+                <p class="app-sidebar__user-designation">Chào mừng bạn trở lại</p>
+            </div>
+        </div>
+        <hr>
+        <ul class="app-menu">
+            <li><a class="app-menu__item haha"><i class='app-menu__icon bx bx-user'></i>
+                <span class="app-menu__label">Trưởng phòng</span></a></li>
+            <li><a class="app-menu__item" href="/home"><i class='app-menu__icon bx bx-tachometer'></i><span
+                  class="app-menu__label">Trang chủ</span></a></li>
+            <li><a class="app-menu__item" href="/form_view_update_employees/{{my_user[4]}}_N"><i
+                  class='app-menu__icon bx bx-id-card'></i>
+                <span class="app-menu__label">Thông tin cá nhân</span></a></li>
+            <li><a class="app-menu__item" href="/view_data_money/{{my_user[4]}}"><i
+                  class='app-menu__icon bx bx-dollar'></i><span class="app-menu__label">Thống kê lương</span></a></li>
+            <li><a class="app-menu__item" href="/form_add_data_cham_cong"><i class='app-menu__icon bx bx-edit-alt'></i><span
+                  class="app-menu__label">Chấm công ngày</span></a></li>
+            <li><a class="app-menu__item" href="/danh_sach_cham_cong"><i class='app-menu__icon bx bxs-report'></i><span
+                  class="app-menu__label">Thống kê chấm công</span></a></li>
+            <li><a class="app-menu__item active" href="/view_phong_ban/{{my_user[-1]}}"><i class='app-menu__icon bx bxs-business'></i><span
+                  class="app-menu__label">Phòng ban</span></a></li>
+            <li><a class="app-menu__item" href="/cai_dat"><i class='app-menu__icon bx bx-cog'></i><span
+                  class="app-menu__label">Cài đặt</span></a></li>
+          </ul>
+    </aside>
+    <main class="app-content">
+        <div class="app-title">
+            <ul class="app-breadcrumb breadcrumb">
+                <li class="breadcrumb-item"><a href="//view_phong_ban/{{my_user[-1]}}">Phòng ban</a></li>
+                <li class="breadcrumb-item"><a href="">Phòng Công nghệ thông tin</a></li>
+            </ul>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+
+                <div class="tile">
+
+                    <h3 class="tile-title">Tổng quan</h3>
+                    <div class="tile-body">
+                        <div class="dash-cards">
+                            <div class="card-single">
+                                <div class="card-body">
+                                    <span class='bx bx-user-pin'></span>
+                                    <div>
+                                        <h5>Tống số nhân viên</h5>
+                                        <h4>{{phongban[-1]}}</h4>
+                                    </div>
+                                </div>
+                                <div class="card-footer">
+                                    <a href="/view_phong_ban/{{phongban[0]}}">Xem thêm</a>
+                                </div>
+                            </div>
+
+                            <div class="card-single" style="background-color: #228B22;">
+                                <div class="card-body">
+                                    <span class="bx bxs-award"></span>
+                                    <div>
+                                        <h5>Thưởng</h5>
+                                        <h4>{{num_thuong}}</h4>
+                                    </div>
+                                </div>
+                                <div class="card-footer">
+                                    <a href="/view_thuong_phong_ban/{{phongban[0]}}">Đang xem</a>
+
+                                </div>
+                            </div>
+                            <div class="card-single" style="background-color: #DAA520;">
+                                <div class="card-body">
+                                    <span class='bx bx-info-square'></span>
+                                    <div>
+                                        <h5>Kỷ luật</h5>
+                                        <h4>{{num_phat}}</h4>
+                                    </div>
+                                </div>
+                                <div class="card-footer">
+                                    <a href="/view_phat_phong_ban/{{phongban[0]}}">Xem thêm</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-12">
+
+                        <div class="tile">
+
+                            <h3 class="tile-title">Danh sách khen thưởng</h3>
+                            <div class="tile-body">
+                                <div class="row element-button">
+                                    <div class="col-sm-2">
+                                        <a class="btn btn-add btn-sm" data-toggle="modal"
+                                            data-target="#exampleModalCenter" title="Thêm nhân viên khen thưởng"
+                                            href="/form_add_thuong_phat_phong_ban/{{phongban[0]}}"><b><i
+                                                    class="fas fa-folder-plus"></i> Thêm nhân viên
+                                                khen thưởng</b></a>
+                                    </div>
+
+                                </div>
+                                <table class="table table-hover table-bordered js-copytextarea" cellpadding="0"
+                                    cellspacing="0" border="0" id="sampleTable">
+                                    <thead>
+                                        <tr>
+                                            <th width="170">Tên nhân viên</th>
+                                            <th width="250">Nội dung khen thưởng</th>
+                                            <th width="200">Ngày khen thưởng</th>
+                                            <th width="200">Hình thức khen thưởng</th>
+                                            <th width="200">Ghi chú</th>
+                                            <th width="100">Thao tác</th>
+
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for data in thuong_phong_ban %}
+                                        <tr>
+                                            <td>{{data[-1]}}</td>
+                                            <td>{{data[3]}}</td>
+                                            <td>{{data[5]}}</td>
+                                            <td style="color: green; font-style: italic;">{{data[4]}}</td>
+                                            <td>{{data[6]}}</td>
+                                            <td>
+                                                <button class="btn btn-primary btn-sm trash" type="button" title="Xóa"
+                                                    onclick="deleteThuongRow({{data[0]}})"><i
+                                                        class="fas fa-trash-alt"></i>
+                                                </button>
+                                                <button class="btn btn-primary btn-sm edit" type="button" title="Sửa"
+                                                    id="show-emp">
+                                                    <a
+                                                        href="/form_update_thuong_phat_phong_ban/{{phongban[0]}}_{{data[0]}}"><i
+                                                            class="fa fa-eye" aria-hidden="true"></i></a>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    <!-- Essential javascripts for application to work-->
+    <script src="{{url_for('static', filename='doc/js/jquery-3.2.1.min.js')}}"></script>
+    <script src="{{url_for('static', filename='doc/js/popper.min.js')}}"></script>
+    <script src="{{url_for('static', filename='doc/js/bootstrap.min.js')}}"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script src="{{url_for('static', filename='doc/js/main.js')}}"></script>
+    <!-- The javascript plugin to display page loading on top-->
+    <script src="{{url_for('static', filename='doc/js/plugins/pace.min.js')}}"></script>
+    <!-- Page specific javascripts-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.js"></script>
+    <!-- Data table plugin-->
+    <!-- <script type="text/javascript" src="js/plugins/jquery.dataTables.min.js"></script> -->
+    <script src="{{url_for('static', filename='doc/js/plugins/jquery.dataTables.min.js')}}"></script>
+    <!-- <script type="text/javascript" src="js/plugins/dataTables.bootstrap.min.js"></script> -->
+    <script src="{{url_for('static', filename='doc/js/plugins/dataTables.bootstrap.min.js')}}"></script>
+    <script type="text/javascript">$('#sampleTable').DataTable();</script>
+    <script>
+
+        function deleteThuongRow(id) {
+            swal({
+                title: "Cảnh báo",
+                text: "Bạn có chắc chắn là muốn xóa bản ghi này?", // index = 3
+                buttons: ["Hủy bỏ", "Đồng ý"],
+            })
+                .then((willDelete) => {
+                    if (willDelete) {
+                        $.ajax({
+                            url: "/delete_thuong_phat/{{phongban[0]}}" + "_" + id,
+                            context: document.body
+                        })
+                        location.href = "/view_phong_ban/{{phongban[0]}}";
+                    }
+                });
+        }
+    </script>
+</body>
+
+</html>

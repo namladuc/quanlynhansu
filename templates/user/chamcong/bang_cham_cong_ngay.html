@@ -49,32 +49,26 @@
     <hr>
     <ul class="app-menu">
       <li><a class="app-menu__item haha"><i class='app-menu__icon bx bx-user'></i>
-          <span class="app-menu__label">Quản lý</span></a></li>
+              <span class="app-menu__label">Nhân viên</span></a></li>
       <li><a class="app-menu__item" href="/home"><i class='app-menu__icon bx bx-tachometer'></i><span
-            class="app-menu__label">Bảng điều khiển</span></a></li>
-      <li><a class="app-menu__item" href="/table_data_employees"><i class='app-menu__icon bx bx-id-card'></i>
-          <span class="app-menu__label">Quản lý nhân viên</span></a></li>
-      <li><a class="app-menu__item" href="/table_chuc_vu"><i class='app-menu__icon bx bxs-book-content'></i>
-          <span class="app-menu__label">Quản lý chức vụ</span></a></li>
-      <li><a class="app-menu__item" href="/danh_sach_hop_dong"><i class='app-menu__icon bx bx-user-voice'></i><span
-            class="app-menu__label">Danh sách hợp
-            đồng</span></a></li>
-      <li><a class="app-menu__item" href="/table_data_money"><i class='app-menu__icon bx bx-dollar'></i><span
-            class="app-menu__label">Bảng kê lương</span></a></li>
-      <li><a class="app-menu__item active" href="/danh_sach_cham_cong"><i class='app-menu__icon bx bx-edit-alt'></i><span
-            class="app-menu__label">Danh sách chấm công</span></a></li>
-      <li><a class="app-menu__item" href="/view_all_thoi_gian_cong_tac"><i class='app-menu__icon bx bx-history'></i><span
-            class="app-menu__label">Thời gian công tác</span></a></li>
-      <li><a class="app-menu__item" href="/view_all_phong_ban"><i class='app-menu__icon bx bxs-business'></i><span
-            class="app-menu__label">Phòng ban</span></a></li>
+                  class="app-menu__label">Trang chủ</span></a></li>
+      <li><a class="app-menu__item" href="/form_view_update_employees/{{my_user[4]}}_N"><i
+                  class='app-menu__icon bx bx-id-card'></i>
+              <span class="app-menu__label">Thông tin cá nhân</span></a></li>
+      <li><a class="app-menu__item" href="/view_data_money/{{my_user[4]}}"><i class='app-menu__icon bx bx-dollar'></i><span
+                  class="app-menu__label">Thống kê lương</span></a></li>
+      <li><a class="app-menu__item" href="/form_add_data_cham_cong"><i class='app-menu__icon bx bx-edit-alt'></i><span
+          class="app-menu__label">Chấm công ngày</span></a></li>
+      <li><a class="app-menu__item active" href="/danh_sach_cham_cong"><i class='app-menu__icon bx bxs-report'></i><span
+          class="app-menu__label">Thống kê chấm công</span></a></li>
       <li><a class="app-menu__item" href="/cai_dat"><i class='app-menu__icon bx bx-cog'></i><span
-            class="app-menu__label">Cài đặt</span></a></li>
-    </ul>
+          class="app-menu__label">Cài đặt</span></a></li>
+  </ul>
   </aside>
   <main class="app-content">
     <div class="app-title">
       <ul class="app-breadcrumb breadcrumb side">
-        <li class="breadcrumb-item"><a href="/danh_sach_cham_cong"><b>Danh sách chấm công </b></a></li>
+        <li class="breadcrumb-item"><a href="/danh_sach_cham_cong"><b>Thống kê chấm công năm {{Nam}}</b></a></li>
         <li class="breadcrumb-item active"><a href=""><b>Bảng chấm công các ngày trong tháng - {{month}} / {{year}} -
               {{TenNV}}</b></a></li>
 
@@ -91,48 +85,19 @@
               <div class="col-sm-2">
                 <a class="btn btn-info btn-sm" href="/table_cham_cong_tong_ket_thang/{{maNV}}_{{year}}"
                   title="Xem tổng kết các tháng của nhân viên này"><i class="fa fa-book"></i>
-                  Xem tổng kết các tháng của nhân viên này</a>
+                  Xem tổng kết các tháng</a>
               </div>
-
-              <div class="col-sm-2">
-                <a class="btn btn-info btn-sm" href="/graph_cham_cong_ngay/{{maNV}}_{{year}}_{{month}}" title="Xem biểu đồ của nhân viên"><i
-                    class="fa fa-area-chart"></i>
-                  Xem biểu đồ của nhân viên {{TenNV}}</a>
-              </div>
-
-              <div class="col-sm-2">
-                <a class="btn btn-add btn-sm" href="/form_add_data_cham_cong" title="Thêm dữ liệu chấm công cho nhân viên"><i class="fas fa-plus"></i>
-                  Thêm dữ liệu chấm công cho nhân viên</a>
-              </div>
-
-              <div class="col-sm-2">
-                <a class="btn btn-delete btn-sm print-file" type="button" title="In dữ liệu"
-                  onclick="myApp.printChamCongNgayTable()"><i class="fas fa-print"></i> In dữ liệu</a>
-              </div>
-
-              <div class="col-sm-2">
-                <a class="btn btn-excel btn-sm" href="/get_cham_cong_ngay_trong_thang_excel/{{maNV}}_{{year}}_{{month}}"
-                  title="Xuất Excel"><i class="fas fa-file-excel"></i>Xuất Excel</a>
-              </div>
-
-              <div class="col-sm-2">
-                <a class="btn btn-delete btn-sm pdf-file" type="button" title="Xuất PDF"
-                  href="/get_cham_cong_ngay_trong_thang_pdf/{{maNV}}_{{year}}_{{month}}"><i class="fas fa-file-pdf"></i>
-                  Xuất PDF</a>
-              </div>
-
 
             </div>
             <table class="table table-hover table-bordered" id="sampleTable">
               <thead>
                 <tr>
                   <th class="center-text" rowspan="2" style="background-color: #eee">Ngày</th>
-                  <th colspan="3" style="text-align: center; background-color: #eee">Thông tin</th>
+                  <th colspan="2" style="text-align: center; background-color: #eee">Thông tin</th>
                 </tr>
                 <tr>
                   <th class="center" width="50">Trạng thái</th>
                   <th class="center" width="1000">Giờ</th>
-                  <th class="center" width="100">Thao tác</th>
                 </tr>
               <tbody>
                 {% for i in index_arr %}
@@ -157,13 +122,6 @@
                       <span class="text-info">{{elm[1]}}</span> <br>
                       {% endfor %}
 
-                    </td>
-
-                    <td class="center">
-                      <button class="btn btn-primary btn-sm edit" type="button" title="Sửa" id="show-emp">
-                        <a href="/form_view_update_cham_cong/V_{{maNV}}_NONE_{{day[i]}}_{{month}}_{{year}}"><i
-                            class="fa fa-eye" aria-hidden="true"></i></a>
-                      </button>
                     </td>
                 </tr>
                 {% endfor %}
