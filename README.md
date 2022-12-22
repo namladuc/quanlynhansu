@@ -7,7 +7,7 @@
 <br />
 <div align="center">
   <a href="https://github.com/">
-    <img src="data_img/1829.jpg" alt="Logo" width="80" height="80">
+    <img src="data_img/1829.jpg" alt="Logo" width="120" height="120">
   </a>
 
   <h3 align="center">Quản lý nhân sự</h3>
@@ -69,7 +69,7 @@ Quản lý nhân sự là một công việc mà bất cứ công ty, doanh nghi
 Các thành phần và framework sử dụng
 
 * [![Next][python]][Next-url]
-* [![Fontawesome][fontawesome.js]][fontawesome-url]
+* [![Fontawesome][fontawesome]][fontawesome-url]
 * [![Bootstrap][Bootstrap.com]][Bootstrap-url]
 * [![JQuery][JQuery.com]][JQuery-url]
 * [![Boxicons][boxicons]][boxicons-url]
@@ -97,17 +97,17 @@ Tải các bản cài đặt cần thiết để chuẩn bị cài đặt
 
 #### Python: <a href="https://www.python.org/downloads/release/python-3109/">Python 3.10.4 </a>
 <p>Tải bản tương thích với hệ điều hảnh</p>
- <img src="data_img/python/Python_1.png" alt="StepPython" width="300" height="240">
+ <img src="data_img/python/Python_1.png" alt="StepPython">
 <p>Bấm vào bản cài đặt vừa tải về và bắt đầu cài</p>
-  <img src="data_img/python/Python_2.png" alt="StepPython" width="300" height="240">
+  <img src="data_img/python/Python_2.png" alt="StepPython">
 <p>Đảm bảo đánh dấu Add Python 3.10 to PATH nếu không bạn sẽ phải thực hiện điều đó một cách cụ thể. Nó sẽ bắt đầu cài đặt python trên windows.</p> <br />
 
 #### wkhtmltopdf: <a href="https://wkhtmltopdf.org/downloads.html">wkhtmltopdf </a>
 <p>Tải bản tương thích với hệ điều hảnh</p>
-<img src="data_img/wkhtmltopdf/wkhtmltopdf_1.png" alt="Step_wkhtmltopdf" width="300" height="240">
+<img src="data_img/wkhtmltopdf/wkhtmltopdf_1.png" alt="Step_wkhtmltopdf">
 <p>Bấm vào bản cài đặt vừa tải về và bắt đầu cài</p>
 
-#### XAMPP: <a href="https://wkhtmltopdf.org/downloads.html">wkhtmltopdf </a><br />
+#### XAMPP: <a href="https://www.apachefriends.org/download.html">XAMPP </a><br />
 Cách cài đặt XAMPP trên Windows
 + Bước 1: Download XAMPP
 + Bước 2: Nhấp vào file có đuôi .exe trên file tải xuống.
@@ -122,7 +122,7 @@ Cách cài đặt XAMPP trên Linux
 
 Đầu tiên thêm quyền thực thi cho file cài đặt
 ```sh
-  cd thu_muc_chua_file_cai_dat/
+cd thu_muc_chua_file_cai_dat/
 sudo chmod +x xampp-linux-x64-7.2.8-0-installer.run
 ```
 
@@ -158,7 +158,7 @@ Vào trang web tải Git chọn mục Downloads > Chọn Tải xuống Git phiê
 ### Cài đặt
 
 1. Mở VS Code mở vào một thư mục trống rồi clone chương trình xuống: 
-  <img src="data_img/step/step_vsc.png" alt="" width="400" height="340">
+  <img src="data_img/step/Step_vsc.png" alt="">
     ```sh
     git clone https://github.com/assassinnyt2811/quanlynhansu.git
     ```
@@ -166,20 +166,20 @@ Vào trang web tải Git chọn mục Downloads > Chọn Tải xuống Git phiê
 2. Khởi động localhost trong XAMPP
 
 3. Truy cập vào đường dẫn: `http://localhost:8080/phpmyadmin/`
-  <img src="data_img/step/step_1.png" alt="" width="400" height="340">
+  <img src="data_img/step/step_1.png" alt="">
 
 4. Tạo database với tên: `quan_ly_nhan_su`
-  <img src="data_img/step/step_2.png" alt="" width="400" height="340">
+  <img src="data_img/step/step_2.png" alt="">
 
 5. Chọn vào database `quan_ly_nhan_su`
-  <img src="data_img/step/step_3.png" alt="" width="400" height="340">
+  <img src="data_img/step/step_3.png" alt="">
 
 6. Chọn vào import rồi lấy file `quan_ly_nhan_su.sql` trong thư mục clone về ở `Bước 1`. Chọn xong thì kéo xuống chọn `Import`
-  <img src="data_img/step/step_4.png" alt="" width="400" height="340">
-  <img src="data_img/step/step_5.png" alt="" width="400" height="340">
+  <img src="data_img/step/step_4.png" alt="">
+  <img src="data_img/step/step_5.png" alt="">
 
 7. Trong Visual Studio Code mở thư mục vừa clone về
-  <img src="data_img/step/step_6.png" alt="" width="400" height="340">
+  <img src="data_img/step/step_6.png" alt="">
 
 8. Sau đó mở terminal lên dùng tổ hợp phím "Ctrl + `", rồi chạy từng câu lệnh để cài đặt các thư viện cần thiết
   ```sh
