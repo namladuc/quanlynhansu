@@ -3898,14 +3898,14 @@ def index():
 
 
 # Error Handler
-# @app.errorhandler(404)
-# def page_not_found(error):
-#     return render_template('error.html',
-#                            error = error), 404
-# @app.errorhandler(500)
-# def no_role_access(error):
-#     return render_template('error.html',
-#                            error = error), 404
+@app.errorhandler(404)
+def page_not_found(error):
+    return render_template('error.html',
+                           error = error), 404
+@app.errorhandler(500)
+def no_role_access(error):
+    return render_template('error.html',
+                           error = error), 404
 
 def take_image_to_save(id_image, path_to_img):
     cur = mysql.connection.cursor()
