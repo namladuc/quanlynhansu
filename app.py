@@ -2410,7 +2410,6 @@ def form_add_data_cham_cong():
                 GIORA = datetime.datetime.now().strftime("%H:%M:%S")
                 OT = 0
                 session.pop('chamcong')
-                return "OKE"
         sql_chamcong = """
             INSERT INTO `qlnv_chamcong` (`id`, `MaNV`, `Ngay`, `GioVao`, `GioRa`, `OT`, `ThoiGianLamViec`, `ThoiGian_thap_phan`) 
             VALUES (NULL, %s, %s, %s, %s, %s, '', '0');
