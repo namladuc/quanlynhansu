@@ -1327,7 +1327,7 @@ def delete_chuc_vu(maCV):
 def danh_sach_cham_cong():
     cur = mysql.connection.cursor()
     
-    mucPhanLoaiChamCong = [10,20]
+    mucPhanLoaiChamCong = [124,180]
     Nam = datetime.datetime.now().year
     
     if session['role_id'] != 1:

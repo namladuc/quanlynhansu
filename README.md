@@ -106,6 +106,9 @@ Tải các bản cài đặt cần thiết để chuẩn bị cài đặt
 <p>Tải bản tương thích với hệ điều hảnh</p>
 <img src="data_img/wkhtmltopdf/wkhtmltopdf_1.png" alt="Step_wkhtmltopdf">
 <p>Bấm vào bản cài đặt vừa tải về và bắt đầu cài</p>
+<p>Path thư mục bin của wkhtmltopdf vào biến môi trường</p>
+<img src="data_img/wkhtmltopdf/wkhtmltopdf_2.png" alt="Step_wkhtmltopdf">
+
 
 #### XAMPP: <a href="https://www.apachefriends.org/download.html">XAMPP </a><br />
 Cách cài đặt XAMPP trên Windows
@@ -159,6 +162,7 @@ Vào trang web tải Git chọn mục Downloads > Chọn Tải xuống Git phiê
 
 1. Mở VS Code mở vào một thư mục trống rồi clone chương trình xuống: 
   <img src="data_img/step/Step_vsc.png" alt="">
+
     ```sh
     git clone https://github.com/assassinnyt2811/quanlynhansu.git
     ```
@@ -195,14 +199,23 @@ Vào trang web tải Git chọn mục Downloads > Chọn Tải xuống Git phiê
 
 10. Truy cập trang web: `http://127.0.0.1:5000/login`
     * Tài khoản admin: `admin`
-    * Tài khoản Mật khẩu: `12345`
+    * Mật khẩu: `admin`
+
+    * Tài khoản user (Nghia): `nghiaphamhong`
+    * Mật khẩu: `12345`
+
+    * Tài khoản trưởng phòng (Linh): `letailinh`
+    * Mật khẩu: `12345`
+
+11. Bắt đầu sử dụng web
+
+<img src="data_img/step/step_7.png" alt="">
 
 <p align="right">(<a href="#readme-top">Trở lại đầu trang</a>)</p>
 
-
 ## Cách sử dụng
 
-Cách sử dụng: <a href="" >Link PDF báo cáo</a>
+Cách sử dụng: <a href="https://drive.google.com/file/d/1ujvCg9tUIk7WAV605QDictNkxhNzEWBH/view?usp=sharing" >Link PDF báo cáo</a>
 
 <p align="right">(<a href="#readme-top">Trở lại đầu trang</a>)</p>
 
@@ -250,7 +263,7 @@ Nếu có đề xuất nào có thể cải thiện điều này, vui lòng rẽ
 
 ## Liên hệ
 
-Lã Đức Nam - [@your_linkedin](https://www.linkedin.com/in/l%C3%A3-%C4%91%E1%BB%A9c-nam-9b27b4219/) - ducnamla2@gmail.com
+Lã Đức Nam - [@laducnam](https://www.linkedin.com/in/l%C3%A3-%C4%91%E1%BB%A9c-nam-9b27b4219/) - ducnamla2@gmail.com
 
 Project Link: [https://github.com/assassinnyt2811/quanlynhansu](https://github.com/assassinnyt2811/quanlynhansu)
 
