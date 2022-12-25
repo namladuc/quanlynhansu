@@ -2539,6 +2539,7 @@ def form_add_data_cham_cong():
     
     if 'chamcong' in session:
         return render_template(session['role'] +"chamcong/form_add_cham_cong.html",
+                               chamcong = session['chamcong'],
                                is_chamcong = 'YES',
                            congty = session['congty'],
                            my_user = session['username'])
