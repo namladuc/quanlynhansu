@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Dec 22, 2022 at 02:04 AM
+-- Generation Time: Dec 25, 2022 at 03:14 PM
 -- Server version: 10.4.21-MariaDB
 -- PHP Version: 8.0.10
 
@@ -58,7 +58,9 @@ INSERT INTO `qlnv_chamcong` (`id`, `MaNV`, `Ngay`, `GioVao`, `GioRa`, `OT`, `Tho
 (71, 'MNV03', '2022-10-02', '07:30:00', '11:30:00', 0, '04:00:00', 4),
 (72, 'MNV03', '2022-12-03', '07:30:00', '10:15:00', 0, '02:45:00', 2.8),
 (73, 'MNV02', '2022-11-01', '07:30:00', '11:50:00', 0, '04:20:00', 4.3),
-(74, 'MNV02', '2022-11-18', '07:30:00', '11:50:00', 0, '04:20:00', 4.3);
+(74, 'MNV02', '2022-11-18', '07:30:00', '11:50:00', 0, '04:20:00', 4.3),
+(75, 'MNV02', '2022-12-25', '16:14:29', '16:21:13', 0, '00:06:44', 0.1),
+(76, 'MNV01', '2022-12-25', '20:49:26', '20:52:22', 0, '00:02:56', 0);
 
 --
 -- Triggers `qlnv_chamcong`
@@ -145,9 +147,10 @@ INSERT INTO `qlnv_chamcongngay` (`MaChamCong`, `MaNV`, `Nam`, `Thang`, `SoNgayTh
 (41, 'MNV03', 2022, 12, 31, -1, -1, 7.1, 7.5, -1, -1, -1, -1, -1, -1, 4, -1, -1, -1, -1, -1, 4.3, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1),
 (45, 'MNV01', 2022, 11, 30, 4, 4, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1),
 (47, 'MNV03', 2022, 11, 30, 3, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1),
-(48, 'MNV02', 2022, 12, 31, 4, 4.3, 4.3, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1),
+(48, 'MNV02', 2022, 12, 31, 4, 4.3, 4.3, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 0.1, -1, -1, -1, -1, -1, -1),
 (49, 'MNV03', 2022, 10, 31, 3.5, 4, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1),
-(50, 'MNV02', 2022, 11, 30, 4.3, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 4.3, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1);
+(50, 'MNV02', 2022, 11, 30, 4.3, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 4.3, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1),
+(51, 'MNV01', 2022, 12, 31, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 0, -1, -1, -1, -1, -1, -1);
 
 -- --------------------------------------------------------
 
@@ -179,8 +182,8 @@ CREATE TABLE `qlnv_chamcongthang` (
 
 INSERT INTO `qlnv_chamcongthang` (`id`, `MaNV`, `Nam`, `T1`, `T2`, `T3`, `T4`, `T5`, `T6`, `T7`, `T8`, `T9`, `T10`, `T11`, `T12`) VALUES
 (21, 'MNV03', 2022, -1, -1, -1, -1, -1, -1, -1, -1, -1, 7.5, 3, 22.9),
-(25, 'MNV01', 2022, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 8, -1),
-(27, 'MNV02', 2022, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 8.6, 12.6);
+(25, 'MNV01', 2022, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 8, 0),
+(27, 'MNV02', 2022, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 8.6, 12.7);
 
 -- --------------------------------------------------------
 
@@ -207,9 +210,10 @@ INSERT INTO `qlnv_chamcongtongketthang` (`Id`, `MaNhanVien`, `Nam`, `Thang`, `So
 (19, 'MNV03', 2022, 12, 4, 23, 0, 4),
 (23, 'MNV01', 2022, 11, 2, 24, 0, 2),
 (24, 'MNV03', 2022, 11, 1, 25, 0, 1),
-(25, 'MNV02', 2022, 12, 3, 24, 0, 3),
+(25, 'MNV02', 2022, 12, 4, 23, 0, 4),
 (26, 'MNV03', 2022, 10, 2, 24, 0, 2),
-(27, 'MNV02', 2022, 11, 2, 24, 0, 2);
+(27, 'MNV02', 2022, 11, 2, 24, 0, 2),
+(28, 'MNV01', 2022, 12, 1, 26, 0, 1);
 
 --
 -- Triggers `qlnv_chamcongtongketthang`
@@ -414,7 +418,7 @@ CREATE TABLE `qlnv_congty` (
 --
 
 INSERT INTO `qlnv_congty` (`ID`, `TenCongTy`, `DiaChi`, `LogoPath`, `SoDienThoai`, `MaSoDoanhNghiep`, `NgayThanhLap`) VALUES
-(1, 'Công ty Mòe', '334 Đ. Nguyễn Trãi, Thanh Xuân Trung, Thanh Xuân, Hà Nội', 'web/img/favicon.png', '0986259999', '0869886889', '2022-12-18');
+(1, 'Công ty tư vấn giải pháp phần mềm quản lý nhân sự', '334 Đ. Nguyễn Trãi, Thanh Xuân Trung, Thanh Xuân, Hà Nội', 'web/img/favicon.png', '0986259999', '0869886889', '2022-12-18');
 
 -- --------------------------------------------------------
 
@@ -464,7 +468,9 @@ CREATE TABLE `qlnv_imagedata` (
 --
 
 INSERT INTO `qlnv_imagedata` (`ID_image`, `PathToImage`) VALUES
+('Image_Profile_MNV01', 'web/img/Image_Profile_MNV01.jpg'),
 ('Image_Profile_MNV02', 'web/img/Image_Profile_MNV02.gif'),
+('Image_Profile_MNV03', 'web/img/Image_Profile_MNV03.jpg'),
 ('Image_Profile_MNV04', 'web/img/Image_Profile_MNV04.jpg'),
 ('logo_web', 'web/img/favicon.png'),
 ('none_image_profile', 'web/img/No_Image.png');
@@ -497,7 +503,8 @@ INSERT INTO `qlnv_luong` (`id`, `MaNV`, `Nam`, `Thang`, `LuongCoDinh`, `LuongCha
 (8, 'MNV03', 2022, 11, 1000000, 17000, 0, 0, 17000),
 (9, 'MNV02', 2022, 12, 1000000, 71000, 10000, 0, 81000),
 (10, 'MNV03', 2022, 10, 1000000, 45000, 0, 0, 45000),
-(11, 'MNV02', 2022, 11, 1000000, 51000, 0, 0, 51000);
+(11, 'MNV02', 2022, 11, 1000000, 51000, 0, 0, 51000),
+(12, 'MNV01', 2022, 12, 1000000, 0, 0, 0, 0);
 
 -- --------------------------------------------------------
 
@@ -535,9 +542,9 @@ CREATE TABLE `qlnv_nhanvien` (
 
 INSERT INTO `qlnv_nhanvien` (`MaNhanVien`, `MaChucVu`, `MaPhongBan`, `Luong`, `GioiTinh`, `MaHD`, `TenNV`, `NgaySinh`, `NoiSinh`, `SoCMT`, `DienThoai`, `DiaChi`, `Email`, `TTHonNhan`, `DanToc`, `MATDHV`, `NgayCMND`, `NoiCMND`, `BHYT`, `BHXH`, `ID_profile_image`) VALUES
 ('MNN01', 'NV', 'MPB05', 1300000, 'Nam', 'MHDMN11', 'Nguyễn Quang Minh', '2002-12-12', 'Thanh Vân - Hiệp Hòa - Bắc Giang', '001205068139', '0965513786', 'Làng sinh viên Hacinco - Nhân Chính - Thanh Xuân - Hà Nội', 'nguyenquangminh@gmail.com', 'Độc thân', 'Kinh', 'SV002', '2019-03-10', 'Hiệp Hòa', 'SV40101206185', '0118059003', 'none_image_profile'),
-('MNV01', 'TTS', 'MPB01', 1000000, 'Nam', 'MHD01', 'Dương Văn Nam', '2002-01-07', 'Hiệp Hòa - Bắc Giang', '001215387168', '0877625245', 'Hiệp Hòa - Bắc Giang', 'namdv@gmail.com', 'Độc thân', 'Kinh', 'SV001', '2019-11-30', 'Hiệp Hòa - Bắc Giang', 'SV40101238294', '0118128311', 'none_image_profile'),
+('MNV01', 'TTS', 'MPB01', 1000000, 'Nam', 'MHD01', 'Dương Văn Nam', '2002-01-07', 'Hiệp Hòa - Bắc Giang', '001215387168', '0877625245', 'Hiệp Hòa - Bắc Giang', 'namdv@gmail.com', 'Độc thân', 'Kinh', 'SV001', '2019-11-30', 'Hiệp Hòa - Bắc Giang', 'SV40101238294', '0118128311', 'Image_Profile_MNV01'),
 ('MNV02', 'TTS', 'MPB02', 1000000, 'Nam', 'MHD02', 'Lã Đức Nam', '2002-11-28', 'Hà Tây', '001202035197', '0945549876', 'Làng sinh viên Hacinco - Nhân Chính - Thanh Xuân - Hà Nội - Việt Nam', 'namld@gmail.com', 'Độc thân', 'Kinh', 'SV001', '2020-08-03', 'Hà Nội', 'SV401985718', '0118157171', 'Image_Profile_MNV02'),
-('MNV03', 'TTS', 'MPB01', 1000000, 'Nam', 'MHD03', 'Phạm Hồng Nghĩa', '2002-04-04', 'Phú Thọ', '123456789', '0822655245', '36 Vũ Trọng Phụng, Thanh Xuân Trung, Thanh Xuân, Hà Nội', 'nghiaph@gmail.com', 'Đã kết hôn', 'Kinh', 'SV001', '2020-12-12', 'Phú Thọ', 'SV40101135729', '0811002892', 'none_image_profile'),
+('MNV03', 'TTS', 'MPB01', 1000000, 'Nam', 'MHD03', 'Phạm Hồng Nghĩa', '2002-04-04', 'Phú Thọ', '123456789', '0822655245', '36 Vũ Trọng Phụng, Thanh Xuân Trung, Thanh Xuân, Hà Nội', 'nghiaph@gmail.com', 'Đã kết hôn', 'Kinh', 'SV001', '2020-12-12', 'Phú Thọ', 'SV40101135729', '0811002892', 'Image_Profile_MNV03'),
 ('MNV04', 'GD', 'PBGD', 10000000, 'Nam', 'MHD04', 'Phạm Nhật Vượng', '1968-08-05', 'Phù Lưu, Lộc Hà, Hà Tĩnh', '000827826195', '0877865245', 'Phù Lưu, Lộc Hà, Hà Tĩnh', 'vuongpn@gmail.com', 'Đã kết hôn', 'Kinh', 'TS001', '1986-10-10', 'Phù Lưu, Lộc Hà, Hà Tĩnh', '', '', 'Image_Profile_MNV04'),
 ('MNV05', 'TTS', 'MPB02', 900000, 'Nam', 'MHD05', 'Nguyễn Khắc Huy', '2002-10-01', 'Đan Phượng - Hà Nội', '001297385197', '0877265456', 'Đan Phượng - Hà Nội', 'huynk@gmail.com', 'Độc thân', 'Kinh', 'SV001', '2020-03-03', 'Đan Phượng', '', '', 'none_image_profile'),
 ('MNV06', 'NV', 'MPB03', 1500000, 'Nam', 'MHD06', 'Phạm Như Khoa', '2002-05-05', 'Hoài Đức - Hà Nội', '123456789', '0556276648', 'Hoài Đức - Hà Nội', 'khoapn@gmail.com', 'Độc thân', 'Kinh', 'SV001', '2020-08-09', 'Hoài Đức', '', '', 'none_image_profile'),
@@ -582,7 +589,8 @@ INSERT INTO `qlnv_phanquyenuser` (`id_user`, `role_id`) VALUES
 (2, 3),
 (7, 3),
 (8, 1),
-(10, 2);
+(10, 2),
+(11, 3);
 
 -- --------------------------------------------------------
 
@@ -891,11 +899,12 @@ CREATE TABLE `qlnv_user` (
 --
 
 INSERT INTO `qlnv_user` (`Id_user`, `username`, `password`, `tennguoidung`, `MaNhanVien`, `LastLogin`, `register`) VALUES
-(1, 'admin', '21232f297a57a5a743894a0e4a801fc3', 'Administrator', 'MNV02', '2022-12-22 07:59:52', '2022-12-01 14:57:45'),
-(2, 'namsiunhon', '827ccb0eea8a706c4c34a16891f84e7b', 'Lã Đức Nam', 'MNV02', '2022-12-21 10:48:50', '2022-12-01 14:57:59'),
-(7, 'nghiaphamhong', '827ccb0eea8a706c4c34a16891f84e7b', 'Pham Hong Nghia', 'MNV03', '2022-12-22 07:45:40', '2022-12-20 20:20:24'),
+(1, 'admin', '21232f297a57a5a743894a0e4a801fc3', 'Administrator', 'MNV02', '2022-12-25 21:13:00', '2022-12-01 14:57:45'),
+(2, 'namsiunhon', '827ccb0eea8a706c4c34a16891f84e7b', 'Lã Đức Nam', 'MNV02', '2022-12-25 21:12:41', '2022-12-01 14:57:59'),
+(7, 'nghiaphamhong', '827ccb0eea8a706c4c34a16891f84e7b', 'Pham Hong Nghia', 'MNV03', '2022-12-25 21:12:11', '2022-12-20 20:20:24'),
 (8, 'phamnhatvuong', '827ccb0eea8a706c4c34a16891f84e7b', 'Phạm Nhật Vượng', 'MNV04', '2022-12-21 21:18:20', '2022-12-21 14:43:39'),
-(10, 'letailinh', '827ccb0eea8a706c4c34a16891f84e7b', 'Lê Tài Linh', 'MNV10', '2022-12-22 07:58:14', '2022-12-21 22:27:34');
+(10, 'letailinh', '827ccb0eea8a706c4c34a16891f84e7b', 'Lê Tài Linh', 'MNV10', '2022-12-22 07:58:14', '2022-12-21 22:27:34'),
+(11, 'duongnam', '827ccb0eea8a706c4c34a16891f84e7b', 'Dương Văn Nam', 'MNV01', '2022-12-25 20:49:02', '2022-12-25 20:48:52');
 
 --
 -- Indexes for dumped tables
@@ -1005,13 +1014,13 @@ ALTER TABLE `qlnv_user`
 -- AUTO_INCREMENT for table `qlnv_chamcong`
 --
 ALTER TABLE `qlnv_chamcong`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=75;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=77;
 
 --
 -- AUTO_INCREMENT for table `qlnv_chamcongngay`
 --
 ALTER TABLE `qlnv_chamcongngay`
-  MODIFY `MaChamCong` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=51;
+  MODIFY `MaChamCong` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=52;
 
 --
 -- AUTO_INCREMENT for table `qlnv_chamcongthang`
@@ -1023,7 +1032,7 @@ ALTER TABLE `qlnv_chamcongthang`
 -- AUTO_INCREMENT for table `qlnv_chamcongtongketthang`
 --
 ALTER TABLE `qlnv_chamcongtongketthang`
-  MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=28;
+  MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=29;
 
 --
 -- AUTO_INCREMENT for table `qlnv_congty`
@@ -1041,7 +1050,7 @@ ALTER TABLE `qlnv_hopdong`
 -- AUTO_INCREMENT for table `qlnv_luong`
 --
 ALTER TABLE `qlnv_luong`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- AUTO_INCREMENT for table `qlnv_thoigiancongtac`
@@ -1059,7 +1068,7 @@ ALTER TABLE `qlnv_thuongphat`
 -- AUTO_INCREMENT for table `qlnv_user`
 --
 ALTER TABLE `qlnv_user`
-  MODIFY `Id_user` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `Id_user` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

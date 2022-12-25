@@ -49,6 +49,9 @@ def login_required(func): # need for some router
     
 @app.route("/logout")
 def logout():
+    if 'chamcong' in session.keys():
+        form_add_data_cham_cong()
+    
     session.clear()
     return redirect(url_for("login"))
 
@@ -390,6 +393,30 @@ def form_view_update_employees(maNV, canEdit):
             TENNV, NGAYSINH, NOISINH, CMND, SDT, DIACHI,
             MAIL, HONHAN, DANTOC, MATDHV, NGAYCMND, NOICMND, BHYT, BHXH, ID_image, MNV))
         mysql.connection.commit()
+        
+        if (maNV == session['username'][4]):
+                cur.execute("""SELECT us.*, img.PathToImage
+                FROM qlnv_user us
+                JOIN qlnv_nhanvien nv ON us.MaNhanVien = nv.MaNhanVien
+                JOIN qlnv_imagedata img ON nv.ID_profile_image = img.ID_image
+                WHERE username=%s""",(session['username'][1],))
+                user_data = cur.fetchall()
+                
+                my_user = user_data[0]
+        
+                cur.execute("""
+                    SELECT MaPhongBan
+                    FROM qlnv_nhanvien
+                    WHERE MaNhanVien = %s
+                    """, (my_user[4],))
+                maPB = cur.fetchall()[0][0]
+                
+                elms = list(my_user)
+                elms.append(maPB)
+                my_user = elms
+                session['username'] = my_user
+                
+        
         cur.close()
         if session['role_id'] != 1:
             return redirect(url_for("form_view_update_employees", maNV = maNV, canEdit = 'N'))
