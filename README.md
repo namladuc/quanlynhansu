@@ -163,9 +163,9 @@ Vào trang web tải Git chọn mục Downloads > Chọn Tải xuống Git phiê
 1. Mở VS Code mở vào một thư mục trống rồi clone chương trình xuống: 
   <img src="data_img/step/Step_vsc.png" alt="">
 
-    ```sh
-    git clone https://github.com/assassinnyt2811/quanlynhansu.git
-    ```
+  ```sh
+  git clone https://github.com/assassinnyt2811/quanlynhansu.git
+  ```
 
 2. Khởi động localhost trong XAMPP
 
